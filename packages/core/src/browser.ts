@@ -125,7 +125,7 @@ export function createPet(options: {
       dragCurrent = dragTarget;
       engine.handle({ type: "drag", value: dragCurrent }, time);
     }
-    if (e.type === "pointerup" && !moved) engine.handle({ type: "tap" }, time);
+    if (e.type === "pointerup" && !moved) engine.handle({ type: "tap", hit: renderer.hitTest(e.clientX,e.clientY), at: performance.now()/1000, choice: Math.random() }, time);
     draw();
   };
   svg.addEventListener("pointerup", release, { signal });
@@ -146,7 +146,7 @@ export function createPet(options: {
     (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        engine.handle({ type: "tap" }, time);
+        engine.handle({ type: "tap", at: performance.now()/1000, choice: Math.random() }, time);
         draw();
       }
     },

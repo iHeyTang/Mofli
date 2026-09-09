@@ -22,8 +22,8 @@ import { beanSkin } from "@mofli/grove/skins/mofli-bean";
 import { stoneSkin } from "@mofli/grove/skins/mofli-stone";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
-import { hat } from "@mofli/grove/accessories/hat";
-import { bow } from "@mofli/grove/accessories/bow";
+import { hat } from "@mofli/grove/accessories";
+import { bow } from "@mofli/grove/accessories";
 export {
   projectMode,
   projectKey,

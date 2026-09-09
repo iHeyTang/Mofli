@@ -1,0 +1,39 @@
+{
+  "name": "Moon Mark",
+  "id": "moon",
+  "mount": "head.forehead",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "path",
+          "d": "M 0.07 -0.15 C -0.1 -0.2 -0.235 -0.055 -0.17 0.105 C -0.105 0.25 0.08 0.215 0.15 0.1 C 0.165 0.056 0.12 0.026 0.091 0.062 C -0.022 0.14 -0.106 -0.04 0.054 -0.096 C 0.104 -0.11 0.108 -0.14 0.07 -0.15 Z"
+        },
+        "attrs": {
+          "fill": "#e8d8b7"
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "path",
+          "d": "M -0.125 -0.04 C -0.155 0.016 -0.12 0.12 -0.063 0.14 C -0.092 0.08 -0.108 0.017 -0.125 -0.04 Z"
+        },
+        "attrs": {
+          "fill": "#fff0d7"
+        }
+      }
+    ]
+  }
+}

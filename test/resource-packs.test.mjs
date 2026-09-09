@@ -73,17 +73,19 @@ test("cross-pack skin bindings are independent of package order and fail atomica
   );
 });
 test("all twenty bundled accessory definitions roundtrip as pure JSON and resolve numeric animation channels", async () => {
-  const files = readdirSync("packages/grove/src/accessories/data");
+  const entries = readdirSync("packages/grove/src/accessories");
+  assert.deepEqual(entries.filter(file => file.endsWith(".ts")), ["index.ts"]);
+  const files = entries.filter(file => file.endsWith(".json"));
   assert.equal(files.length, 20);
   for (const file of files) {
-    const definition = JSON.parse(
-      readFileSync("packages/grove/src/accessories/data/" + file),
+    const { name, ...definition } = JSON.parse(
+      readFileSync("packages/grove/src/accessories/" + file),
     );
     assert.equal(typeof definition.scene, "object");
-    const { definition: typed } = await import(
-      "@mofli/grove/accessories/" + file.replace(".json", "")
-    );
-    assert.deepEqual(typed, definition);
+    const { definitions } = await import('@mofli/grove/accessories');
+    const raw = await import('@mofli/grove/accessories/' + file, {with: {type: 'json'}});
+    assert.deepEqual(raw.default, {name, ...definition});
+    assert.deepEqual(definitions.find(item => item.id === definition.id), {name, ...definition});
     const part = defineAttachment(definition),
       registry = new PetRegistry()
         .registerRig(bloubRig)

@@ -1,0 +1,115 @@
+{
+  "name": "Peach Blush",
+  "id": "blush",
+  "mount": "head.cheeks",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 0.154,
+          "ry": 0.075,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#d69c96"
+        },
+        "member": "left",
+        "surface": true
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": -0.006,
+          "rx": 0.13,
+          "ry": 0.06,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e5b0a5"
+        },
+        "member": "left",
+        "surface": true
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.028,
+          "cy": -0.021,
+          "rx": 0.036,
+          "ry": 0.014,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#f3c7b7"
+        },
+        "member": "left",
+        "surface": true
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 0.154,
+          "ry": 0.075,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#d69c96"
+        },
+        "member": "right",
+        "surface": true
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": -0.006,
+          "rx": 0.13,
+          "ry": 0.06,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e5b0a5"
+        },
+        "member": "right",
+        "surface": true
+      },
+      {
+        "id": "part-5",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.028,
+          "cy": -0.021,
+          "rx": 0.036,
+          "ry": 0.014,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#f3c7b7"
+        },
+        "member": "right",
+        "surface": true
+      }
+    ]
+  }
+}

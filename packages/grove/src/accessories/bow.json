@@ -1,0 +1,36 @@
+{
+  "name": "Clay Bow",
+  "id": "bow",
+  "mount": "head.lower.front",
+  "slot": "head.overlay",
+  "space": "flat",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "wings",
+        "geometry": {
+          "kind": "path",
+          "d": "M -.06 -.04 Q -.34 -.18 -.39 -.12 Q -.44 .04 -.36 .17 Q -.30 .24 -.06 .06 L .06 .06 Q .30 .24 .36 .17 Q .44 .04 .39 -.12 Q .34 -.18 .06 -.04 Z"
+        },
+        "attrs": {
+          "fill": "#ba7864"
+        }
+      },
+      {
+        "id": "knot",
+        "geometry": {
+          "kind": "rect",
+          "x": -0.085,
+          "y": -0.085,
+          "width": 0.17,
+          "height": 0.19,
+          "rx": 0.06
+        },
+        "attrs": {
+          "fill": "#925643"
+        }
+      }
+    ]
+  }
+}

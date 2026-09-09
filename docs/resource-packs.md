@@ -52,8 +52,8 @@ Grove 的骨架、皮肤与饰品实现位于 packages/grove，运行时只依�
 - `@mofli/grove` 主入口导出 grovePack（也为默认导出）、骨架及皮肤工厂。
 - `@mofli/grove/rigs/bloub` 与 `rigs/mew` 提供骨架、约束和工厂。
 - `@mofli/grove/skins/mofli-dough` 等子路径提供单款皮肤。
-- `@mofli/grove/accessories/sprout` 等子路径提供单款饰品与纯数据 definition。
-- JSON 定义位于 packages/grove/src/accessories/data。
+- `@mofli/grove/accessories` 统一导出饰品实例与 definitions；`@mofli/grove/accessories/sprout.json` 提供原始数据。
+- JSON 定义位于 packages/grove/src/accessories。
 
 ### 基于官方资源扩展
 

@@ -5,8 +5,8 @@ import {bloubRig} from '@mofli/grove/rigs/bloub';
 import {mewRig} from '@mofli/grove/rigs/mew';
 import {doughSkin} from '@mofli/grove/skins/mofli-dough';
 import {sesame} from '@mofli/grove/skins/cat-ink';
-import {hat} from '@mofli/grove/accessories/hat';
-import {bow} from '@mofli/grove/accessories/bow';
+import {hat} from '@mofli/grove/accessories';
+import {bow} from '@mofli/grove/accessories';
 import {extraParts} from '../apps/studio/accessories.js';
 const parts=[hat,bow,...extraParts.map(p=>p.attachment)];
 test('seven mount families expose the available independently packaged accessories',()=>{

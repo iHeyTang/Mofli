@@ -32,7 +32,7 @@ test('public browser SDK loads the saved composition and handles keyboard input'
   const {PetRegistry}=await import(root+'core/dist/index.js');
   const {createPet}=await import(root+'core/dist/browser.js');
   const {bloubRig}=await import(root+'grove/dist/rigs/bloub/index.js');
-  const {hat}=await import(root+'grove/dist/accessories/hat.js');
+  const {hat}=await import(root+'grove/dist/accessories/index.js');
   const registry=new PetRegistry().registerRig(bloubRig).registerAttachment(hat);
   const container=document.createElement('div');document.body.append(container);
   const pet=createPet({container,registry,config:JSON.parse(localStorage.getItem('mofli.pet.v1')!),reducedMotion:true});

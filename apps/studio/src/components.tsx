@@ -166,11 +166,13 @@ export function PlaybackSlider() {
 }
 
 export function PetStage() {
+  const stage = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const m = useModel();
   useEffect(() => {
     const renderer = createSvgRenderer(host.current!);
     const svg = renderer.svg;
+    const surface = stage.current!;
     svg.setAttribute("role", "button");
     svg.setAttribute("tabindex", "0");
     svg.setAttribute("aria-label", "互动宠物，点击或按 Enter 打招呼");
@@ -194,10 +196,10 @@ export function PetStage() {
         code.textContent = `${(model.progress).toFixed(2)} / ${model.duration.toFixed(2)} s`;
       raf = requestAnimationFrame(tick);
     };
-    svg.addEventListener(
+    surface.addEventListener(
       "pointermove",
       (e) => {
-        const r = svg.getBoundingClientRect();
+        const r = surface.getBoundingClientRect();
         model.engine.handle(
           {
             type: "look",
@@ -232,25 +234,28 @@ export function PetStage() {
       },
       { signal },
     );
-    svg.addEventListener(
+    surface.addEventListener(
       "pointerdown",
       (e) => {
-        if (e.button !== 0) return;
+        if (e.button !== 0 || pointer) return;
+        e.preventDefault();
+        svg.focus({ preventScroll: true });
         pointer = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
-        svg.setPointerCapture(e.pointerId);
+        surface.setPointerCapture(e.pointerId);
       },
       { signal },
     );
     const release = (e: PointerEvent) => {
-      if (!pointer) return;
+      if (!pointer || e.pointerId !== pointer.id) return;
       if (e.type === "pointerup" && !pointer.moved)
-        model.engine.handle({ type: "tap" }, model.time);
+        model.engine.handle({ type: "tap", hit: renderer.hitTest(e.clientX, e.clientY), at: performance.now()/1000, choice: Math.random() }, model.time);
       model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
       pointer = null;
     };
-    svg.addEventListener("pointerup", release, { signal });
-    svg.addEventListener("pointercancel", release, { signal });
-    svg.addEventListener(
+    surface.addEventListener("pointerup", release, { signal });
+    surface.addEventListener("pointercancel", release, { signal });
+    surface.addEventListener("lostpointercapture", release, { signal });
+    surface.addEventListener(
       "pointerleave",
       () => {
         if (!pointer)
@@ -266,7 +271,7 @@ export function PetStage() {
       (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          model.engine.handle({ type: "tap" }, model.time);
+          model.engine.handle({ type: "tap", at: performance.now()/1000, choice: Math.random() }, model.time);
         }
       },
       { signal },
@@ -280,6 +285,7 @@ export function PetStage() {
   }, []);
   return (
     <div
+      ref={stage}
       className="canvas"
       id="stage"
       style={{ backgroundColor: m.skin.colors.paper ?? "#f6f7f3" }}
@@ -289,7 +295,7 @@ export function PetStage() {
         实时预览<span>SVG / {m.entry.name}</span>
       </div>
       <div id="avatar" ref={host} style={{ transform: `scale(${m.zoom})` }} />
-      <div className="canvas-hint">移动鼠标与它对视 · 点击打个招呼</div>
+      <div className="canvas-hint">{m.debug ? "X / Y / Z：局部方向 · 虚线：表面采样或角色单位范围" : "移动鼠标与它对视 · 点击不同部位试试"}</div>
     </div>
   );
 }

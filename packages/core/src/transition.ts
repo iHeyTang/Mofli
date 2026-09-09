@@ -136,6 +136,7 @@ export function blendFrames(a: Frame, b: Frame, k: number): Frame {
     ...(resources.length ? { resources } : {}),
     ...(b.viewBox ? { viewBox: b.viewBox } : {}),
     shapes,
+    ...(b.hitArea ? {hitArea:b.hitArea} : {}),
     ...((a.mounts||b.mounts)?{mounts:blendMountFrames(a.mounts,b.mounts,k)}:{}),
     ...(b.slots?{slots:Object.fromEntries(Object.entries(b.slots).map(([id,index])=>[id,index===b.shapes.length?shapes.length:index]))}:{}),
     bounds,

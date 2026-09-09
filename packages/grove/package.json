@@ -49,97 +49,22 @@
       "types": "./dist/skins/mofli-stone/index.d.ts",
       "import": "./dist/skins/mofli-stone/index.js"
     },
-    "./accessories/flower": {
-      "types": "./dist/accessories/flower.d.ts",
-      "import": "./dist/accessories/flower.js"
-    },
-    "./accessories/blush": {
-      "types": "./dist/accessories/blush.d.ts",
-      "import": "./dist/accessories/blush.js"
-    },
-    "./accessories/pearls": {
-      "types": "./dist/accessories/pearls.d.ts",
-      "import": "./dist/accessories/pearls.js"
-    },
-    "./accessories/ribbons": {
-      "types": "./dist/accessories/ribbons.d.ts",
-      "import": "./dist/accessories/ribbons.js"
-    },
-    "./accessories/gem": {
-      "types": "./dist/accessories/gem.d.ts",
-      "import": "./dist/accessories/gem.js"
-    },
-    "./accessories/scarf": {
-      "types": "./dist/accessories/scarf.d.ts",
-      "import": "./dist/accessories/scarf.js"
-    },
-    "./accessories/halo": {
-      "types": "./dist/accessories/halo.d.ts",
-      "import": "./dist/accessories/halo.js"
-    },
-    "./accessories/horns": {
-      "types": "./dist/accessories/horns.d.ts",
-      "import": "./dist/accessories/horns.js"
-    },
-    "./accessories/freckles": {
-      "types": "./dist/accessories/freckles.d.ts",
-      "import": "./dist/accessories/freckles.js"
-    },
-    "./accessories/bow": {
-      "types": "./dist/accessories/bow.d.ts",
-      "import": "./dist/accessories/bow.js"
-    },
-    "./accessories/sprout": {
-      "types": "./dist/accessories/sprout.d.ts",
-      "import": "./dist/accessories/sprout.js"
-    },
-    "./accessories/medal": {
-      "types": "./dist/accessories/medal.d.ts",
-      "import": "./dist/accessories/medal.js"
-    },
-    "./accessories/bunny": {
-      "types": "./dist/accessories/bunny.d.ts",
-      "import": "./dist/accessories/bunny.js"
-    },
-    "./accessories/petals": {
-      "types": "./dist/accessories/petals.d.ts",
-      "import": "./dist/accessories/petals.js"
-    },
-    "./accessories/bells": {
-      "types": "./dist/accessories/bells.d.ts",
-      "import": "./dist/accessories/bells.js"
-    },
-    "./accessories/hat": {
-      "types": "./dist/accessories/hat.d.ts",
-      "import": "./dist/accessories/hat.js"
-    },
-    "./accessories/fireflies": {
-      "types": "./dist/accessories/fireflies.d.ts",
-      "import": "./dist/accessories/fireflies.js"
-    },
-    "./accessories/moon": {
-      "types": "./dist/accessories/moon.d.ts",
-      "import": "./dist/accessories/moon.js"
-    },
-    "./accessories/bubbles": {
-      "types": "./dist/accessories/bubbles.d.ts",
-      "import": "./dist/accessories/bubbles.js"
-    },
-    "./accessories/cheek-stars": {
-      "types": "./dist/accessories/cheek-stars.d.ts",
-      "import": "./dist/accessories/cheek-stars.js"
-    },
     "./rigs/cat-head": {
       "types": "./dist/rigs/mew/index.d.ts",
       "import": "./dist/rigs/mew/index.js"
-    }
+    },
+    "./accessories/*.json": "./dist/accessories/*.json"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "mofli dev",
+    "check": "npm run build && mofli check",
+    "export:pet": "mofli export"
   },
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "@mofli/studio": "^0.1.0"
   },
   "dependencies": {
     "@mofli/core": "^0.1.0"

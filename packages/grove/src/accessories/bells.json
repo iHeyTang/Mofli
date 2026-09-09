@@ -1,0 +1,191 @@
+{
+  "name": "Twin Bells",
+  "id": "bells",
+  "mount": "head.lower.sides",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "path",
+          "d": "M -0.012 -0.02 C -0.022 -0.06 0.024 -0.06 0.018 -0.015 C 0.006 0.07 -0.013 0.125 0.003 0.17 C 0.02 0.2 -0.012 0.22 -0.025 0.17 C -0.04 0.1 -0.006 0.03 -0.012 -0.02 Z"
+        },
+        "attrs": {
+          "fill": "#789174"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.25,
+          "rx": 0.12,
+          "ry": 0.13,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.035,
+          "cy": 0.2,
+          "rx": 0.035,
+          "ry": 0.032,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.3,
+          "rx": 0.058,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#52654f"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.335,
+          "rx": 0.025,
+          "ry": 0.032,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-5",
+        "geometry": {
+          "kind": "path",
+          "d": "M -0.012 -0.02 C -0.022 -0.06 0.024 -0.06 0.018 -0.015 C 0.006 0.07 -0.013 0.125 0.003 0.17 C 0.02 0.2 -0.012 0.22 -0.025 0.17 C -0.04 0.1 -0.006 0.03 -0.012 -0.02 Z"
+        },
+        "attrs": {
+          "fill": "#789174"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-6",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.25,
+          "rx": 0.12,
+          "ry": 0.13,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-7",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.035,
+          "cy": 0.2,
+          "rx": 0.035,
+          "ry": 0.032,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-8",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.3,
+          "rx": 0.058,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#52654f"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-9",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.335,
+          "rx": 0.025,
+          "ry": 0.032,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      }
+    ]
+  }
+}

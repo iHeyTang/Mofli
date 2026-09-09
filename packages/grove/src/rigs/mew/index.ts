@@ -1,3 +1,4 @@
+import { headHitArea, headReaction } from '../head-interaction.js';
 import {headMountCapabilities} from '@mofli/core';
 import {headMounts} from "@mofli/core";
 import { catSurfaces, renderMarkings, blendMarkings } from "./markings.js";
@@ -200,11 +201,12 @@ export const mewRig: Rig = {
             attention: state.attention,
             pressed: state.pressed,
             reaction: time - state.reactionAt,
+        click: state.click,
           },
     );
     const effective = reducedMotion ? skin : appearance(p, t);
     const elapsed = time - state.reactionAt;
-    const clicked = !reducedMotion && elapsed >= 0 && elapsed < .68 ? Math.min(1, elapsed/.07, (.68-elapsed)/.16) : 0;
+    const clicked = state.click ? (reducedMotion ? 0 : headReaction(state.click, elapsed, true).irritation) : !reducedMotion && elapsed >= 0 && elapsed < .68 ? Math.min(1, elapsed/.07, (.68-elapsed)/.16) : 0;
     const irritated = Math.max(skin.parameters.expression === 16 ? 1 : 0, clicked) * source.attachmentSurface.visibility;
     const frame = characterFrame(
       source,
@@ -212,7 +214,7 @@ export const mewRig: Rig = {
       effective.colors.face!,
       effective.variants?.eyes,
       irritated,
-      reducedMotion || irritated === 0 ? 0 : Math.exp(-7 * (clicked > 0 ? elapsed : skinTime)) * Math.sin(24 * (clicked > 0 ? elapsed : skinTime)),
+      reducedMotion || irritated === 0 ? 0 : state.click ? headReaction(state.click,elapsed,true).roll/7 : Math.exp(-7 * (clicked > 0 ? elapsed : skinTime)) * Math.sin(24 * (clicked > 0 ? elapsed : skinTime)),
     );
     const bodyIndex = frame.shapes.findIndex((s) => s.id === "ink-body");
     frame.shapes.splice(
@@ -226,6 +228,7 @@ export const mewRig: Rig = {
       source.attachmentPoints[40]!,
       source.attachmentPoints[56]!,
     ];
+    frame.hitArea = headHitArea;
     return frame;
   },
 };

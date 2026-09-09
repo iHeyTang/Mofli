@@ -204,3 +204,8 @@ h1,h2,h3,p {margin:0}
 .attachment-item:has(input:checked) {border-color:#b9ccbb;background:var(--studio-selection)}
 
 .accessory-toggle {position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:1;cursor:pointer}
+
+/* The whole canvas is the pointer surface; keyboard focus uses the existing hint. */
+#stage { touch-action: none; cursor: pointer; }
+#avatar svg:focus { outline: none; }
+#stage:has(#avatar svg:focus-visible) .canvas-hint { color: var(--studio-sage); text-decoration: underline; text-underline-offset: 4px; }

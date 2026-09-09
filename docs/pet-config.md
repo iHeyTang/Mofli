@@ -14,8 +14,8 @@
 import { PetRegistry } from '@mofli/core';
 import { createPet } from '@mofli/core/browser';
 import { bloubRig } from '@mofli/grove/rigs/bloub';
-import { hat } from '@mofli/grove/accessories/hat';
-import { bow } from '@mofli/grove/accessories/bow';
+import { hat } from '@mofli/grove/accessories';
+import { bow } from '@mofli/grove/accessories';
 
 const registry = new PetRegistry()
   .registerRig(bloubRig)

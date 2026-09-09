@@ -1,8 +1,8 @@
 import projectDefinition, { projectMode, projectKey } from "./project.js";
 import type { StudioProject } from "./project-types.js";
 const project = projectDefinition as StudioProject;
-import { hat } from "@mofli/grove/accessories/hat";
-import { bow } from "@mofli/grove/accessories/bow";
+import { hat } from "@mofli/grove/accessories";
+import { bow } from "@mofli/grove/accessories";
 import { PetRegistry, type PetConfig, composeAttachments } from "@mofli/core";
 import { doughSkin } from "@mofli/grove/skins/mofli-dough";
 import { beanSkin } from "@mofli/grove/skins/mofli-bean";

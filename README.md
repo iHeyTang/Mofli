@@ -1,62 +1,64 @@
 # Mofli
 
-框架无关的交互式 SVG 宠物引擎。使用骨架、皮肤和饰品组装宠物，在 Studio 中预览、调整并导出到自己的项目。
+**English** | [简体中文](README.zh-CN.md)
 
-需要 Node.js 22.12 或更新版本。
+A framework-independent engine for interactive SVG pets. Combine rigs, skins, and accessories, then preview, customize, and export your pet in Studio for use in your own project.
 
-## 开箱组装宠物
+Requires Node.js 22.12 or later.
+
+## Build a pet
 
 ```sh
 npx @mofli/studio
 ```
 
-打开终端显示的地址，选择 Grove 内置资源、调整参数并保存宠物 JSON。需要开发自己的资源和导出运行包时，创建下面的独立项目。
+Open the address shown in your terminal, choose from Grove's built-in resources, adjust parameters, and save your pet as JSON. To develop your own resources and export a runtime bundle, create a project as described below.
 
-## 在 Studio 中开发自己的资源
+## Develop your resources in Studio
 
-创建自己的项目，在该项目中启动 Studio，你实现的皮肤和饰品就会出现在工作台素材库里，可以直接预览、组装和调试。
+Create your own project and start Studio from that directory. Your skins and accessories appear in Studio's library, ready to preview, assemble, and debug.
 
 ```sh
-# 创建项目并安装依赖
+# Create a project and install dependencies
 npx @mofli/studio init my-pack --type pack
 
-# 进入自己的项目，启动带有项目资源的 Studio
+# Start Studio with your project's resources
 cd my-pack
 npm run dev
 ```
 
-脚手架会生成以下项目结构，配置已就绪：
+The CLI generates a project with the configuration already in place:
 
 ```text
 my-pack/
-├── src/index.ts       # 你的资源实现与集合导出
-├── mofli.project.ts   # 告诉 Studio 加载哪个资源集合
-├── package.json      # 项目依赖和启动、导出命令
-└── tsconfig.json     # TypeScript 配置
+├── src/index.ts       # Your resource implementations and pack export
+├── mofli.project.ts   # Tells Studio which resource pack to load
+├── package.json      # Dependencies and development/export commands
+└── tsconfig.json     # TypeScript configuration
 ```
 
-打开终端显示的地址，Studio 中已经能看到模板提供的自定义皮肤和饰品。修改 `my-pack/src/index.ts`，工作台会自动重新加载并展示修改后的效果。
+Open the address shown in your terminal. The starter's custom skin and accessory are already available in Studio. Edit `my-pack/src/index.ts` to see your changes automatically reloaded in the workspace.
 
-启动时，Studio 会读取当前项目根目录的 `mofli.project.ts`。脚手架已将它配置为加载 `src/index.ts` 导出的资源集合；继续往这个集合里添加骨架、皮肤或饰品即可，无需修改 Studio 源码。
+On startup, Studio reads `mofli.project.ts` from your project root. The generated configuration loads the resource pack exported by `src/index.ts`. Add rigs, skins, or accessories to that pack to make them available in Studio.
 
-在工作台中搭配宠物，点击“保存到项目”，再在 `my-pack` 目录运行：
+Assemble your pet in Studio, click “保存到项目” (Save to project), then run these commands from `my-pack`:
 
 ```sh
-npm run check        # 校验资源与宠物配置
-npm run export:pet   # 导出可接入业务项目的宠物运行包
+npm run check        # Validate resources and pet configuration
+npm run export:pet   # Export a pet runtime bundle for your application
 ```
 
-只开发皮肤或饰品时，创建命令可改用 `--type skin --rig bloub`、`--type skin --rig mew` 或 `--type attachment`。详细步骤见 [创作者工作流](docs/creator-workflow.md)。
+To develop only a skin or accessory, use `--type skin --rig bloub`, `--type skin --rig mew`, or `--type attachment` in the creation command. See the [creator workflow](docs/creator-workflow.md) for details.
 
-## 在业务项目中使用
+## Use a pet in your application
 
-在你的业务项目目录安装运行依赖：
+Install the runtime dependencies in your application project:
 
 ```sh
 npm install @mofli/core @mofli/grove
 ```
 
-注册资源集合并加载 Studio 保存的宠物配置：
+Register a resource pack and load the pet configuration saved by Studio:
 
 ```ts
 import { PetRegistry } from '@mofli/core';
@@ -67,28 +69,36 @@ const registry = new PetRegistry().registerPacks(grovePack);
 const pet = createPet({ container, registry, config });
 
 pet.setMood('happy');
-// 页面或组件卸载时释放资源。
+// Release resources when the page or component unmounts.
 pet.destroy();
 ```
 
-`container` 是有宽高的 DOM 元素，`config` 是宠物 JSON 对象。宿主也可直接使用 CLI 导出的浏览器运行包。
+`container` is a DOM element with a defined width and height. `config` is the pet JSON object. You can also use the browser runtime bundle exported by the CLI.
 
-## SDK 文档
+## SDK documentation
 
-- [创作者工作流](docs/creator-workflow.md)：创建项目、工作台开发、保存与导出。
-- [资源包](docs/resource-packs.md)：组织和注册骨架、皮肤、饰品。
-- [架构](docs/architecture.md)：各层职责、执行模型与约束。
-- [皮肤开发](docs/skin-authoring.md)：外观、几何默认值和表面花纹。
-- [饰品开发](docs/attachment-authoring.md)：挂载接口、SVG 场景与数据动画。
-- [宠物配置](docs/pet-config.md)：保存格式和宿主接入。
-- [绑定工具](docs/bindings.md)：局部坐标、曲面投影与关节链。
+The following guides are currently in Chinese:
 
-## 修改 Mofli 源码
+- [Creator workflow](docs/creator-workflow.md): project setup, Studio development, saving, and exporting.
+- [Resource packs](docs/resource-packs.md): organize and register rigs, skins, and accessories.
+- [Architecture](docs/architecture.md): responsibilities, execution model, and constraints.
+- [Skin authoring](docs/skin-authoring.md): appearance, geometry defaults, and surface patterns.
+- [Accessory authoring](docs/attachment-authoring.md): mount interfaces, SVG scenes, and declarative animation.
+- [Pet configuration](docs/pet-config.md): saved format and application integration.
+- [Binding utilities](docs/bindings.md): local coordinates, surface projection, and joint chains.
 
-维护 Core、Grove 或 Studio 的实现，请阅读 [源码开发指南](CONTRIBUTING.md)。其中的 workspace 安装、构建与测试命令仅用于 Mofli 仓库。
+## Develop Mofli itself
 
-## 运行边界与许可
+To modify Core, Grove, or Studio, read the [source development guide](CONTRIBUTING.md) (Chinese). Its workspace installation, build, and test commands apply to the Mofli repository.
 
-Mofli 是受约束的 SVG / 2.5D 引擎，不提供任意三维物体相交或碰撞求解。资源包代码按可信代码执行，没有不可信插件沙箱。Core 默认入口不依赖 DOM；浏览器能力通过 `@mofli/core/browser` 使用。
+## Runtime boundaries
 
-Bloub 衍生实现保留 MIT 归属声明，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+Mofli is a constrained SVG / 2.5D engine. It does not solve arbitrary 3D intersections or collisions. Resource packs run as trusted code, without a sandbox for untrusted plugins. Core's default entry point is DOM-independent; browser integration is available through `@mofli/core/browser`.
+
+## Origins and acknowledgments
+
+Mofli was originally inspired by [Bloub](https://github.com/jeremy-prt/bloub). Thank you to **Jérémy Perret** for sharing the SVG character morphing, eye animation, and head orientation implementation that provided a foundation for Mofli's exploration.
+
+Mofli's Bloub rig, parts of the Mew rig, and the contour and facial calculations extracted into Core use and adapt Bloub source code. These portions retain **Copyright (c) 2026 Jérémy Perret** and are distributed under the **MIT License**. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the source, revision, and full license text.
+
+Bloub recreates the x.ai / Grok bot avatar. Its MIT license covers the code, not rights to the original character design or trademarks, which belong to their respective owners. Mofli is not affiliated with or endorsed by x.ai.

@@ -67,7 +67,7 @@ core 围绕局部原点摆动，补偿头部倾斜并加入末端延迟；左右
 
 这些结构置于 `{kind:'mesh', id:'surface-', faces:[...]}` 中，可选 `cull:'negative'` / `'positive'` 约定正面投影绕序。core 统一生成网格、投影、在同一个 mesh 内按平均深度排列面。需要互相排序的部件放入同一个 mesh。
 
-参考 `packages/grove/src/accessories/hat.ts`：礼帽只声明截面、圆环、底面和颜色，由 Core 完成网格生成、投影及深度排序。
+参考 `packages/grove/src/accessories/hat.json`：礼帽只声明截面、圆环、底面和颜色，由 Core 完成网格生成、投影及深度排序。
 
 这仍是受约束的 2.5D 系统。平均深度排序不解决任意相交面、角色与饰品间的通用遮挡，也不会自动规避其他饰品。优先用前景平面或主动悬空造型。
 
@@ -105,3 +105,19 @@ Bloub 与 Mew 提供以下接口；每个接口在 Studio 中是一个独立分�
 | `character.orbit` | 角色中心与范围 | Floating Bubbles, Firefly Glow, Drifting Petals |
 
 挂载由骨架逐帧输出朝向、尺度与可见性。符号状态可隐藏头部挂载；Mew 的原生耳朵属于骨架，佩戴额外饰品不会移除它们。其他骨架只有声明兼容的接口才能使用相应饰品。
+
+## 在 Grove 中组织数据
+
+每件内置饰品只维护 `packages/grove/src/accessories/<id>.json`，包含名称、挂载、参数和场景；`index.ts` 统一加载并调用 Core 驱动，没有逐件 TS 包装。新增 JSON 后在集合入口登记即可。
+
+```ts
+import { sprout } from '@mofli/grove/accessories';
+```
+
+原始数据也通过 `@mofli/grove/accessories/sprout.json` 导出。需要函数生成场景的高级饰品可独立使用 TS 文件，再加入同一资源集合。
+
+## 挂载调试
+
+Studio 的“挂载调试”显示当前 Frame 中的挂载位置、局部 X/Y/Z 方向和左右成员，随姿态与可见性变化。短标签对应挂载 ID；调试层不进入导出的宠物数据。
+
+表面虚线是局部采样示意，环绕虚线是角色局部单位范围；当前挂载协议未声明表面边界，虚线不代表可安装区域的硬边界，也不是碰撞范围。

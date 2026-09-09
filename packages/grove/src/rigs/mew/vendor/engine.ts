@@ -1,3 +1,5 @@
+import { headReaction } from '../../head-interaction.js';
+import type { ClickReaction } from '@mofli/core';
 /*! Bloub © 2026 Jérémy Perret, MIT. See THIRD_PARTY_NOTICES.md. */
 import { turnedProfile } from '../head-turn.js'
 import { softBody } from '../soft-master.js'
@@ -446,7 +448,8 @@ export class BotEngine {
     if (STATE_BY_ID.get(id)?.blinkIn && now - this.blinkAt >= 0.2) this.blinkAt = now
   }
 
-  sample(now: number, interaction?: { look: { x: number; y: number }; attention: number; pressed: boolean; reaction: number }): BotFrame {
+  sample(now: number, interaction?: { look: { x: number; y: number }; attention: number; pressed: boolean; reaction: number; click?: ClickReaction }): BotFrame {
+    const response = headReaction(interaction?.click, interaction?.reaction ?? -1, true);
     const R = this.scale
     const def = STATE_BY_ID.get(this.cur)!
     const shape = this.shapeAtTime(now)
@@ -501,20 +504,23 @@ export class BotEngine {
 
     // Cat-specific irritation: two brief side-to-side turns, easing back to the
     // current gaze. The entire head surface (ears, eyes, markings) shares this pose.
-    const reaction = interaction?.reaction ?? -1
+    const reaction = interaction?.click ? -1 : interaction?.reaction ?? -1
     const u = reaction / .68
     const envelope = u > 0 && u < 1 ? Math.sin(Math.PI*u)**2 * (1-.35*u) : 0
     const shake = Math.sin(5*Math.PI*u) * envelope * (pose.headTurn ?? 0)
     if (envelope > 0) gaze.yaw = clamp(gaze.yaw + shake*24, -60, 60)
     gaze.roll += shake*4
 
+    gaze.yaw += response.yaw;
+    gaze.pitch += response.pitch;
+    gaze.roll += response.roll;
     // clignement declenche par le changement d'etat, en plus du calendrier
     const forced = clamp((now - this.blinkAt) / 0.2)
     const forcedLid = forced < 1 ? Math.abs(forced * 2 - 1) : 1
-    const lid = Math.min(life.lid, forcedLid)
+    const lid = Math.min(life.lid, forcedLid, response.lid)
 
     const offX = pose.offX + life.driftX
-    const offY = pose.offY + life.driftY
+    const offY = pose.offY + life.driftY + response.lift
 
     // --- corps ------------------------------------------------------------
     const sil: Silhouette = {
@@ -525,6 +531,8 @@ export class BotEngine {
       cy: pose.sil.cy + offY,
       sy: pose.sil.sy * life.breath
     }
+    sil.sx *= 1+response.squash;
+    sil.sy *= 1-response.squash;
     const bodyPath = closedPath(toPoints(sil, R, this.pts))
 
     // --- yeux -------------------------------------------------------------

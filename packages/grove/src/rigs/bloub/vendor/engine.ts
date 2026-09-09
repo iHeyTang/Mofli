@@ -1,3 +1,5 @@
+import { headReaction } from '../../head-interaction.js';
+import type { ClickReaction } from '@mofli/core';
 import {headMounts,type MountFrames} from "@mofli/core";
 import {projectHead} from "../head-projection.js";
 import {blendEyeComponent,resolveEyeComponent} from "../eye-component.js";
@@ -469,7 +471,8 @@ export class BotEngine {
     if (STATE_BY_ID.get(id)?.blinkIn) this.blinkAt = now
   }
 
-  sample(now: number, interaction?: { look: { x: number; y: number }; attention: number; pressed: boolean; reaction: number }): BotFrame {
+  sample(now: number, interaction?: { look: { x: number; y: number }; attention: number; pressed: boolean; reaction: number; click?: ClickReaction }): BotFrame {
+    const response = headReaction(interaction?.click, interaction?.reaction ?? -1, false);
     const R = this.scale
     const def = STATE_BY_ID.get(this.cur)!
     const shape = this.shapeAtTime(now)
@@ -522,17 +525,20 @@ export class BotEngine {
       roll: pose.gaze.roll + life.dRoll
     }
 
+    gaze.yaw += response.yaw;
+    gaze.pitch += response.pitch;
+    gaze.roll += response.roll;
     // clignement declenche par le changement d'etat, en plus du calendrier
     const forced = clamp((now - this.blinkAt) / 0.2)
     const forcedLid = forced < 1 ? Math.abs(forced * 2 - 1) : 1
-    const lid = Math.min(life.lid, forcedLid)
+    const lid = Math.min(life.lid, forcedLid, response.lid)
 
     const offX = pose.offX + life.driftX
-    const offY = pose.offY + life.driftY
+    const offY = pose.offY + life.driftY + response.lift
 
     // --- corps ------------------------------------------------------------
-    const tap = interaction && interaction.reaction >= 0 && interaction.reaction < .48 ? Math.sin(Math.PI*interaction.reaction/.48)**2 : 0;
-    const squash = tap*.1;
+    const tap = !interaction?.click && interaction && interaction.reaction >= 0 && interaction.reaction < .48 ? Math.sin(Math.PI*interaction.reaction/.48)**2 : 0;
+    const squash = interaction?.click ? response.squash : tap*.1;
     const sil: Silhouette = {
       ...pose.sil,
       cx: pose.sil.cx + offX,

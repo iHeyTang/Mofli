@@ -6,6 +6,26 @@ export interface MountFrame {members?:MountFrames;surface?:readonly [number,numb
 export type MountFrames=Record<string,MountFrame>;
 export interface Attachment {parameters?:Record<string,{min:number;max:number;default:number}>;id:string;mount:string;slot:string;volume?:boolean;sample(context:AttachmentContext,parameters:Readonly<Record<string,number>>):(Shape & {slot?:string})[]}
 export interface AttachmentInstance {id:string;attachment:Attachment;parameters?:Record<string,number>}
+/** Shared projection for attachments and mount diagnostics. */
+export function createMountContext(m:MountFrame,time=0):AttachmentContext {
+  const target=(member?:string)=>{
+   const target=member?m.members?.[member]:m;
+   if(!target)throw new Error(`Unknown mount member: ${member}`);
+   return target;
+  };
+  const project=(point:readonly [number,number,number],member?:string)=>{
+   const v=target(member).volume;if(!v)throw new Error('Missing volume mount');
+   const [x,y,z]=point;
+   return {x:v.origin.x+v.scale*(x*v.right[0]!+y*v.down[0]!+z*v.forward[0]!),y:v.origin.y+v.scale*(x*v.right[1]!+y*v.down[1]!+z*v.forward[1]!),depth:(v.originDepth??0)+x*v.right[2]!+y*v.down[2]!+z*v.forward[2]!};
+  };
+  return {time,project,surface:([u,v],member)=>{
+   const region=target(member).surface;if(!region)throw new Error('Missing surface region');
+   const [x,y]=region;
+   const z=Math.sqrt(Math.max(0,1-(x+u)**2-(y+v)**2))-Math.sqrt(Math.max(0,1-x*x-y*y));
+   return project([u,v,z],member);
+  }};
+
+}
 /** A small first protocol: rigid mounts and flat shapes; no arbitrary SVG/resources. */
 export function composeAttachments(frame:Frame,instances:readonly AttachmentInstance[],time=0):Frame {
  if(!instances.length)return frame;
@@ -17,22 +37,7 @@ export function composeAttachments(frame:Frame,instances:readonly AttachmentInst
   if(occupied.has(a.mount))throw new Error(`Mount occupied: ${a.mount}`);occupied.add(a.mount);
   if(!m.matrix.every(Number.isFinite)||!Number.isFinite(m.visibility)||m.visibility<0||m.visibility>1||!Number.isInteger(slot)||slot<0||slot>frame.shapes.length)throw new Error('Invalid mount frame');
   if(a.volume&&!m.volume)throw new Error(`Attachment requires volume mount: ${a.id}`);
-  const target=(member?:string)=>{
-   const target=member?m.members?.[member]:m;
-   if(!target)throw new Error(`Unknown mount member: ${member}`);
-   return target;
-  };
-  const project=(point:readonly [number,number,number],member?:string)=>{
-   const v=target(member).volume;if(!v)throw new Error('Missing volume mount');
-   const [x,y,z]=point;
-   return {x:v.origin.x+v.scale*(x*v.right[0]!+y*v.down[0]!+z*v.forward[0]!),y:v.origin.y+v.scale*(x*v.right[1]!+y*v.down[1]!+z*v.forward[1]!),depth:(v.originDepth??0)+x*v.right[2]!+y*v.down[2]!+z*v.forward[2]!};
-  };
-  const context:AttachmentContext={time,project,surface:([u,v],member)=>{
-   const region=target(member).surface;if(!region)throw new Error('Missing surface region');
-   const [x,y]=region;
-   const z=Math.sqrt(Math.max(0,1-(x+u)**2-(y+v)**2))-Math.sqrt(Math.max(0,1-x*x-y*y));
-   return project([u,v,z],member);
-  }};
+  const context=createMountContext(m,time);
   if(!parameters||typeof parameters!=='object'||Array.isArray(parameters)||Object.keys(parameters).some(k=>!Object.hasOwn(a.parameters??{},k)))throw new Error('Unknown attachment parameter');
   const resolved:Record<string,number>={};
   for(const [key,rule] of Object.entries(a.parameters??{})){

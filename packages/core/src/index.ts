@@ -1,3 +1,5 @@
+import { ClickTracker, type ClickReaction, type ClickHit, type HitArea } from './clicks.js';
+export type { ClickReaction, ClickHit, HitArea } from './clicks.js';
 export {defineResourcePack,collectResourcePacks,type ResourcePack} from './resource-pack.js';
 export type {SceneValue,SceneChannels} from './scene-values.js';
 export type {AttachmentSolid,AttachmentFace} from './attachment-solids.js';
@@ -78,6 +80,7 @@ export interface PetState {
   drag: Point;
   pressed: boolean;
   reactionAt: number;
+  click?: ClickReaction;
 }
 export interface Shape {
   mask?: string;
@@ -89,6 +92,7 @@ export interface Shape {
   attrs: Record<string, string | number>;
 }
 export interface Frame {
+  hitArea?: HitArea;
   mounts?: import("./attachments.js").MountFrames;
   slots?: Record<string,number>;
   resources?: SvgResource[];
@@ -287,7 +291,7 @@ export type PetEvent =
   | { type: "mood"; value: Mood }
   | { type: "look" | "drag"; value: Point }
   | { type: "press"; value: boolean }
-  | { type: "tap" }
+  | { type: "tap"; hit?: ClickHit; at?: number; choice?: number }
   | { type: "hover"; value: boolean };
 export interface EngineOptions {
   transitionDuration?: number;
@@ -295,6 +299,7 @@ export interface EngineOptions {
   pose?: RigPose;
 }
 export class PetEngine {
+  private clicks = new ClickTracker();
   private attention = { from: 0, target: 0, at: 0 };
   private attentionAt(time: number) {
     const u = clamp((time - this.attention.at) / 0.24, 0, 1);
@@ -482,13 +487,22 @@ export class PetEngine {
         y: clamp(event.value.y),
       };
     } else if (event.type === "hover") this.focus(event.value, time);
-    else if (event.type === "tap") this.state.reactionAt = time;
+    else if (event.type === "tap") {
+      const click = this.clicks.next(event.hit ?? { region: 'body', point: {x:0,y:0} }, event.at ?? time, event.choice);
+      if (!click) return;
+      if (click.intense && this.state.click) {
+        click.from = { reaction: { ...structuredClone(this.state.click), from: undefined }, elapsed: Math.max(0,time-this.state.reactionAt) };
+      }
+      this.state.click = click;
+      this.state.reactionAt = time + (click.delay ?? 0);
+    }
     else if (event.type === "activity") {
       if (!["idle", "working", "waiting", "success"].includes(event.value))
         throw new Error("Invalid activity");
       if (this.state.activity === event.value) return;
       this.begin(time);
       this.state.activity = event.value;
+      this.state.click = undefined;
       this.state.reactionAt = time;
     } else if (event.type === "mood") {
       if (!["calm", "curious", "happy"].includes(event.value))
@@ -520,6 +534,7 @@ export class PetEngine {
       skinTime: Math.max(0, time - this.skinAt),
       state: {
         ...structuredClone(this.state),
+        ...(time < this.state.reactionAt ? { click: undefined, reactionAt: -100 } : {}),
         attention: reducedMotion
           ? this.attention.target
           : this.attentionAt(time),

@@ -30,6 +30,17 @@ npm run dev
 
 `apps/studio/src` 包含工作台和编辑模型，`bin` 包含 CLI，`resources.js` 收集项目资源。`reference.html`、`reference.ts`、`reference.css` 是开发服务器上的回归入口，不参与生产构建和 npm 分发。
 
+## 开发 Grove 资源
+
+完成仓库依赖安装后，在 Grove 自己的项目目录启动：
+
+```sh
+cd packages/grove
+npm run dev
+```
+
+Studio 读取该目录的 `mofli.project.ts`，加载 `src/index.ts` 导出的源码资源集合。修改骨架、皮肤或饰品后自动重新加载，流程与第三方资源项目一致。保存到项目会写入此目录的 `pet.json`；在此目录运行 `npm run check` 校验，`npm run export:pet` 导出。
+
 ## 构建和验证
 
 ```sh

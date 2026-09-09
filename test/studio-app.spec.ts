@@ -137,3 +137,83 @@ test('accessory library groups seven mounts, replaces variants and exports a sev
  await page.locator('#pet-file').setInputFiles({name:'pet.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(saved))});
  await expect(page.locator('#wear-freckles')).toBeChecked();
 });
+
+test('Grove starts Studio as a source resource project', async ({ page }) => {
+  const { resolve } = await import('node:path');
+  const { spawn } = await import('node:child_process');
+  const root = resolve('packages/grove');
+  const child = spawn(process.execPath, [resolve('apps/studio/bin/mofli.mjs'), '--port', '4193'], { cwd: root, stdio: 'pipe' });
+  let logs = '';
+  child.stdout.on('data', x => logs += x);
+  child.stderr.on('data', x => logs += x);
+  const exited = new Promise(resolve => child.once('exit', resolve));
+  const errors: string[] = [];
+  page.on('pageerror', e => errors.push(e.message));
+  try {
+    await expect.poll(() => logs).toContain('127.0.0.1:4193');
+    expect(logs).toContain(root);
+    await page.goto('http://127.0.0.1:4193/');
+    await expect(page.locator('#avatar svg')).toHaveCount(1);
+    await expect(page.locator('h1')).toContainText('Mallow');
+    await page.getByRole('button', { name: '饰品', exact: true }).click();
+    await expect(page.locator('.attachment-item')).toHaveCount(20);
+    await page.getByRole('link', { name: '项目与导出' }).click();
+    await expect(page.locator('#save-project')).toBeVisible();
+    expect(errors).toEqual([]);
+  } finally {
+    child.kill('SIGTERM');
+    await exited;
+  }
+});
+
+test('preview background tracks the mouse without an SVG focus border', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173/');
+  const stage = page.locator('#stage'), svg = page.locator('#avatar svg');
+  await expect(svg).toBeVisible();
+  const area = (await stage.boundingBox())!, pet = (await svg.boundingBox())!;
+  const left = area.x + 12, right = area.x + area.width - 12, y = area.y + area.height / 2;
+  expect(left).toBeLessThan(pet.x);
+  expect(right).toBeGreaterThan(pet.x + pet.width);
+  await page.evaluate(async () => {
+    const url = performance.getEntriesByType('resource').map(entry => entry.name).find(url => /\/src\/model\.ts(?:\?|$)/.test(url))!;
+    const { model } = await import(url);
+    const handle = model.engine.handle.bind(model.engine);
+    (window as any).previewEvents = [];
+    model.engine.handle = (event: any, time: number) => {
+      (window as any).previewEvents.push(event);
+      return handle(event, time);
+    };
+  });
+  await page.mouse.move(left, y);
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.filter((e: any) => e.type === 'look').at(-1)?.value.x)).toBeLessThan(-0.9);
+  await page.mouse.move(right, y);
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.filter((e: any) => e.type === 'look').at(-1)?.value.x)).toBeGreaterThan(0.9);
+  await page.mouse.click(right, y);
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.some((e: any) => e.type === 'tap'))).toBe(true);
+  await expect(svg).toBeFocused();
+  await expect(svg).toHaveCSS('outline-style', 'none');
+  await page.screenshot({path:'test-results/preview-pointer-desktop.png'});
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:'test-results/preview-pointer-mobile.png'});
+});
+
+test('mount debugging follows real frames and clears when disabled', async ({page}) => {
+  await page.goto('http://127.0.0.1:4173/');
+  await page.getByRole('button',{name:'挂载调试',exact:true}).click();
+  const mounts = page.locator('#avatar [data-mount]');
+  await expect(mounts).toHaveCount(10);
+  await expect(page.locator('[data-mount="head.sides/left"]')).toBeVisible();
+  const crown = page.locator('[data-mount="head.crown"] circle');
+  const area=(await page.locator('#stage').boundingBox())!;
+  await page.mouse.move(area.x+10,area.y+area.height/2);
+  await page.waitForTimeout(300);
+  const first=await crown.getAttribute('cx');
+  await page.mouse.move(area.x+area.width-10,area.y+30);
+  await expect.poll(()=>crown.getAttribute('cx')).not.toBe(first);
+  await expect(page.locator('[data-mount="head.cheeks/left"] title').first()).toHaveText(/not a boundary/);
+  await page.screenshot({path:'test-results/mount-debug-desktop.png'});
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:'test-results/mount-debug-mobile.png'});
+  await page.getByRole('button',{name:'挂载调试',exact:true}).click();
+  await expect(mounts).toHaveCount(0);
+});

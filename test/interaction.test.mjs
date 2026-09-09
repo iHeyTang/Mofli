@@ -26,8 +26,8 @@ for (const [rig, skin] of [
     assert.deepEqual(left.sample(1.5), baseline.sample(1.5));
     const click = make();
     click.handle({ type: "tap" }, 0);
-    assert.notDeepEqual(click.sample(0.24), baseline.sample(0.24));
-    assert.deepEqual(click.sample(1), baseline.sample(1));
+    assert.notDeepEqual(click.sample(0.45), baseline.sample(0.45));
+    assert.deepEqual(click.sample(1.1), baseline.sample(1.1));
     assert.deepEqual(click.getPose(), baseline.getPose());
     assert.deepEqual(click.getSkin(), baseline.getSkin());
     const pressed = make();
@@ -63,8 +63,8 @@ test('irritated face is selectable and click temporarily overlays it',()=>{
   assert.equal(face.find(s=>s.id==='eye-0').attrs.opacity,0);
   assert.equal(face.some(s=>s.id.includes('mouth')),false);
   const baseline=make(4),clicked=make(4);
-  clicked.handle({type:'tap'},0);
-  assert.equal(clicked.sample(.2).resources[0].shapes.find(s=>s.id==='irritated-eye-1').attrs.opacity,1);
+  clicked.handle({type:'tap',choice:0,hit:{region:'face',point:{x:0,y:0}}},0);
+  assert.equal(clicked.sample(.65).resources[0].shapes.find(s=>s.id==='irritated-eye-1').attrs.opacity,1);
   assert.equal(clicked.getPose().expression,4);
-  assert.deepEqual(clicked.sample(1),baseline.sample(1));
+  assert.deepEqual(clicked.sample(1.1),baseline.sample(1.1));
 });

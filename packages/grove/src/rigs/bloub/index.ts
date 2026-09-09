@@ -1,3 +1,4 @@
+import { headHitArea } from '../head-interaction.js';
 import {headMountCapabilities} from '@mofli/core';
 import {validateBloubDesign,type BloubDesign} from "./design.js";
 import {resolveEyeComponent} from "./eye-component.js";
@@ -220,6 +221,7 @@ export function bloubFrame(
     ],
     mounts,
     slots: {"head.overlay": 0},
+    hitArea: headHitArea,
     anchors: [],
     bounds: { x: -158, y: -158, width: 316, height: 316 },
   };
@@ -414,6 +416,7 @@ export const bloubRig: Rig = {
         attention: state.attention,
         pressed: state.pressed,
         reaction: time - state.reactionAt,
+        click: state.click,
       }),
       skin.colors.body!,
       skin.colors.paper!,

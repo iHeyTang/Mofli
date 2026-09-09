@@ -1,3 +1,4 @@
+import { renderMountDebug } from './mount-debug.js';
 import type { Frame, Shape, SvgResource } from "./index.js";
 const NS = "http://www.w3.org/2000/svg";
 const allowed = new Set([
@@ -44,6 +45,7 @@ export function createSvgRenderer(
   svg.append(defs, body, debugLayer);
   container.append(svg);
   const nodes = new Map<string, SVGElement>();
+  let currentFrame: Frame | undefined;
   function validateShape(
     shape: Shape,
     resources: Map<string, SvgResource>,
@@ -178,20 +180,31 @@ export function createSvgRenderer(
         node.remove();
         nodes.delete(id);
       }
+    currentFrame = frame;
     debugLayer.replaceChildren();
-    if (debug)
-      for (const p of frame.anchors) {
-        const node = document.createElementNS(NS, "circle");
-        node.setAttribute("cx", String(p.x));
-        node.setAttribute("cy", String(p.y));
-        node.setAttribute("r", "2");
-        node.setAttribute("fill", "#244E3C");
-        debugLayer.append(node);
-      }
+    if (debug) renderMountDebug(debugLayer, frame);
   }
   return {
     svg,
     render,
+    hitTest(clientX: number, clientY: number): import('./clicks.js').ClickHit {
+      const area = currentFrame?.hitArea;
+      const shape = area ? nodes.get(area.shape) as SVGGeometryElement | undefined : undefined;
+      const bounds = svg.getBoundingClientRect();
+      const outside = { region: 'outside', point: {
+        x: Math.max(-1,Math.min(1,2*(clientX-bounds.left)/Math.max(1,bounds.width)-1)),
+        y: Math.max(-1,Math.min(1,2*(clientY-bounds.top)/Math.max(1,bounds.height)-1)),
+      }};
+      if (!shape || Number(shape.getAttribute('opacity') ?? 1) < .1) return outside;
+      const matrix = shape.getScreenCTM();
+      if (!matrix) return outside;
+      const local = new DOMPoint(clientX,clientY).matrixTransform(matrix.inverse());
+      if (!shape.isPointInFill(local)) return outside;
+      const box = shape.getBBox();
+      const x = (local.x-box.x)/Math.max(.001,box.width), y = (local.y-box.y)/Math.max(.001,box.height);
+      const region = area!.regions.find(r => x>=r.x && y>=r.y && x<=r.x+r.width && y<=r.y+r.height);
+      return { region: region?.id ?? 'body', point: {x:x*2-1,y:y*2-1} };
+    },
     setDebug(value: boolean) {
       debug = value;
     },

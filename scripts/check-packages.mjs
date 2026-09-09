@@ -17,7 +17,10 @@ const tarballs = new Map();
 const manifests = new Map(packages.map((p) => [p.manifest.name, p.manifest]));
 const run = (cmd, args, cwd) =>
   execFileSync(cmd, args, { cwd, stdio: "pipe" }).toString();
-function install(project, manifest) {
+function install(project, manifest, { libraryBuild = false } = {}) {
+  manifest = structuredClone(manifest);
+  // Bootstrap libraries before packing their Studio development tool.
+  if (libraryBuild) delete manifest.devDependencies?.["@mofli/studio"];
   // Replace only internal package versions with packed artifacts. Keep every
   // external dependency/devDependency as declared, including the local toolchain.
   const closure = new Set();
@@ -62,7 +65,7 @@ try {
       filter: (source) =>
         !["node_modules", "dist"].includes(source.split("/").at(-1)),
     });
-    install(isolated, manifest);
+    install(isolated, manifest, { libraryBuild: true });
     run("npm", ["run", "build"], isolated);
     run("npm", ["run", "typecheck"], isolated);
     // Pack the independently built output using its original dependency manifest.
@@ -153,6 +156,10 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
     ],
     consumer,
   );
+  const groveProject = join(temp, "grove");
+  install(groveProject, manifests.get("@mofli/grove"));
+  run("npm", ["run", "check"], groveProject);
+  console.log("Grove source project: packed Studio loads and validates mofli.project.ts OK");
   const cli = join(consumer, "node_modules/@mofli/studio/bin/mofli.mjs");
   const help=run("npm",["exec","--offline","--","mofli","--help"],consumer);
   if(!help.includes("mofli init"))throw new Error("Packed npm CLI launcher failed");

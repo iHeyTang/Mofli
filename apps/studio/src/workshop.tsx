@@ -100,14 +100,6 @@ function Library() {
               </button>
             ))}
           </div>
-          <div className="library-note">
-            <Box size={18} />
-            <p>
-              一副骨架，不同个性。
-              <br />
-              <span>更换皮肤，保留当前动作。</span>
-            </p>
-          </div>
         </>
       ) : (
         <>
@@ -386,14 +378,14 @@ export function Workshop() {
             </Action>
             <i />
             <Action
-              title="骨架叠加"
+              title="挂载调试"
               onPress={() => {
                 m.debug = !m.debug;
                 m.changed();
               }}
             >
               <Box size={15} />
-              {m.debug ? "隐藏骨架" : "骨架"}
+              {m.debug ? "关闭调试" : "挂载调试"}
             </Action>
           </div>
         </div>
