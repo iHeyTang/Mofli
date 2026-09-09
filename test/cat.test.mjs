@@ -4,12 +4,12 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { PoseController, transformPoint } from "@mofli/core";
 import { blend, toPoints } from "@mofli/core/radial";
-import { catHeadRig, catStates } from "@mofli/grove/rigs/cat-head";
+import { mewRig, catStates } from "@mofli/grove/rigs/mew";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
 const catSkins = [sesame, patches];
-import { BotEngine as CatEngine } from "../packages/grove/dist/rigs/cat-head/vendor/engine.js";
-import { masterProfile } from "../packages/grove/dist/rigs/cat-head/soft-master.js";
+import { BotEngine as CatEngine } from "../packages/grove/dist/rigs/mew/vendor/engine.js";
+import { masterProfile } from "../packages/grove/dist/rigs/mew/soft-master.js";
 import { bloubStates } from "@mofli/grove/rigs/bloub";
 import { BotEngine } from "../packages/grove/dist/rigs/bloub/vendor/engine.js";
 // Upstream decor prefixes resource ids when freezing a transition; compare
@@ -54,7 +54,7 @@ test("both cat skins preserve geometry on all state changes and rapid interrupti
   for (const skin of catSkins)
     for (const from of catStates)
       for (const to of catStates) {
-        const e = new PetEngine(catHeadRig, {
+        const e = new PetEngine(mewRig, {
           ...skin,
           parameters: { ...skin.parameters, state: from.index },
         });
@@ -88,7 +88,7 @@ test("fourteen states use the selected soft master and reference animation", () 
   );
   for (const skin of catSkins)
     for (const state of catStates) {
-      const e = new PetEngine(catHeadRig, {
+      const e = new PetEngine(mewRig, {
         ...skin,
         parameters: { ...skin.parameters, state: state.index },
       });
@@ -118,7 +118,7 @@ test("fourteen states use the selected soft master and reference animation", () 
 });
 test("symbol states retract ears geometrically; changing skin keeps interrupted geometry", () => {
   for (const id of ["thinking", "alert", "exclaim", "sleep", "burst"]) {
-    const f = new PetEngine(catHeadRig, {
+    const f = new PetEngine(mewRig, {
       ...catSkins[0],
       parameters: {
         ...catSkins[0].parameters,
@@ -131,7 +131,7 @@ test("symbol states retract ears geometrically; changing skin keeps interrupted 
       new BotEngine(100, id).sample(2).bodyPath,
     );
   }
-  const e = new PetEngine(catHeadRig, catSkins[0]);
+  const e = new PetEngine(mewRig, catSkins[0]);
   e.setSkin(
     { ...catSkins[0], parameters: { ...catSkins[0].parameters, state: 3 } },
     1,
@@ -146,7 +146,7 @@ test("symbol states retract ears geometrically; changing skin keeps interrupted 
 
 test("head silhouette follows yaw with mirrored views and preserves the frontal master", async () => {
   const { turnedProfile } =
-    await import("../packages/grove/dist/rigs/cat-head/head-turn.js");
+    await import("../packages/grove/dist/rigs/mew/head-turn.js");
   const p = masterProfile(45, 0),
     front = turnedProfile(p, 0, 0, 1),
     right = turnedProfile(p, 30, 0, 1),
@@ -160,13 +160,13 @@ test("head silhouette follows yaw with mirrored views and preserves the frontal 
       ) < 1e-7,
     );
   assert.deepEqual(turnedProfile(p, 30, 10, 0), p);
-  const e = new PetEngine(catHeadRig, {
+  const e = new PetEngine(mewRig, {
     ...catSkins[0],
     parameters: { ...catSkins[0].parameters, state: 5 },
   });
   assert.notEqual(
     e.sample(1).resources[0].shapes[0].attrs.d,
-    new PetEngine(catHeadRig, catSkins[0]).sample(1).resources[0].shapes[0]
+    new PetEngine(mewRig, catSkins[0]).sample(1).resources[0].shapes[0]
       .attrs.d,
   );
 });

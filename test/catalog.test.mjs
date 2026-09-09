@@ -8,7 +8,7 @@ import {
   expressionOptions,
   colorOptions,
 } from "@mofli/grove/rigs/bloub";
-import { catHeadRig } from "@mofli/grove/rigs/cat-head";
+import { mewRig } from "@mofli/grove/rigs/mew";
 import { bloubSkin } from "@mofli/grove/skins/bloub";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
@@ -19,7 +19,7 @@ test("complete shape and expression catalogs render across both rigs", () => {
   assert.equal(colorOptions.length, 12);
   for (const [rig, skin] of [
     [bloubRig, bloubSkin],
-    [catHeadRig, catSkins[0]],
+    [mewRig, catSkins[0]],
   ]) {
     const silhouettes = new Set();
     for (const shape of shapeOptions.filter(s => rig === bloubRig || s.index < 8)) {

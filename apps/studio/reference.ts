@@ -9,9 +9,9 @@ import { beanSkin } from "@mofli/grove/skins/mofli-bean";
 import { shapeOptions, expressionOptions } from "@mofli/grove/rigs/bloub";
 import {
   expressionOptions as catExpressions,
-  catHeadRig,
+  mewRig,
   catStates,
-} from "@mofli/grove/rigs/cat-head";
+} from "@mofli/grove/rigs/mew";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
 const catSkins = [sesame, patches];
@@ -56,7 +56,7 @@ const catalog: { rig: Rig; name: string; skins: Skin[] }[] = [
     name: "Bloub · 参考骨架",
     skins: [bloubSkin, doughSkin, beanSkin, stoneSkin],
   },
-  { rig: catHeadRig, name: "Cat Head · 部件骨架", skins: catSkins },
+  { rig: mewRig, name: "Mew · 部件骨架", skins: catSkins },
 ];
 for (const pet of project.pets ?? []) {
   const existing = catalog.find((e) => e.rig.id === pet.rig.id);
@@ -152,7 +152,7 @@ function mountedInstances() {
 let entry = catalog[0]!;
 let preset = bloubSkin;
 const isBloub = () => entry.rig.id === bloubRig.id;
-const isCat = () => entry.rig.id === catHeadRig.id;
+const isCat = () => entry.rig.id === mewRig.id;
 const states = () => {
   if (isBloub()) return bloubStates;
   if (isCat()) return catStates;

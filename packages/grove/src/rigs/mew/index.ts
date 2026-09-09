@@ -120,11 +120,11 @@ function appearance(p: Prepared, t: number): Skin {
     ),
   };
 }
-export const catHeadRig: Rig = {
+export const mewRig: Rig = {
   mounts: headMountCapabilities,
   id: "cat-head",
   version: 1,
-  name: "Cat head",
+  name: "Mew · Cat Head",
   variants: { eyes: ["capsule", "oval"] },
   surfaces: catSurfaces,
   colors: { body: "#0a0a0c", face: "#f9f9f9" },
@@ -229,5 +229,7 @@ export const catHeadRig: Rig = {
     return frame;
   },
 };
-export const defineCatSkin = (input: SkinInput) =>
-  defineSkin(catHeadRig, input);
+export const defineMewSkin = (input: SkinInput) =>
+  defineSkin(mewRig, input);
+
+export { mewRig as catHeadRig, defineMewSkin as defineCatSkin };

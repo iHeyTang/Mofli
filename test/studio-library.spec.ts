@@ -10,7 +10,7 @@ test('studio exposes all six skins with compatible controls and activities', asy
     ['bloub', ['bloub-reference', 'mofli-dough', 'mofli-bean', 'mofli-stone']], ['cat-head', ['sesame', 'patches']],
   ] as const) {
     // Read the actual public rig ids for the reference entries, whose ids may be versioned.
-    const option = page.locator('#rig-select option').filter({hasText: rig === 'bloub' ? 'Bloub' : 'Cat Head'});
+    const option = page.locator('#rig-select option').filter({hasText: rig === 'bloub' ? 'Bloub' : 'Mew'});
     await page.locator('#rig-select').selectOption((await option.getAttribute('value'))!);
     await expect(page.locator('#skin-select option')).toHaveCount(skins.length);
     for (const skin of skins) {
@@ -25,7 +25,7 @@ test('studio exposes all six skins with compatible controls and activities', asy
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'test-results/all-skins-mobile.png',fullPage:true});
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
-  await page.locator('#rig-select').selectOption({label:'Cat Head · 部件骨架'});
+  await page.locator('#rig-select').selectOption({label:'Mew · 部件骨架'});
   await expect(page.locator('.choice-library')).toBeVisible();
   expect(errors).toEqual([]);
 });

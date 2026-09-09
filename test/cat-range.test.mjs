@@ -1,11 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetEngine} from '@mofli/core';
-import {catHeadRig,catStates} from '@mofli/grove/rigs/cat-head';
+import {mewRig,catStates} from '@mofli/grove/rigs/mew';
 import { patches } from "@mofli/grove/skins/cat-patches";
 test('expanded ear and cheek extremes stay finite through shapes, turns and states',()=>{
  for(const earLength of [12,45,85]) for(const cheek of [-6,0,8]) for(const shape of [-1,0,2,4,6,7]) {
-  const engine=new PetEngine(catHeadRig,patches,{rigConfig:{earLength,cheek,shape},pose:{state:0},transitionDuration:0});
+  const engine=new PetEngine(mewRig,patches,{rigConfig:{earLength,cheek,shape},pose:{state:0},transitionDuration:0});
   let time=0;
   for(const state of catStates) {
    engine.setPose({state:state.index},time);
@@ -17,7 +17,7 @@ test('expanded ear and cheek extremes stay finite through shapes, turns and stat
 });
 
 test('longer ears broaden their roots without expanding the lower face',async()=>{
- const {masterProfile,softBody}=await import('../packages/grove/dist/rigs/cat-head/soft-master.js');
+ const {masterProfile,softBody}=await import('../packages/grove/dist/rigs/mew/soft-master.js');
  const base=masterProfile(45,0),long=masterProfile(85,0);
  for(let i=0;i<33;i++) assert.equal(long[i],base[i]);
  // A normalized shoulder grows beyond pure height scaling.

@@ -1,6 +1,6 @@
 import {defineResourcePack} from '@mofli/core';
 import {bloubRig} from './rigs/bloub/index.js';
-import {catHeadRig} from './rigs/cat-head/index.js';
+import {mewRig} from './rigs/mew/index.js';
 import {bloubSkin} from './skins/bloub/index.js';
 import {doughSkin} from './skins/mofli-dough/index.js';
 import {beanSkin} from './skins/mofli-bean/index.js';
@@ -9,7 +9,9 @@ import {sesame} from './skins/cat-ink/index.js';
 import {patches} from './skins/cat-patches/index.js';
 import {parts} from './accessories/index.js';
 export {bloubRig,defineBloubSkin} from './rigs/bloub/index.js';
-export {catHeadRig,defineCatSkin} from './rigs/cat-head/index.js';
+export {mewRig,defineMewSkin} from './rigs/mew/index.js';
 export {bloubSkin,doughSkin,beanSkin,stoneSkin,sesame,patches,parts};
-export const grovePack=defineResourcePack({id:'mofli.grove',version:1,rigs:[bloubRig,catHeadRig],skins:[doughSkin,beanSkin,stoneSkin,bloubSkin,sesame,patches],attachments:parts});
+export const grovePack=defineResourcePack({id:'mofli.grove',version:1,rigs:[bloubRig,mewRig],skins:[doughSkin,beanSkin,stoneSkin,bloubSkin,sesame,patches],attachments:parts});
 export default grovePack;
+
+export { mewRig as catHeadRig, defineMewSkin as defineCatSkin } from "./rigs/mew/index.js";

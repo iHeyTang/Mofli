@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetEngine,composeAttachments,headMountCapabilities,PetRegistry} from '@mofli/core';
 import {bloubRig} from '@mofli/grove/rigs/bloub';
-import {catHeadRig} from '@mofli/grove/rigs/cat-head';
+import {mewRig} from '@mofli/grove/rigs/mew';
 import {doughSkin} from '@mofli/grove/skins/mofli-dough';
 import {sesame} from '@mofli/grove/skins/cat-ink';
 import {hat} from '@mofli/grove/accessories/hat';
@@ -14,7 +14,7 @@ test('seven mount families expose the available independently packaged accessori
  for(const mount of Object.keys(headMountCapabilities))assert.equal(parts.filter(a=>a.mount===mount).length,mount==='head.sides'?2:3,mount);
 });
 test('every accessory renders finite geometry across both rigs, all states and size extremes',()=>{
- for(const [rig,skin] of [[bloubRig,doughSkin],[catHeadRig,sesame]])for(let state=0;state<14;state++) {
+ for(const [rig,skin] of [[bloubRig,doughSkin],[mewRig,sesame]])for(let state=0;state<14;state++) {
   const engine=new PetEngine(rig,skin,{pose:{state}});
   for(const time of [0,.75,2])for(const part of parts)for(const size of [.6,1.4]){
    const frame=composeAttachments(engine.sample(time),[{id:part.id,attachment:part,parameters:part.parameters?.size?{size}:{}}],time);

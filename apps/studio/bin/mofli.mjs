@@ -48,7 +48,7 @@ function config(root, withProject = true) {
       fs: { allow: [searchForWorkspaceRoot(studio), root] },
     },
     optimizeDeps: {
-      exclude: ["@mofli/core", "@mofli/grove/rigs/bloub", "@mofli/grove/rigs/cat-head"],
+      exclude: ["@mofli/core", "@mofli/grove/rigs/bloub", "@mofli/grove/rigs/mew"],
     },
   };
 }
@@ -78,7 +78,7 @@ try {
     console.log(version);
   } else if (command === "help" || command === "--help") {
     console.log(
-      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--rig bloub|cat-head] [--no-install]\nmofli dev [--project directory] [--port 4173]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
+      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--rig bloub|mew] [--no-install]\nmofli dev [--project directory] [--port 4173]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
     );
   } else if (command === "init") {
     const type = option("--type", "skin"),

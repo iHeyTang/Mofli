@@ -26,9 +26,9 @@ export default defineResourcePack({
 
 Bloub 的 Mallow、Pip、Pebble 提供不同的轮廓与五官设计数据，由骨架统一执行表情和过渡。可参考 Grove 对应皮肤定义编写 `design`，不要在皮肤中复制动画代码。
 
-Cat Head 提供 `forehead`、`leftCheek`、`rightCheek` 表面。每个花纹包含唯一 ID、支持的 slot、六位十六进制颜色、0–1 透明度与 32 个局部边界点；坐标在 -1–1 内，按简单轮廓顺序排列。最多 8 个花纹。骨架负责投影、形变、裁切与状态可见性。
+Mew 提供 `forehead`、`leftCheek`、`rightCheek` 表面。每个花纹包含唯一 ID、支持的 slot、六位十六进制颜色、0–1 透明度与 32 个局部边界点；坐标在 -1–1 内，按简单轮廓顺序排列。最多 8 个花纹。骨架负责投影、形变、裁切与状态可见性。
 
-`variants` 只能选择骨架声明的样式。Cat Head 的眼睛支持 `capsule` 与 `oval`。未知样式、表面或超出范围的数据会被拒绝。这里不是任意纹理图片或 SVG 文档导入接口。
+`variants` 只能选择骨架声明的样式。Mew 的眼睛支持 `capsule` 与 `oval`。未知样式、表面或超出范围的数据会被拒绝。这里不是任意纹理图片或 SVG 文档导入接口。
 
 ## 检查
 

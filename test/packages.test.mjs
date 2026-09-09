@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve, relative, dirname } from "node:path";
 import ts from "typescript";
 import { defineBloubSkin, bloubRig } from "@mofli/grove/rigs/bloub";
-import { defineCatSkin } from "@mofli/grove/rigs/cat-head";
+import { defineMewSkin } from "@mofli/grove/rigs/mew";
 import { bloubPet } from "@mofli/grove/skins/bloub";
 
 const root = resolve("packages");
@@ -68,7 +68,7 @@ test("rig skin factories bind identity and validate parameters before packaging"
   );
   assert.throws(
     () =>
-      new PetEngine(bloubRig, defineCatSkin({ id: "cat", name: "Cat" })),
+      new PetEngine(bloubRig, defineMewSkin({ id: "cat", name: "Cat" })),
   );
   assert.ok(new PetEngine(bloubPet.rig, bloubPet.skin).sample(1).shapes.length);
 });

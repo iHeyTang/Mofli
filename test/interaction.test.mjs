@@ -1,14 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PetEngine } from "@mofli/core";
-import { catHeadRig } from "@mofli/grove/rigs/cat-head";
+import { mewRig } from "@mofli/grove/rigs/mew";
 import { bloubRig } from "@mofli/grove/rigs/bloub";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
 import { bloubSkin } from "@mofli/grove/skins/bloub";
 for (const [rig, skin] of [
-  [catHeadRig, sesame],
-  [catHeadRig, patches],
+  [mewRig, sesame],
+  [mewRig, patches],
   [bloubRig, bloubSkin],
 ]) {
   test(`${rig.id}/${skin.id}: gaze and transient click are rig-owned`, () => {
@@ -38,8 +38,8 @@ for (const [rig, skin] of [
 }
 
 test('cat click shakes the head in both directions without a forced wink', async () => {
-  const { BotEngine } = await import('../packages/grove/dist/rigs/cat-head/vendor/engine.js');
-  const { masterProfile } = await import('../packages/grove/dist/rigs/cat-head/soft-master.js');
+  const { BotEngine } = await import('../packages/grove/dist/rigs/mew/vendor/engine.js');
+  const { masterProfile } = await import('../packages/grove/dist/rigs/mew/soft-master.js');
   const engine = new BotEngine(100,'idle',masterProfile(45,0));
   const turns=[];
   for(const t of [.12,.25,.4,.53]) {
@@ -56,7 +56,7 @@ test('cat click shakes the head in both directions without a forced wink', async
 });
 
 test('irritated face is selectable and click temporarily overlays it',()=>{
-  const make=(expression=-1)=>new PetEngine(catHeadRig,patches,{pose:{state:0,expression},transitionDuration:0});
+  const make=(expression=-1)=>new PetEngine(mewRig,patches,{pose:{state:0,expression},transitionDuration:0});
   const selected=make(16);
   const face=selected.sample(1).resources[0].shapes;
   assert.equal(face.find(s=>s.id==='irritated-eye-0').attrs.opacity,1);

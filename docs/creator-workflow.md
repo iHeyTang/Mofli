@@ -1,6 +1,8 @@
 # Mofli 创作者工作流
 
-目标：创作者只维护自己的源码包；Studio 自动加载源码，输出可编辑配置或可直接运行的宠物。
+本指南面向使用 Mofli npm 开发套件的创作者。你维护 CLI 创建的独立资源项目，无需克隆或修改 Mofli 仓库。修改引擎或工作台本身请阅读 [源码开发指南](../CONTRIBUTING.md)。
+
+除初次执行 init 外，下面的项目命令均在你创建的资源项目目录运行。
 
 ## 包与命令
 
@@ -11,13 +13,13 @@
 
 CLI 统一负责项目创建、加载、校验与导出。
 
-当前这些包尚未公开发布。下面的 `npx @mofli/studio` 是发布后的入口；仓库中可以使用 `node apps/studio/bin/mofli.mjs`，本地依赖安装可使用 npm tarball。
+使用 `npx @mofli/studio` 运行 CLI。
 
 ## 直接启动 Studio
 
-发布后在任意目录执行 `npx @mofli/studio` 即可打开内置工作台，无需先创建皮肤项目。在创作者项目目录执行会自动加载 `mofli.project.ts`；显式指定用 `npx @mofli/studio --project ./my-skin`。
+在任意目录执行 `npx @mofli/studio` 即可打开内置工作台，无需先创建皮肤项目。在创作者项目目录执行会自动加载 `mofli.project.ts`；显式指定用 `npx @mofli/studio --project ./my-skin`。
 
-Studio 位于 `apps/studio`，采用 React、HeroUI、TanStack Router 与 Query，作为应用独立构建与打包。
+
 
 ## 从零创建
 
@@ -29,7 +31,7 @@ cd my-skin
 npm run dev
 ```
 
-`init` 默认安装依赖；可用 `--no-install` 分离创建与安装。已有目录会拒绝覆盖。猫头使用 `--rig cat-head`。
+`init` 默认安装依赖；可用 `--no-install` 分离创建与安装。已有目录会拒绝覆盖。猫头使用 `--rig mew`。
 
 饰品使用同一流程：
 

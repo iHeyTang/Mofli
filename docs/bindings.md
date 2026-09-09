@@ -62,7 +62,6 @@ const leg = solveJointChain({ x: 120, y: 160, angle: Math.PI / 2 }, [
 
 The result includes the root and each segment endpoint with its absolute angle. Each input angle is **local to its parent**, clamped to that joint's min/max. Lengths are preserved. This is forward kinematics: it does not solve a foot target, enforce ground contact, create a walk cycle or handle collisions. Those belong to a quadruped Rig's additional constraints and behaviors.
 
-`examples/headless/jointed-rig.mjs` demonstrates a separate executable Rig using this API, with no dependency on built-in pets or the studio.
 
 ## Transitions and limits
 

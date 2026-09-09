@@ -1,5 +1,7 @@
 # npm 资源包
 
+本文用于在你自己的 npm 项目中扩展 Mofli。创建项目使用 [创作者工作流](creator-workflow.md)；维护 Grove 本身请阅读 [源码开发指南](../CONTRIBUTING.md)。
+
 资源种类与 npm 包独立。一个 npm 包可以导出任意数量的骨架、皮肤、饰品，也可以导出多个 ResourcePack；包内是否拆文件由作者决定。
 
 ```ts
@@ -28,7 +30,7 @@ import pack from 'my-collection';
 export default {packs: [pack], defaultSkin: 'my-skin-id'};
 ```
 
-发布后可运行 `npx @mofli/studio init my-collection --type pack` 创建包含两种骨架、两款皮肤和一个饰品的包模板。当前所有本地包仍 private，仓库内可用 `node apps/studio/bin/mofli.mjs init <目录> --type pack --no-install`。
+运行 `npx @mofli/studio init my-collection --type pack` 创建包含两种骨架、两款皮肤和一个饰品的包模板。
 
 项目通过 packs 声明资源集合。Studio、CLI check 和导出后的运行时使用同一资源收集入口，避免工作台能用但导出丢资源。
 
@@ -48,7 +50,7 @@ const pet = registry.create(savedPetConfig);
 Grove 的骨架、皮肤与饰品实现位于 packages/grove，运行时只依赖 Core。
 
 - `@mofli/grove` 主入口导出 grovePack（也为默认导出）、骨架及皮肤工厂。
-- `@mofli/grove/rigs/bloub` 与 `rigs/cat-head` 提供骨架、约束和工厂。
+- `@mofli/grove/rigs/bloub` 与 `rigs/mew` 提供骨架、约束和工厂。
 - `@mofli/grove/skins/mofli-dough` 等子路径提供单款皮肤。
 - `@mofli/grove/accessories/sprout` 等子路径提供单款饰品与纯数据 definition。
 - JSON 定义位于 packages/grove/src/accessories/data。

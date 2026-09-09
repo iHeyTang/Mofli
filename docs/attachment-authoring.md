@@ -4,7 +4,7 @@
 
 ## 创建项目
 
-发布后的命令设计为 `npx @mofli/studio init my-decoration --type attachment`。当前包仍 private，未发布；仓库内可用 `node apps/studio/bin/mofli.mjs init <目录> --type attachment --no-install` 查看生成结果，安装依赖需使用本地打包产物。
+运行 `npx @mofli/studio init my-decoration --type attachment` 创建饰品项目。
 
 CLI 生成 `defineAttachment` 声明式模板。进入项目后运行 `npm run dev`，在 Studio 搭配、保存宠物 JSON；使用 CLI `export` 生成接入项目的运行时。导出与 Studio 使用同一 core 渲染器。
 
@@ -92,7 +92,7 @@ localTransform 声明局部二维变换，通道可驱动平移和旋转。静�
 
 ## Grove 挂载接口
 
-Bloub 与 Cat Head 提供以下接口；每个接口在 Studio 中是一个独立分组，同一排他接口同时佩戴一款饰品。
+Bloub 与 Mew 提供以下接口；每个接口在 Studio 中是一个独立分组，同一排他接口同时佩戴一款饰品。
 
 | 接口 | 空间 | Grove 饰品 |
 | --- | --- | --- |
@@ -104,4 +104,4 @@ Bloub 与 Cat Head 提供以下接口；每个接口在 Studio 中是一个独�
 | `head.lower.sides` | 成对连接区域 | Twin Bells, Pearl Drops, Ribbon Drops |
 | `character.orbit` | 角色中心与范围 | Floating Bubbles, Firefly Glow, Drifting Petals |
 
-挂载由骨架逐帧输出朝向、尺度与可见性。符号状态可隐藏头部挂载；Cat Head 的原生耳朵属于骨架，佩戴额外饰品不会移除它们。其他骨架只有声明兼容的接口才能使用相应饰品。
+挂载由骨架逐帧输出朝向、尺度与可见性。符号状态可隐藏头部挂载；Mew 的原生耳朵属于骨架，佩戴额外饰品不会移除它们。其他骨架只有声明兼容的接口才能使用相应饰品。

@@ -1,6 +1,6 @@
 # Mofli project constraints
 
-- Core infrastructure remains independently implemented; core/radial.ts, spherical-face.ts and face-math.ts are attributed extractions from Bloub, with its MIT notice distributed in the core package. The user subsequently explicitly requested faithful Bloub reproduction: packages/grove/src/rigs/bloub/vendor, the user-requested cat port in packages/grove/src/rigs/cat-head/vendor, and the optional bloub-reference Rig are the attributed MIT reference integration. Preserve THIRD_PARTY_NOTICES.md and do not describe those files as original Mofli code.
+- Core infrastructure remains independently implemented; core/radial.ts, spherical-face.ts and face-math.ts are attributed extractions from Bloub, with its MIT notice distributed in the core package. The user subsequently explicitly requested faithful Bloub reproduction: packages/grove/src/rigs/bloub/vendor, the user-requested cat port in packages/grove/src/rigs/mew/vendor, and the optional bloub-reference Rig are the attributed MIT reference integration. Preserve THIRD_PARTY_NOTICES.md and do not describe those files as original Mofli code.
 - Keep `packages/core/src/index.ts` and rigs framework- and DOM-independent. Browser integration belongs in `packages/core/src/browser.ts`; Amiba APIs belong in a future adapter.
 - Rig is executable trusted code; Skin is validated data. Do not claim untrusted plugin isolation until an actual sandbox exists.
 - Keep package private until the owner chooses licensing, verifies package ownership and requests publication.

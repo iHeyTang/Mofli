@@ -1,15 +1,15 @@
 import {
-  catHeadRig,
-  defineCatSkin,
+  mewRig,
+  defineMewSkin,
   type Skin,
   type PetDefinition,
-} from "../../rigs/cat-head/index.js";
+} from "../../rigs/mew/index.js";
 const oval = (rx: number, ry: number) =>
   Array.from({ length: 32 }, (_, i) => ({
     x: Math.cos((i * Math.PI) / 16) * rx,
     y: Math.sin((i * Math.PI) / 16) * ry,
   }));
-export const patches: Skin = defineCatSkin({
+export const patches: Skin = defineMewSkin({
   id: "patches",
   name: "Patches",
   variants: { eyes: "oval" },
@@ -31,4 +31,4 @@ export const patches: Skin = defineCatSkin({
     },
   ],
 });
-export const patchesPet: PetDefinition = { rig: catHeadRig, skin: patches };
+export const patchesPet: PetDefinition = { rig: mewRig, skin: patches };

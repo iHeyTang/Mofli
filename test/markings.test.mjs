@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PetEngine, validateSkin } from "@mofli/core";
-import { catHeadRig, catStates } from "@mofli/grove/rigs/cat-head";
+import { mewRig, catStates } from "@mofli/grove/rigs/mew";
 import { bloubRig } from "@mofli/grove/rigs/bloub";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { patches } from "@mofli/grove/skins/cat-patches";
@@ -10,7 +10,7 @@ test("one immutable pattern definition follows all states and shape choices", ()
   const saved = JSON.stringify(patches);
   for (let shape = -1; shape < 8; shape++)
     for (const state of catStates) {
-      const e = new PetEngine(catHeadRig, patches, {
+      const e = new PetEngine(mewRig, patches, {
         rigConfig: { shape },
         pose: { state: state.index },
       });
@@ -29,14 +29,14 @@ test("one immutable pattern definition follows all states and shape choices", ()
         );
     }
   assert.equal(JSON.stringify(patches), saved);
-  const idle = new PetEngine(catHeadRig, patches).sample(1);
-  const turn = new PetEngine(catHeadRig, patches, {
+  const idle = new PetEngine(mewRig, patches).sample(1);
+  const turn = new PetEngine(mewRig, patches, {
     pose: { state: 3 },
   }).sample(1);
   assert.notEqual(marks(idle)[0].attrs.d, marks(turn)[0].attrs.d);
 });
 test("pattern appearance transitions can be interrupted without a jump", () => {
-  const e = new PetEngine(catHeadRig, sesame);
+  const e = new PetEngine(mewRig, sesame);
   e.setSkin(patches, 1);
   const before = e.sample(1.12);
   e.setSkin(sesame, 1.12);
@@ -57,7 +57,7 @@ test("skins cannot request unknown bindings or inject drawing code", () => {
     assert.throws(() =>
       validateSkin(
         { ...patches, markings: [{ ...patches.markings[0], ...change }] },
-        catHeadRig,
+        mewRig,
       ),
     );
   assert.throws(() =>
@@ -70,11 +70,11 @@ test("skins cannot request unknown bindings or inject drawing code", () => {
 test("eye artwork changes without replacing skeletal projection or expression timing", () => {
   for (const state of catStates) {
     const a = new PetEngine(
-      catHeadRig,
+      mewRig,
       { ...patches, variants: { eyes: "capsule" } },
       { pose: { state: state.index } },
     ).sample(state.posterTime);
-    const b = new PetEngine(catHeadRig, patches, {
+    const b = new PetEngine(mewRig, patches, {
       pose: { state: state.index },
     }).sample(state.posterTime);
     const eyes = (f) =>
@@ -85,8 +85,8 @@ test("eye artwork changes without replacing skeletal projection or expression ti
     );
   }
   assert.throws(() =>
-    validateSkin({ ...patches, variants: { eyes: "script" } }, catHeadRig),
+    validateSkin({ ...patches, variants: { eyes: "script" } }, mewRig),
   );
-  const e = new PetEngine(catHeadRig, patches);
+  const e = new PetEngine(mewRig, patches);
   assert.deepEqual(e.exportSkin().variants, { eyes: "oval" });
 });

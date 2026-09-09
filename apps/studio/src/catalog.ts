@@ -12,10 +12,10 @@ import {
   bloubPosition,
 } from "@mofli/grove/rigs/bloub";
 import {
-  catHeadRig,
+  mewRig,
   catStates,
   expressionOptions as catExpressions,
-} from "@mofli/grove/rigs/cat-head";
+} from "@mofli/grove/rigs/mew";
 import { bloubSkin } from "@mofli/grove/skins/bloub";
 import { doughSkin } from "@mofli/grove/skins/mofli-dough";
 import { beanSkin } from "@mofli/grove/skins/mofli-bean";
@@ -41,8 +41,8 @@ export const catalog = resources.rigs
     name:
       rig.id === bloubRig.id
         ? "Bloub"
-        : rig.id === catHeadRig.id
-          ? "Cat Head"
+        : rig.id === mewRig.id
+          ? "Mew · Cat Head"
           : rig.name,
     skins: resources.skins.filter((s) => s.rig === rig.id),
   }))
@@ -72,7 +72,7 @@ const names = [
 export const statesFor = (rig: Rig) =>
   rig.id === bloubRig.id
     ? bloubStates.map((s, i) => ({ ...s, name: names[i] }))
-    : rig.id === catHeadRig.id
+    : rig.id === mewRig.id
       ? catStates
       : [
           {

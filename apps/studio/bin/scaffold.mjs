@@ -6,8 +6,9 @@ export function scaffold(
 ) {
   if (!["skin", "attachment", "pack"].includes(type))
     throw new Error("--type must be skin, attachment or pack");
-  if (!["bloub", "cat-head"].includes(rig))
-    throw new Error("--rig must be bloub or cat-head");
+  if (rig === "cat-head") rig = "mew";
+  if (!["bloub", "mew"].includes(rig))
+    throw new Error("--rig must be bloub or mew");
   const dir = resolve(target),
     id = basename(dir);
   if (!/^[a-z][a-z0-9-]{0,49}$/.test(id))
@@ -15,15 +16,15 @@ export function scaffold(
   if (existsSync(dir))
     throw new Error("Destination already exists; choose a new directory");
   const rigPackage = "@mofli/grove/rigs/" + rig;
-  const rigExport = rig === "bloub" ? "bloubRig" : "catHeadRig",
-    factory = rig === "bloub" ? "defineBloubSkin" : "defineCatSkin";
+  const rigExport = rig === "bloub" ? "bloubRig" : "mewRig",
+    factory = rig === "bloub" ? "defineBloubSkin" : "defineMewSkin";
   const source =
     type === "pack"
       ? `import {defineResourcePack,defineAttachment} from '@mofli/core';
 import {bloubRig,defineBloubSkin} from '@mofli/grove/rigs/bloub';
-import {catHeadRig,defineCatSkin} from '@mofli/grove/rigs/cat-head';
+import {mewRig,defineMewSkin} from '@mofli/grove/rigs/mew';
 const gem=defineAttachment({id:'${id}-gem',mount:'head.forehead',slot:'head.overlay',scene:{version:1,nodes:[{id:'gem',geometry:{kind:'ellipse',cx:0,cy:0,rx:.15,ry:.18},attrs:{fill:'#dfcdab'}}]}});
-export const pack=defineResourcePack({id:'${id}',version:1,rigs:[bloubRig,catHeadRig],skins:[defineBloubSkin({id:'${id}-blob',name:'Soft blob',colors:{body:'#536852'}}),defineCatSkin({id:'${id}-cat',name:'Soft cat',colors:{body:'#536852'}})],attachments:[{name:'Soft gem',attachment:gem}]});
+export const pack=defineResourcePack({id:'${id}',version:1,rigs:[bloubRig,mewRig],skins:[defineBloubSkin({id:'${id}-blob',name:'Soft blob',colors:{body:'#536852'}}),defineMewSkin({id:'${id}-cat',name:'Soft cat',colors:{body:'#536852'}})],attachments:[{name:'Soft gem',attachment:gem}]});
 export default pack;
 `
       : type === "skin"

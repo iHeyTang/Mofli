@@ -10,7 +10,7 @@ import {
   defineAttachment,
 } from "@mofli/core";
 import { bloubRig } from "@mofli/grove/rigs/bloub";
-import { catHeadRig } from "@mofli/grove/rigs/cat-head";
+import { mewRig } from "@mofli/grove/rigs/mew";
 import { doughSkin } from "@mofli/grove/skins/mofli-dough";
 import { sesame } from "@mofli/grove/skins/cat-ink";
 import { accessoryPack } from "@mofli/grove/accessories";
@@ -18,7 +18,7 @@ import { scaffold } from "../apps/studio/bin/scaffold.mjs";
 const mixed = defineResourcePack({
   id: "mixed",
   version: 1,
-  rigs: [bloubRig, catHeadRig],
+  rigs: [bloubRig, mewRig],
   skins: [doughSkin, sesame],
   attachments: accessoryPack.attachments,
 });
@@ -52,7 +52,7 @@ test("cross-pack skin bindings are independent of package order and fail atomica
       registry.registerPacks({
         id: "bad",
         version: 1,
-        rigs: [catHeadRig, { ...bloubRig, name: "conflict" }],
+        rigs: [mewRig, { ...bloubRig, name: "conflict" }],
       }),
     /Conflicting/,
   );
@@ -150,7 +150,7 @@ test("CLI scaffolds one mixed resource npm package and Studio consumes its pack"
     const dir = scaffold(join(root, "my-pack"), { type: "pack" });
     assert.match(
       readFileSync(join(dir, "src/index.ts"), "utf8"),
-      /rigs:\[bloubRig,catHeadRig\]/,
+      /rigs:\[bloubRig,mewRig\]/,
     );
     assert.match(
       readFileSync(join(dir, "mofli.project.ts"), "utf8"),

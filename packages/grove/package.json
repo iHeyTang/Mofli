@@ -21,9 +21,9 @@
       "types": "./dist/rigs/bloub/index.d.ts",
       "import": "./dist/rigs/bloub/index.js"
     },
-    "./rigs/cat-head": {
-      "types": "./dist/rigs/cat-head/index.d.ts",
-      "import": "./dist/rigs/cat-head/index.js"
+    "./rigs/mew": {
+      "types": "./dist/rigs/mew/index.d.ts",
+      "import": "./dist/rigs/mew/index.js"
     },
     "./skins/bloub": {
       "types": "./dist/skins/bloub/index.d.ts",
@@ -128,6 +128,10 @@
     "./accessories/cheek-stars": {
       "types": "./dist/accessories/cheek-stars.d.ts",
       "import": "./dist/accessories/cheek-stars.js"
+    },
+    "./rigs/cat-head": {
+      "types": "./dist/rigs/mew/index.d.ts",
+      "import": "./dist/rigs/mew/index.js"
     }
   },
   "scripts": {

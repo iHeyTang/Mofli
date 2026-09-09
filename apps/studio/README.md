@@ -1,25 +1,41 @@
 # @mofli/studio
 
-Mofli 的独立宠物工作台与 CLI，使用 React、HeroUI、TanStack Router 和 TanStack Query。动画由 Core 与 SVG renderer 驱动。
+Mofli 宠物工作台与 CLI。需要 Node.js >=22.12。
 
-## 本地运行
+## 使用工作台
 
-在仓库根目录执行 `npm install`、`npm run studio`。编辑界面使用 `npm run dev`；生产构建使用 `npm run build:studio`，输出到 `apps/studio/dist`。
+在任意目录运行，无需克隆 Mofli：
 
-Node.js 要求 >=22.12。包尚未发布；发布后的启动入口为 `npx @mofli/studio`。
+```sh
+npx @mofli/studio
+```
 
-## 创作者命令
+无项目时使用 Grove 内置素材库。存在 `mofli.project.ts` 时自动加载你的资源项目。
 
-- `mofli init <目录> --type skin|attachment|pack`：创建项目。
-- `mofli dev`：加载当前目录的 `mofli.project.ts`。
-- `mofli check`：校验资源与宠物配置。
-- `mofli export`：导出浏览器运行包。
-- `--project <目录>`、`--port <端口>`：指定项目和监听端口。
+## 开发自己的资源包
 
-无项目时使用内置 Grove 资源。完整流程见仓库的 [创作者工作流](../../docs/creator-workflow.md)。
+```sh
+npx @mofli/studio init my-pack --type pack
+cd my-pack
+npm run dev
+```
 
-## 源码
+修改生成项目的 `src/index.ts`，在工作台预览并保存到项目，然后在同一目录运行：
 
-`src/` 包含工作台、资源目录、编辑模型和路由；`bin/` 包含 CLI、项目加载和导出；`resources.js` 收集项目资源。
+```sh
+npm run check
+npm run export:pet
+```
 
-`reference.html`、`reference.ts`、`reference.css` 为开发服务器上的引擎回归测试入口，不参与生产构建和 npm 分发。
+`--type skin` 创建皮肤项目，`--type attachment` 创建饰品项目；`--rig bloub|mew` 选择皮肤模板使用的骨架。完整流程见 [创作者工作流](../../docs/creator-workflow.md)。
+
+## CLI
+
+- `npx @mofli/studio dev`：启动工作台。
+- `npx @mofli/studio check`：校验当前资源项目与宠物配置。
+- `npx @mofli/studio export`：将当前项目的 pet.json 导出为浏览器运行包。
+- `--project <目录>`、`--port <端口>`：指定资源项目和监听端口。
+
+## 修改 Studio 本身
+
+工作台源码使用 React、HeroUI 和 TanStack。克隆 Mofli 后，按 [源码开发指南](../../CONTRIBUTING.md) 安装 workspace 依赖并运行本地开发服务器。这与上面开发自己的资源包是两条独立流程。
