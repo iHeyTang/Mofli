@@ -1,6 +1,6 @@
 # Optional surface and joint bindings
 
-Bindings are reusable mathematics exported from `mofli`, not mandatory base classes for every Rig. They return data and do not depend on SVG, DOM, React or Vue. The browser renderer accepts typed `Shape.transform` matrices.
+Bindings are reusable mathematics exported from `@mofli/core`, not mandatory base classes for every Rig. They return data and do not depend on SVG, DOM, React or Vue. The browser renderer accepts typed `Shape.transform` matrices.
 
 ## Coordinates and composition
 
@@ -9,7 +9,7 @@ Scene coordinates are x-right / y-down. Surface z points toward the viewer. All 
 ## Flat surface
 
 ```ts
-import { bindPlane } from "mofli";
+import { bindPlane } from "@mofli/core";
 const eye = {
   id: "left-eye",
   kind: "ellipse" as const,
@@ -23,7 +23,7 @@ const eye = {
 ## Sphere or ellipsoid
 
 ```ts
-import { bindEllipsoid, compose2D } from "mofli";
+import { bindEllipsoid, compose2D } from "@mofli/core";
 const projected = bindEllipsoid({
   radii: [60, 50, 55],
   longitude: -0.35,
@@ -53,7 +53,7 @@ Yaw rotates the front toward +x, pitch toward +y, then roll rotates in the scree
 ## Joint chains
 
 ```ts
-import { solveJointChain } from "mofli";
+import { solveJointChain } from "@mofli/core";
 const leg = solveJointChain({ x: 120, y: 160, angle: Math.PI / 2 }, [
   { length: 25, angle: 0.2, min: -0.6, max: 0.6 },
   { length: 22, angle: 0.5, min: 0, max: 1.2 },
@@ -66,7 +66,7 @@ The result includes the root and each segment endpoint with its absolute angle. 
 
 ## Transitions and limits
 
-Shape matrices are included in generic frame interpolation. This fallback linearly interpolates affine coefficients for C0 continuity; it is **not** rotation-aware pose interpolation and can shrink a large rotating shape between endpoints. A future Rig-owned pose mixer should interpolate joint angles on their chosen path before forward kinematics, keeping lengths invariant throughout. The joint solver itself preserves lengths for every input pose.
+Shape matrices are included in generic frame interpolation. This fallback linearly interpolates affine coefficients for C0 continuity; it is **not** rotation-aware pose interpolation and can shrink a large rotating shape between endpoints. A Rig-owned pose mixer should interpolate joint angles on their chosen path before forward kinematics, keeping lengths invariant throughout. The joint solver itself preserves lengths for every input pose.
 
 The renderer rejects non-finite or wrongly-sized transform arrays before DOM mutation, and removes stale transform attributes when a shape returns to untransformed coordinates. Raw SVG transform strings are not accepted.
 

@@ -110,7 +110,7 @@ assert.ok(new PetEngine(bloubRig,custom).sample(0).shapes.length);
 assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
 `);
   run(process.execPath,['smoke.mjs'],consumer);
-  console.log('Packed official collection: all resources and extension factories OK');
+  console.log('Packed Grove collection: all resources and extension factories OK');
   const studio = join(temp, "studio");
   cpSync(join(root, "apps/studio"), studio, {
     recursive: true,
@@ -123,10 +123,10 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
   );
   run("npm", ["run", "typecheck"], studio);
   run("npm", ["run", "build"], studio);
-  for (const page of ["index.html", "design.html"])
+  for (const page of ["index.html"])
     readFileSync(join(studio, "dist", page));
   console.log(
-    "@mofli/studio: isolated install, typecheck and two-page production build OK",
+    "@mofli/studio: isolated install, typecheck and production build OK",
   );
   const studioManifest = JSON.parse(
     readFileSync(join(root, "apps/studio/package.json"), "utf8"),

@@ -1,6 +1,6 @@
 // Run after npm run build: node examples/headless/custom-rig.mjs
 // Public package exports only. No studio, browser, or built-in rig dependency.
-import { RigRegistry } from "mofli";
+import { RigRegistry } from "@mofli/core";
 const lantern = {
   id: "lantern",
   version: 1,

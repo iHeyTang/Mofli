@@ -11,7 +11,7 @@
     "build:demo": "npm run build --workspace @mofli/studio",
     "test:browser": "playwright test",
     "typecheck": "npm run build && npm run typecheck --workspaces --if-present",
-    "format": "prettier --write packages examples test docs README.md package.json scripts",
+    "format": "prettier --write packages apps examples test docs README.md package.json scripts",
     "test:packages": "npm run build && node scripts/check-packages.mjs",
     "predev": "npm run build",
     "prebuild:demo": "npm run build",

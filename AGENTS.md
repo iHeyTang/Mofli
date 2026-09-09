@@ -8,6 +8,6 @@
 - Validate meaningful changes with `npm test`, `npm run typecheck`, `npm run build:demo`; browser interaction changes also need Playwright and desktop/mobile visual inspection. On machines with Chrome, use `MOFLI_BROWSER_CHANNEL=chrome npm run test:browser`.
 - Main UI: a quiet creature workshop, paper/canvas/fern palette, pet and optional rig anchors at center, library left and skin inspector right. Responsive stacking on mobile. Every visible control should do something.
 
-- Engine-first: the studio must be a removable public-SDK client. Rig means topology + bounded control space + binding constraints + temporal invariants, not just a draw function. Read docs/bloub-design-study.md before expanding rig/animation behavior.
+- Engine-first: the studio must be a removable public-SDK client. Rig means topology + bounded control space + binding constraints + temporal invariants, not just a draw function. Read docs/architecture.md before expanding rig/animation behavior.
 
 - Logical skin bindings reference exactly one rig. npm resource packs may contain multiple rigs, skins and accessories; package boundaries do not determine compatibility. Core must not import resources or Studio. Use public package imports across boundaries, never sibling source paths. Each package must build independently with installed declared dependencies.

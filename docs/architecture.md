@@ -1,74 +1,41 @@
-# Mofli architecture / v0.1
+# 架构
 
-## Design boundaries
+## 资源与包
 
-The core is TypeScript without browser globals or framework imports. A rig owns topology, a bounded control space, geometric constraints, skin binding and pose generation. The studio is a disposable client of the SDK. A skin carries a rig identifier, named color slots and bounded numeric parameters. The browser runtime owns rendering and input. The host owns application events, persistence and permission to install executable rigs.
+`@mofli/core` 提供协议与运行时；`@mofli/grove` 提供官方资源；`@mofli/studio` 是调用公共 SDK 的编辑应用。Core 不依赖具体资源或 Studio。
 
-```text
-Amiba / another host
-  → activity, mood, skin
-  → Browser Runtime → PetEngine → installed Rig.sample()
-  → neutral Frame → SVG DOM
-```
+npm 包是分发单元，骨架、皮肤和饰品是逻辑资源。一个包可以包含多种资源，兼容性由协议决定。详见 [资源包](resource-packs.md)。
 
-The workspace contains @mofli/core, the optional @mofli/grove collection, and Studio. Official contains all built-in rigs, skins and accessories and depends only on core. Third-party packages may depend on core alone or extend official resources. Logical resource compatibility is independent of npm package boundaries. See [resource packs](./resource-packs.md).
+| 层 | 负责 | 输入与输出 |
+| --- | --- | --- |
+| Core | 注册与校验、事件和时间、通用过渡、饰品组合、渲染 | 资源与配置 → Frame |
+| Rig | 拓扑、控制范围、五官与轮廓形变、状态动作、挂载约束 | 时间、状态、皮肤 → 几何与挂载数据 |
+| Skin | 配色、受支持的造型与五官数据、几何默认值 | 绑定一个 Rig 的可校验数据 |
+| Attachment | 局部几何、材质颜色、安装参数、局部运动 | 挂载 ID 与场景数据 |
+| Studio | 素材选择、预览、配置编辑、保存与导出 | 资源包 → 完整宠物配置或运行包 |
 
-## Rig contract
+## 采样与渲染
 
-`id` and `version` identify the rig implementation; v1 skins currently match the rig ID and protocol version. `parameters` defines ranges and defaults; `colors` declares available paint slots. `sample({time,state,skin,reducedMotion,motion,prepared})` must not mutate inputs, use global clocks or random values. Output geometry uses a 320 × 320 coordinate system. `anchors` provides authoring diagnostics; `bounds` is descriptive geometry for future host layout/hit testing, not enforced clipping in v0.1.
+PetEngine 接收活动、心情、视线与交互事件。Rig 的 `sample` 根据显式时间和当前状态生成 Frame，不应读取全局时钟、随机值或修改输入。相同状态快照下采样可重复，不等同于完整历史事件重放。
 
-Soft body uses 64 polar samples, a quadratic smoothed closed outline and procedural facial features. Mechanical uses independent rectangle, ellipse and line elements with antenna/foot anchors. The separate implementations deliberately share only the protocol.
+Frame 包含有稳定 ID 的图元、渲染资源和挂载信息。浏览器入口负责 SVG DOM、输入与生命周期；动画帧不经过 React 状态树。无 DOM 的宿主可以自行驱动采样并消费 Frame。
 
-A frame is not a fixed body-and-eyes record. It contains an ordered flat list of supported primitives. IDs must be unique and stable across samples. A custom renderer can consume these primitives without Vue or React. Browser supports typed mask and linearGradient resources with instance-local IDs and custom Frame.viewBox. It still does not support arbitrary shaders, image textures, external URLs or nested SVG groups.
+## 骨架约束
 
-## Preparation and extensions
+骨架声明颜色槽、参数范围、姿态通道及可选表面与样式能力。`prepare` 在皮肤应用前计算绑定；验证失败不能破坏已应用的皮肤。几何表示属于骨架，不要求所有骨架使用相同采样点数或球面模型。
 
-RigRegistry explicitly installs trusted rigs and resolves skin rig IDs. Duplicate registrations, invalid ranges and incompatible skins are rejected. `Rig.prepare(skin)` runs before a skin is committed, and a failed preparation leaves the existing skin unchanged. Prepared values are treated as immutable by the rig.
+`Rig.updateSkin` 可返回骨架自身的过渡实现，使轮廓、五官与挂载沿统一姿态变化。没有此能力时，Core 对兼容图元插值，对不兼容图元淡化。通用过渡不保证速度连续或任意拓扑的形变质量。
 
-Soft-body preparation bounds the minimum radial extent over all permitted temporal perturbations and conservatively accounts for quadratic smoothing. It measures the complete face envelope, reserves clearance and limits the shared gaze amplitude once per skin. Face features share the body's affine deformation. This avoids per-frame nearest-edge switching; it is specific to this bounded shape family, not an arbitrary contour solver.
+Grove 的 Bloub 和 Cat Head 使用受约束的头部模型。表情、朝向和符号状态由骨架处理，皮肤提供其支持的外观定义。饰品依赖骨架提供的局部坐标系、成对成员、曲面区域或整体范围。
 
-## State and animation
+## 饰品组合
 
-PetEngine accepts typed activity, mood, look, drag, press and tap events. It stores a current snapshot and last reaction timestamp. Sampling is deterministic for that snapshot, not event-sourced replay. Browser time stops while hidden or paused. Geometry input is normalized to [-1, 1]; non-finite pointer data is ignored. Automatic movement is suppressed by reduced-motion preference, while direct input still works.
+骨架逐帧输出位置、朝向、尺度和可见性。Core 将饰品的局部场景投影到挂载空间；饰品无需复制视角或身体形变算法。体积饰品可使用受支持的网格定义；同一 mesh 内按深度排序。
 
-Direct manipulation is owned by the browser: pointer capture prevents a drag getting stuck outside the SVG; release/cancel/lost capture clear pressed state. The drag target eases back with a delta-time exponential response in the render loop; gaze targets use an analytical bounded curve in the core. This is a first interaction model, not a full spring or physics engine. The whole SVG is the current interaction target.
+该模型不提供任意相交面的遮挡求解或自动避让。帽子等造型通过自身悬空设计避免穿插，前景平面饰品按声明的层级绘制。详情见 [饰品开发](attachment-authoring.md)。
 
-### Transitions and behaviors
+## 验证与安全
 
-Timestamped mutations must be non-negative and monotonic. `sample()` does not advance the mutation clock or discard prior transition data. It remains repeatable for the current snapshot, not a full historic event log. `setSkin(skin, time)` should receive the host time; omitted time uses the last event time.
+注册表校验资源 ID、协议版本和皮肤绑定；组装时校验饰品挂载、插槽、数值范围与占用冲突。资源包与骨架是可信可执行代码；可序列化场景不代表 npm 模块被沙箱隔离。
 
-Discrete changes freeze the currently visible frame and blend toward the newly sampled target. Compatible primitive attributes and path structures interpolate; incompatible primitives crossfade. Colors interpolate in hex RGB. This provides C0 continuity on interruption, not C1 continuity or a generic topology-preserving morph guarantee. The outgoing pose is currently a frozen frame; live dual-pose mixing is future work.
-
-A Behavior is JSON with duration, priority and bounded keyframe tracks matching Rig channels. Tracks use smoothstep segments and must start/end neutral, preventing abrupt one-shot completion. One clip plays at a time: lower priorities are rejected while a higher priority is active, equal/higher priorities interrupt, and pressing cancels playback and blocks new clips. Reduced motion skips clips and frame transitions. `play()` returns acceptance; malformed or unsupported clips throw.
-
-## Resource lifetime
-
-`createSvgRenderer()` is a low-level public API with render/setDebug/destroy and no animation loop. It reuses stable SVG nodes and only updates changed attributes. Each createPet owns one SVG and one requestAnimationFrame loop. destroy aborts listeners, cancels the loop and removes only its SVG. Rig changes recreate the instance; same-rig skins validate before assignment. The host should not modify nodes inside the SVG.
-
-## Trust
-
-Skin files are data; strict whitelists and color/number validation define the accepted surface. The studio caps JSON uploads at 64 KB. SVG attributes are set through DOM APIs and restricted to a small attribute set; URL paint references are rejected. Custom rig code is **trusted executable code**, not safe untrusted plugin content. No sandbox guarantees are claimed.
-
-## Next milestones
-
-1. Rig-owned pose blending, continuous velocities and explicit transition invariants.
-2. Deterministic idle gaze and type-safe mask/clip/group resources with instance-local IDs. Sphere/plane helpers and constrained forward-kinematic joint chains are now available; see bindings.md.
-3. Multi-track behaviors, semantic capability maps and documented fallback policy.
-4. Rig/skin schema migration, geometry validation for more expressive body families.
-5. AI authoring using those constraints and visual acceptance sheets.
-6. Package release review and Amiba adapter; keep host APIs outside Core.
-
-See [Bloub design study](./bloub-design-study.md) for source-backed reasoning and the current implementation gaps.
-
-## Optional geometry toolkit
-
-`bindPlane` preserves a flat local surface. `bindEllipsoid` projects the point, tangent frame and normal of a sphere/ellipsoid. `solveJointChain` implements fixed-length forward kinematics with local angle bounds. A Rig may combine these tools or use none. Bloub and cat-head use spherical face projection. `Shape.transform` carries an optional typed affine matrix through frame mixing and rendering. Generic matrix interpolation is coefficient-wise and does not claim rotation-aware or length-preserving intermediate poses; use Rig-level kinematics for structural guarantees.
-
-## Bloub reference integration
-
-The user explicitly requested faithful reproduction after rejecting the initial sample pets. An optional `@mofli/grove/rigs/bloub` entry converts attributed MIT upstream calculations into Mofli Frames. The default demo now exercises this rig and the SDK resource renderer; no upstream Vue UI is embedded. The core does not import Bloub. See THIRD_PARTY_NOTICES.md and docs/bloub-reference.md. This supersedes earlier blanket no-source-reuse statements for this explicitly scoped integration.
-
-
-### Rig-owned skin transitions
-
-`Rig.updateSkin({ skin, previousSkin, prepared, time, skinTime, restart })` optionally returns a fresh prepared state and `transition: "rig" | "frame"`. Rig-owned transitions bypass generic frame blending so geometry, facial bindings and masks are generated from one coherent interpolated pose. Rigs without this hook retain the existing prepare/snapshot fallback. Validate before returning; do not mutate previous prepared state. Bloub uses this hook for all manual state selections, for interrupted morphs and for handoff to automatic playback. Its state clock is preserved across selections; `restart:false` color edits preserve motion (colors apply immediately). Explicit restart/seek in the demo creates a fresh engine.
+每个包通过公共 exports 消费其他包，并独立构建。测试覆盖协议、几何范围、动画过渡、输入交互、Studio 操作和隔离安装流程。

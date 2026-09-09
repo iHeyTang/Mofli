@@ -1,5 +1,5 @@
 // npm run build && node examples/headless/jointed-rig.mjs
-import { RigRegistry, solveJointChain } from "mofli";
+import { RigRegistry, solveJointChain } from "@mofli/core";
 const rig = {
   id: "jointed-tail",
   version: 1,

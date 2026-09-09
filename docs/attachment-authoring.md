@@ -54,7 +54,7 @@ motion: {kind: 'sway', amplitude: .14, frequency: 2.15, lag: .2}
 
 core 围绕局部原点摆动，补偿头部倾斜并加入末端延迟；左右成员默认错相。可配置 phase。它是确定性动画，不是真实惯性物理模拟。关闭动态时，宿主运行时传入零时间，饰品运动随之冻结。
 
-静态轮廓及 motion 可以直接存成数据。需要程序生成布局或特殊轨迹时，scene 也可写成 `({time, parameters}) => ({version: 1, nodes: [...]})`。该函数拿不到挂载投影器，输出仍然是局部场景数据。`attachmentSceneBuilder` 是可选的数据编排助手，不执行渲染。内置 20 款饰品现在全部使用 JSON，包括泡泡、萤火和花瓣。
+静态轮廓及 motion 可以直接存成数据。需要程序生成布局或特殊轨迹时，scene 也可写成 `({time, parameters}) => ({version: 1, nodes: [...]})`。该函数拿不到挂载投影器，输出仍然是局部场景数据。`attachmentSceneBuilder` 是可选的数据编排助手，不执行渲染。内置 20 款饰品使用 JSON，包括泡泡、萤火和花瓣。
 
 ## 有体积的饰品
 
@@ -67,13 +67,13 @@ core 围绕局部原点摆动，补偿头部倾斜并加入末端延迟；左右
 
 这些结构置于 `{kind:'mesh', id:'surface-', faces:[...]}` 中，可选 `cull:'negative'` / `'positive'` 约定正面投影绕序。core 统一生成网格、投影、在同一个 mesh 内按平均深度排列面。需要互相排序的部件放入同一个 mesh。
 
-参考 `packages/grove/src/accessories/hat.ts`：礼帽只声明截面、圆环、底面和颜色，不再包含网格遍历、投影、路径拼接及深度排序。
+参考 `packages/grove/src/accessories/hat.ts`：礼帽只声明截面、圆环、底面和颜色，由 Core 完成网格生成、投影及深度排序。
 
 这仍是受约束的 2.5D 系统。平均深度排序不解决任意相交面、角色与饰品间的通用遮挡，也不会自动规避其他饰品。优先用前景平面或主动悬空造型。
 
 ## 扩展边界
 
-旧 `Attachment.sample(context, parameters)` 继续作为高级兼容入口。内置 20 款饰品和新 CLI 模板均使用 `defineAttachment`。新作者应优先使用声明式接口；新增通用投影能力应在 core 扩展，挂载形变能力在骨架扩展，而不是复制到饰品中。
+`Attachment.sample(context, parameters)` 是高级入口。内置 20 款饰品和新 CLI 模板均使用 `defineAttachment`。新作者应优先使用声明式接口；新增通用投影能力应在 core 扩展，挂载形变能力在骨架扩展，而不是复制到饰品中。
 
 静态 scene 可序列化不等于整个 npm 插件安全：包仍可执行任意受信任代码，Mofli 不提供不可信插件沙箱。
 
@@ -89,3 +89,19 @@ channels: [{
 ```
 
 localTransform 声明局部二维变换，通道可驱动平移和旋转。静态形状无需通道。包的组织与数据协议独立，详见 [资源包指南](resource-packs.md)。
+
+## Grove 挂载接口
+
+Bloub 与 Cat Head 提供以下接口；每个接口在 Studio 中是一个独立分组，同一排他接口同时佩戴一款饰品。
+
+| 接口 | 空间 | Grove 饰品 |
+| --- | --- | --- |
+| `head.crown` | 头顶局部坐标系 | Sage Hat, Cream Halo, Twin Sprout |
+| `head.sides` | 成对连接区域 | Floppy Ears, Cream Horns |
+| `head.forehead` | 额头局部坐标系 / 表面 | Honey Gem, Cream Blossom, Moon Mark |
+| `head.cheeks` | 成对曲面区域 | Peach Blush, Sesame Freckles, Star Freckles |
+| `head.lower.front` | 下缘前侧局部坐标系 | Clay Bow, Sage Scarf, Round Charm |
+| `head.lower.sides` | 成对连接区域 | Twin Bells, Pearl Drops, Ribbon Drops |
+| `character.orbit` | 角色中心与范围 | Floating Bubbles, Firefly Glow, Drifting Petals |
+
+挂载由骨架逐帧输出朝向、尺度与可见性。符号状态可隐藏头部挂载；Cat Head 的原生耳朵属于骨架，佩戴额外饰品不会移除它们。其他骨架只有声明兼容的接口才能使用相应饰品。

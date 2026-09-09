@@ -9,15 +9,15 @@
 - 第三方集合：可仅基于 Core 开发，也可导入官方资源扩展；通过 ResourcePack 在同一个 npm 包中提供多类资源。
 - `@mofli/studio`：独立创作工具包，提供 `mofli` CLI；作为创作者项目的开发依赖，不进入其运行时依赖。
 
-不为每个皮肤再提供一个独立命令。统一命令负责加载这些包，避免用户需要学习不同工具。
+CLI 统一负责项目创建、加载、校验与导出。
 
-当前这些包尚未公开发布。下面的 `npx @mofli/studio` 是发布后的入口；仓库中可以使用 `node apps/studio/bin/mofli.mjs`，隔离验证使用真实 npm tarball。包保持 private，未执行 npm publish。
+当前这些包尚未公开发布。下面的 `npx @mofli/studio` 是发布后的入口；仓库中可以使用 `node apps/studio/bin/mofli.mjs`，本地依赖安装可使用 npm tarball。
 
 ## 直接启动 Studio
 
-发布后在任意目录执行 `npx @mofli/studio` 即可打开内置工作台，无需先创建皮肤项目。在创作者项目目录执行会自动加载 `mofli.project.ts`；显式指定用 `npx @mofli/studio --project ./my-skin`。无参数启动已由本地 CLI 实现，但 npm 尚未发布。
+发布后在任意目录执行 `npx @mofli/studio` 即可打开内置工作台，无需先创建皮肤项目。在创作者项目目录执行会自动加载 `mofli.project.ts`；显式指定用 `npx @mofli/studio --project ./my-skin`。
 
-Studio 位于 `apps/studio`，采用 React、HeroUI、TanStack Router 与 Query，作为正式应用独立构建与打包。
+Studio 位于 `apps/studio`，采用 React、HeroUI、TanStack Router 与 Query，作为应用独立构建与打包。
 
 ## 从零创建
 
@@ -48,6 +48,8 @@ npm run dev
 
 运行 `npm run dev` 后打开终端显示的本机地址。端口被占用时会明确报错；使用 `npm run dev -- --port 4175` 更换端口。
 
+创建包含多种资源的集合包使用 `--type pack`，详见 [资源包](resource-packs.md)。
+
 ## 在工作台开发
 
 编辑 `src/index.ts`，Studio 自动重新加载。选中的皮肤、手动调整的参数和饰品保留在当前标签页；源码新增默认值会生效，旧参数不兼容时回到项目默认配置。编译失败由开发服务器显示错误。
@@ -55,21 +57,16 @@ npm run dev
 Studio 自动列出项目声明的皮肤、饰品和饰品数值参数。可以把源码模块替换为 npm 包导出：
 
 ```ts
-import { pet } from './src/index.js';
-import { attachment } from 'my-accessory';
+import pack from './src/index.js';
 import type { StudioProject } from '@mofli/studio';
 
 export default {
-  pets: [pet],
-  attachments: [{ name: '我的饰品', attachment }],
-  defaultSkin: pet.skin.id,
-  defaultAttachments: [attachment.id],
+  packs: [pack],
+  defaultSkin: 'my-skin-id',
 } satisfies StudioProject;
 ```
 
-`my-accessory` 需要先安装到创作者项目。每个皮肤导出 `{rig, skin}` 装配定义，避免让用户手动匹配骨架。外部骨架也可经 `pets` 注册；当前提供通用参数与姿态预览，Bloub／猫头具有专门的图形选项面板。
-
-同一个排他挂载接口不能同时佩戴两个饰品；工作台拒绝冲突并显示原因。未知饰品不再需要修改 Studio 源码注册。
+项目引用的 npm 资源包需安装到创作者项目。Studio 按协议加载皮肤与饰品；同一排他挂载接口选择新款时替换当前款式。
 
 ## 保存、导出、接入
 
@@ -98,7 +95,7 @@ pet.setMood('happy');
 
 容器需设置宽高。鼠标与键盘响应由运行包提供，宿主可通过返回的 API 控制姿态和活动；React、Vue 或原生页面都可以使用。示例通过 HTTP 开发服务器打开，不能依赖浏览器的 file:// 模块加载。
 
-导出目录已存在时拒绝覆盖。再次导出用 `npx mofli export --out pet-runtime-v2`，或自行清理旧产物。下载的 JSON 也可以直接传入 `npx mofli export /path/to/pet.json`。
+导出目录已存在时拒绝覆盖。再次导出用 `npx @mofli/studio export --out pet-runtime-v2`，或自行清理旧产物。下载的 JSON 也可以直接传入 `npx @mofli/studio export /path/to/pet.json`。
 
 JSON 本身只含数据，需要宿主注册相应实现；运行包已经携带实现，适合直接交付。源码里的 npm 包可以复用到多个宠物；导出的运行包对应一份具体装配。
 
