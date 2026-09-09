@@ -1,0 +1,24 @@
+{
+  "name": "@mofli/studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit --target ES2022 --module ESNext --moduleResolution bundler --strict --skipLibCheck reference.ts",
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@mofli/core": "^0.1.0",
+    "@mofli/rig-bloub": "^0.1.0",
+    "@mofli/skin-bloub": "^0.1.0",
+    "@mofli/rig-cat-head": "^0.1.0",
+    "@mofli/skin-cat-ink": "^0.1.0",
+    "@mofli/skin-cat-patches": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^7.1.0"
+  }
+}

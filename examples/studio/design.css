@@ -1,0 +1,272 @@
+:root {
+  font-family: Inter, "PingFang SC", system-ui, sans-serif;
+  color: #18241d;
+  background: #f9f9f6;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+header {
+  padding: 24px 36px;
+  border-bottom: 1px solid #dddfd7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+header > a:first-child {
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+header span,
+.eyebrow {
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: #788176;
+}
+main {
+  max-width: 1340px;
+  margin: auto;
+  padding: 44px 36px;
+}
+.intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 32px;
+}
+.intro p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #758071;
+}
+.intro .eyebrow {
+  font-size: 10px;
+  margin: 0;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  margin: 10px 0 15px;
+}
+.tools {
+  font-size: 12px;
+  min-width: 180px;
+}
+.tools label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+input {
+  accent-color: #536a50;
+}
+.column-labels,
+.study {
+  display: grid;
+  grid-template-columns: 200px repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.column-labels {
+  font-size: 11px;
+  color: #7d8679;
+  padding: 18px 0;
+  border-top: 1px solid #dddfd7;
+}
+.column-labels span:not(:first-child) {
+  text-align: center;
+}
+.study {
+  padding: 24px 0 22px;
+  border-top: 1px solid #dddfd7;
+  align-items: center;
+  position: relative;
+}
+.study.chosen {
+  border-top-color: #597b56;
+  background: #edf1e8;
+}
+.identity {
+  padding-right: 15px;
+}
+.number {
+  font: 11px monospace;
+  color: #788176;
+}
+h2 {
+  font-size: 21px;
+  font-weight: 550;
+  margin: 9px 0 13px;
+}
+.identity p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #788176;
+}
+.identity button {
+  margin-top: 10px;
+  padding: 9px 14px;
+  border: 1px solid #ccd4c6;
+  background: transparent;
+  color: #365134;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.identity button[aria-pressed="true"] {
+  background: #365134;
+  color: #fff;
+}
+.portrait {
+  margin: 0;
+  text-align: center;
+}
+.portrait svg {
+  width: 100%;
+  max-width: 250px;
+  display: block;
+  margin: auto;
+}
+.portrait figcaption {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  color: #7d8679;
+  font-size: 10px;
+}
+.portrait a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sizes {
+  grid-column: 2 / 5;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 6px 20px;
+}
+.sizes > span {
+  font-size: 10px;
+  color: #7d8679;
+  margin-right: 10px;
+}
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mini svg {
+  flex-shrink: 0;
+}
+.mini span {
+  font: 10px monospace;
+  color: #84907f;
+}
+.outline .pet path {
+  fill: none;
+  stroke: #18241d;
+  stroke-width: 1;
+}
+.outline .pet rect {
+  fill: none;
+  stroke: #a1aa9c;
+  stroke-width: 0.8;
+}
+footer {
+  border-top: 1px solid #dddfd7;
+  padding: 22px 0;
+  color: #7d8679;
+  font-size: 12px;
+  line-height: 1.8;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #597b56;
+  outline-offset: 4px;
+}
+@media (max-width: 700px) {
+  header {
+    padding: 17px 18px;
+  }
+  header span {
+    display: none;
+  }
+  main {
+    padding: 28px 18px;
+  }
+  .intro {
+    display: block;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  .tools {
+    margin-top: 24px;
+  }
+  .column-labels {
+    display: none;
+  }
+  .study {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding-top: 24px;
+  }
+  .identity {
+    grid-column: 1 / 4;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 0;
+  }
+  .identity .number {
+    grid-column: 1/3;
+  }
+  .identity h2 {
+    margin-bottom: 0;
+  }
+  .identity p {
+    grid-column: 1/3;
+    max-width: 330px;
+  }
+  .identity button {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .sizes {
+    grid-column: 1/4;
+    padding: 12px 0;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .sizes > span {
+    margin: 0;
+    font-size: 9px;
+  }
+  .mini {
+    display: block;
+    text-align: center;
+  }
+  .mini span {
+    display: block;
+  }
+  .portrait figcaption {
+    display: block;
+    line-height: 2;
+  }
+  .portrait a {
+    display: block;
+  }
+  .portrait svg {
+    min-height: 110px;
+  }
+}

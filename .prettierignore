@@ -1,0 +1,7 @@
+packages/rig-bloub/src/vendor/
+node_modules/
+dist/
+demo-dist/
+test-results/
+
+packages/*/dist/

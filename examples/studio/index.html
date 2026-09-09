@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mofli · 骨架与皮肤工作台</title>
+  </head>
+  <body>
+    <header>
+      <a class="wordmark" href="./">mofli<span>✳</span></a>
+      <div class="location">RIG <span>/</span> SKIN <span>/</span> PREVIEW</div>
+      <a
+        class="source"
+        href="https://github.com/jeremy-prt/bloub"
+        target="_blank"
+        rel="noreferrer"
+        >原项目 ↗</a
+      >
+    </header>
+    <div class="assembly-bar">
+      <label>骨架<select id="rig-select" aria-label="骨架"></select></label>
+
+      <label
+        >兼容皮肤<select id="skin-select" aria-label="兼容皮肤"></select
+      ></label>
+      <div class="assembly-info">
+        <strong id="assembly"></strong>
+        <p id="rig-note"></p>
+      </div>
+    </div>
+    <div
+      class="assembly-bar"
+      id="rig-parameters"
+      aria-label="皮肤参数调整"
+    ></div>
+    <section class="choice-library" aria-label="形状与表情预览">
+      <div class="choice-heading">基础形状 <span>选择轮廓</span></div>
+      <div
+        id="shape-choices"
+        class="choice-grid"
+        role="group"
+        aria-label="基础形状"
+      ></div>
+      <div class="choice-heading">表情 <span>在静候中预览</span></div>
+      <div
+        id="expression-choices"
+        class="choice-grid"
+        role="group"
+        aria-label="表情"
+      ></div>
+    </section>
+    <main>
+      <aside>
+        <div class="eyebrow">RIG · SKIN · MOTION</div>
+        <h1>选择形态，观察动作。</h1>
+        <p class="intro">
+          先选择骨架与兼容皮肤，<br />再查看这个骨架支持的状态。
+        </p>
+        <div class="list-label">状态 <span id="state-count">14</span></div>
+        <div id="states"></div>
+        <p class="attribution" id="attribution">
+          Character calculations by Jérémy Perret / Bloub.<br />Rendered through
+          Mofli. MIT attribution retained.
+        </p>
+      </aside>
+      <section class="viewer">
+        <div class="scene-title">
+          <div>
+            <span class="eyebrow" id="mode-label">ORIGINAL SEQUENCE</span>
+            <h2 id="state-name">静候</h2>
+          </div>
+          <span id="state-code">IDLE</span>
+        </div>
+        <div id="stage"><div id="avatar"></div></div>
+        <div class="caption">
+          <p id="description">视线轻移，自然眨眼。身体保持安静。</p>
+          <span id="timecode">00.00 / 33.00</span>
+        </div>
+        <div class="transport">
+          <button id="play" aria-pressed="true">Ⅱ 暂停</button
+          ><button id="restart" aria-label="重新播放">↺ 重播</button
+          ><input
+            id="seek"
+            aria-label="播放进度"
+            type="range"
+            min="0"
+            max="33"
+            step="0.01"
+            value="0"
+          /><button id="cycle" aria-pressed="true">全序列</button>
+        </div>
+        <div class="settings">
+          <label>身体<input id="ink" type="color" value="#0a0a0c" /></label
+          ><label>背景<input id="paper" type="color" value="#f9f9f9" /></label
+          ><label id="face-control" hidden
+            >五官<input id="face" type="color" /></label
+          ><label id="accent-control" hidden
+            >点缀<input id="accent" type="color" /></label
+          ><button id="restore">恢复原色</button
+          ><button id="save-skin">保存皮肤 JSON ↗</button>
+          <button id="export">导出当前 SVG ↗</button>
+        </div>
+        <div class="footnote" id="reference-note">
+          <span>SVG · LIVE RENDER</span>
+          <p>
+            原始轮廓与动作节奏 / 球面五官 / 遮罩与轨道分层<br /><small
+              >当前为 Bloub 参考复现，不是 Mofli 的原创角色。</small
+            >
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>MOFLI — EXTENSIBLE SVG CHARACTER ENGINE</span
+      ><span id="status" role="status">参考 Rig 已加载</span>
+    </footer>
+    <script type="module" src="./reference.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "mofli-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-independent interactive creatures with extensible rigs and validated skins",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "dev": "npm run dev --workspace @mofli/studio --",
+    "build:demo": "npm run build --workspace @mofli/studio",
+    "test:browser": "playwright test",
+    "typecheck": "npm run build && npm run typecheck --workspaces --if-present",
+    "format": "prettier --write packages examples test docs README.md package.json scripts",
+    "test:packages": "npm run build && node scripts/check-packages.mjs",
+    "predev": "npm run build",
+    "prebuild:demo": "npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "pngjs": "^7.0.0",
+    "prettier": "^3.9.6",
+    "typescript": "~5.9.3"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/studio"
+  ]
+}
