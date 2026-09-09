@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {BotEngine} from '../packages/rig-bloub/dist/vendor/engine.js';
-import {STATES} from '../packages/rig-bloub/dist/vendor/states.js';
-import {EXPRESSIONS} from '../packages/rig-bloub/dist/vendor/expressions.js';
-import {characterExpression} from '../packages/rig-bloub/dist/character-expression.js';
+import {BotEngine} from '../packages/grove/dist/rigs/bloub/vendor/engine.js';
+import {STATES} from '../packages/grove/dist/rigs/bloub/vendor/states.js';
+import {EXPRESSIONS} from '../packages/grove/dist/rigs/bloub/vendor/expressions.js';
+import {characterExpression} from '../packages/grove/dist/rigs/bloub/character-expression.js';
 
 test('character eye styling preserves state-authored yaw and pitch across the timeline',()=>{
  for(const style of ['mellow','spry','steady']){

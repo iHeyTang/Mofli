@@ -1,30 +1,20 @@
 # Mofli
 
-框架无关的 SVG 角色引擎，按 **1 个核心 + N 个骨架包 + M 个皮肤包** 组织。React、Vue、Amiba 和演示页都属于使用方，不是引擎依赖。
+框架无关的 SVG 角色引擎。逻辑上分为核心、骨架、皮肤和饰品；npm 项目分为 core、官方集合 official，以及独立的 Studio 应用。全部暂为 private，尚未发布。
 
-当前在同一个 npm workspace 管理 9 个引擎包及 1 个独立预览项目。每个包有自己的 manifest、源码、编译配置和产物；可以移到独立仓库，在安装声明的依赖后单独构建。包名暂用 `@mofli/*`，全部 private，尚未发布，也未验证 npm scope 归属。
-
-```mermaid
-graph BT
-  SB["skin-bloub"] --> RB["rig-bloub"]
-  SC["skin-cat-ink / skin-cat-patches"] --> RC["rig-cat-head"]
-  RC --> C
-  RB --> C["core"]
-```
-
-箭头表示直接依赖。皮肤包只直接依赖一个骨架包；核心由骨架间接引入。一个骨架可以有任意多个独立皮肤包，每个皮肤包只提供一款皮肤及其 PetDefinition，皮肤列表由宿主组合。
-
-## 包与职责
-
-| 包项目 | 职责 | 直接运行依赖 |
+| 包 | 内容 | 运行依赖 |
 | --- | --- | --- |
-| [@mofli/core](packages/core) | Rig / Skin / Frame 协议，校验、时钟、事件、行为、注册表、通用绑定和 SVG 渲染 | 无 |
-| [@mofli/rig-bloub](packages/rig-bloub) | Bloub 参考角色的轮廓、五官、约束、14 状态与姿态过渡 | core（peer） |
-| [@mofli/skin-bloub](packages/skin-bloub) | Bloub 原色皮肤 | rig-bloub |
-| [@mofli/rig-cat-head](packages/rig-cat-head) | 猫头轮廓、猫耳、五官与动作约束 | core（peer） |
-| [@mofli/skin-cat-ink](packages/skin-cat-ink) | 墨黑 | rig-cat-head |
-| [@mofli/skin-cat-patches](packages/skin-cat-patches) | Patches 拼色 | rig-cat-head |
-| [@mofli/studio](examples/studio) | 独立预览应用及 Vite 工具链 | 按需消费 core、骨架和皮肤 |
+| @mofli/core | 协议、校验、事件、挂载、动画和渲染 | 无资源依赖 |
+| @mofli/grove | 2 个骨架、6 款皮肤、20 款纯数据饰品 | core |
+| @mofli/studio | 工作台与 CLI | core、official |
+
+开发者可以只用 core 实现自己的骨架、皮肤和饰品；也可以从 official 导入现有骨架、皮肤工厂与饰品，在自己的资源包中扩展。包名不决定资源兼容性。
+
+```ts
+import {PetRegistry} from '@mofli/core';
+import {grovePack} from '@mofli/grove';
+const registry = new PetRegistry().registerPacks(grovePack);
+```
 
 `core/browser` 是核心包的浏览器入口；默认 `core` 入口不读取 DOM。核心不内置骨架目录，也不会自动注册具体角色。实验宠物保持原有实验定位，并非本轮新增的视觉作品。
 
@@ -32,21 +22,23 @@ graph BT
 
 ```sh
 npm install
-npm run dev             # 先构建各包，再启动演示页；默认首页为 Bloub
+npm run studio          # 构建库后启动正式 Studio；自动发现本地创作者项目
+npm run dev             # Studio 应用自身的 Vite 开发服务器
 npm test                # 构建及核心、参考动画、依赖边界测试
 npm run typecheck       # 各包与演示客户端类型检查
-npm run build:demo      # 构建包及静态演示页，输出 examples/studio/dist/
+npm run build:studio    # 构建正式应用，输出 apps/studio/dist/
+npm run build:demo      # 兼容旧构建命令
 npm run test:packages   # 仓库外逐包构建、打包、安装并运行消费项目
 MOFLI_BROWSER_CHANNEL=chrome npm run test:browser
 ```
 
-修改包源码后运行 `npm run build` 更新其 `dist/`；演示页通过真实包 exports 加载产物，不使用源码路径别名。独立构建某包：`npm run build --workspace @mofli/rig-bloub`，前提是核心已构建。
+修改包源码后运行 `npm run build` 更新其 `dist/`；演示页通过真实包 exports 加载产物，不使用源码路径别名。独立构建某包：`npm run build --workspace @mofli/grove/rigs/bloub`，前提是核心已构建。
 
 ## 使用皮肤包
 
 ```ts
 import { createPet } from '@mofli/core/browser';
-import { bloubPet } from '@mofli/skin-bloub';
+import { bloubPet } from '@mofli/grove/skins/bloub';
 
 const pet = createPet({
   container: document.querySelector('#pet')!,
@@ -59,13 +51,13 @@ const pet = createPet({
 
 ## 新建一个皮肤包
 
-皮肤项目只声明 `@mofli/rig-bloub` 依赖，通过骨架提供的工厂创建数据：
+皮肤项目只声明 `@mofli/grove/rigs/bloub` 依赖，通过骨架提供的工厂创建数据：
 
 ```ts
 import {
   bloubRig, defineBloubSkin,
   type Skin, type PetDefinition,
-} from '@mofli/rig-bloub';
+} from '@mofli/grove/rigs/bloub';
 
 export const skin: Skin = defineBloubSkin({
   id: 'sage', name: 'Sage',
@@ -101,8 +93,25 @@ Rig 是可信可执行代码；当前没有不可信插件沙箱。引擎支持�
 
 皮肤可以携带 rigConfig 默认几何值。换肤应用外观和几何，保留当前动作与表情。exportSkin 保存调整后的外观与几何。没有独立骨架预设概念，见 [分层协议](docs/character-layers.md)。
 
-绒石皮肤 `@mofli/skin-mofli-stone` 使用 Bloub 骨架新增的 `variants.eyes: "socket"` 能力。五官投影、眼睑裁剪和瞳孔边界由骨架管理；皮肤只提供外观配置。当前动作仍沿用 Bloub。
+绒石皮肤 `@mofli/grove/skins/mofli-stone` 使用 Bloub 骨架新增的 `variants.eyes: "socket"` 能力。五官投影、眼睑裁剪和瞳孔边界由骨架管理；皮肤只提供外观配置。当前动作仍沿用 Bloub。
 
 Studio 已提供糯团、芽豆、绒石三款独立皮肤。骨架支持三组 64 角度母版，以及受限的眼睛宽高、间距、静候朝向配置；原 Bloub 默认配置保持不变。静候与基础身体状态使用母版，特殊符号/粒子状态仍沿用现有动作，不等同于三套全新动画。
 
 完整宠物支持 JSON 保存、导入与本地恢复；可通过公共 `PetRegistry` 和浏览器 `createPet({container, registry, config})` 加载一个皮肤与多个饰品。协议、分层职责与接入示例见 [完整宠物配置](docs/pet-config.md)。
+
+创作者入口与独立分发流程见 [创作者工作流](docs/creator-workflow.md)：`mofli init` 创建皮肤或饰品包，`mofli dev` 加载项目源码，在 Studio 保存到项目后通过 `mofli export` 输出可嵌入的 ESM 宠物运行包。
+
+
+## Studio 应用
+
+`apps/studio` 是独立的 `@mofli/studio` npm 应用包，不是 examples。React 19 管理界面、HeroUI 3 提供默认控件和主题、TanStack Router 管理创作／项目页面、TanStack Query 管理保存与导入。动画帧保持在 Core 与 SVG renderer 中，不经过 React 全局状态更新。
+
+发布后 `npx @mofli/studio` 无参数即可启动内置工作台。在包含 `mofli.project.ts` 的目录执行时自动加载该项目；也可使用 `npx @mofli/studio --project ./my-pet`。当前尚未发布，本地用 `npm run studio`。
+
+旧 `reference.html` 仅保留为 Bloub 参考回归测试夹具，不是默认首页。React 工作台与创作者工作流有独立浏览器测试。
+
+饰品目录现有 7 类挂载、20 款饰品。详见 [挂载接口与组合](docs/accessory-mounts.md)。
+
+饰品开发采用声明式场景协议：参见 [饰品编写指南](docs/attachment-authoring.md)。局部路径、曲面绑定、摆动与体积结构由 core 统一渲染，骨架提供挂载约束。
+
+资源与 npm 包已解耦：一个包可包含多种骨架、皮肤和饰品，参见 [资源包指南](docs/resource-packs.md)。全部官方资源收录为 `@mofli/grove`；20 款饰品的定义全部保存为 JSON。

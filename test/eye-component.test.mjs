@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveEyeComponent,blendEyeComponent,renderEyeComponent} from '../packages/rig-bloub/dist/eye-component.js';
+import {resolveEyeComponent,blendEyeComponent,renderEyeComponent} from '../packages/grove/dist/rigs/bloub/eye-component.js';
 test('eye component interpolates independently authored upper and lower lids',()=>{
  for(const socket of [false,true]){
   const closed=resolveEyeComponent({w:.42,h:.1,bend:.12},socket);

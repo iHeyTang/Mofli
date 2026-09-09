@@ -1,7 +1,7 @@
 // Run from the workspace root to resample the approved static SVG masters.
 import { chromium } from "@playwright/test";
 import { readFileSync, writeFileSync } from "node:fs";
-const src = readFileSync("examples/studio/character.js", "utf8");
+const src = readFileSync("apps/studio/character.js", "utf8");
 const paths = [...src.matchAll(/"(M [^"]+ Z)"/g)].map((m) => m[1]);
 const b = await chromium.launch({ channel: "chrome" });
 const p = await b.newPage();
@@ -40,7 +40,7 @@ const out = await p.evaluate(
 );
 await b.close();
 writeFileSync(
-  "packages/rig-bloub/src/character-profiles.ts",
+  "packages/grove/src/rigs/bloub/character-profiles.ts",
   "/** 64-angle samples of the approved Mofli SVG study masters, centered at (128,150). */\nexport const characterProfiles = " +
     JSON.stringify(out) +
     ";\n",

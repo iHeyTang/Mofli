@@ -1,13 +1,13 @@
 import type {Frame,Point,Shape} from './index.js';
 import {compose2D,type Affine2D,type SurfacePose} from './bindings.js';
 export interface VolumeMount {originDepth?:number;origin:Point;scale:number;right:readonly number[];down:readonly number[];forward:readonly number[]}
-export interface AttachmentContext {project(point:readonly [number,number,number]):Point & {depth:number}}
-export interface MountFrame {volume?:VolumeMount;kind:'frame';version:1;matrix:Affine2D;visibility:number}
+export interface AttachmentContext {project(point:readonly [number,number,number],member?:string):Point & {depth:number}; surface(point:readonly [number,number],member?:string):Point & {depth:number}; time:number}
+export interface MountFrame {members?:MountFrames;surface?:readonly [number,number];volume?:VolumeMount;kind:'frame';version:1;matrix:Affine2D;visibility:number}
 export type MountFrames=Record<string,MountFrame>;
 export interface Attachment {parameters?:Record<string,{min:number;max:number;default:number}>;id:string;mount:string;slot:string;volume?:boolean;sample(context:AttachmentContext,parameters:Readonly<Record<string,number>>):(Shape & {slot?:string})[]}
 export interface AttachmentInstance {id:string;attachment:Attachment;parameters?:Record<string,number>}
 /** A small first protocol: rigid mounts and flat shapes; no arbitrary SVG/resources. */
-export function composeAttachments(frame:Frame,instances:readonly AttachmentInstance[]):Frame {
+export function composeAttachments(frame:Frame,instances:readonly AttachmentInstance[],time=0):Frame {
  if(!instances.length)return frame;
  const ids=new Set<string>(),occupied=new Set<string>(),insertions=new Map<number,Shape[]>();
  for(const {id,attachment:a,parameters={}} of instances){
@@ -17,9 +17,21 @@ export function composeAttachments(frame:Frame,instances:readonly AttachmentInst
   if(occupied.has(a.mount))throw new Error(`Mount occupied: ${a.mount}`);occupied.add(a.mount);
   if(!m.matrix.every(Number.isFinite)||!Number.isFinite(m.visibility)||m.visibility<0||m.visibility>1||!Number.isInteger(slot)||slot<0||slot>frame.shapes.length)throw new Error('Invalid mount frame');
   if(a.volume&&!m.volume)throw new Error(`Attachment requires volume mount: ${a.id}`);
-  const context:AttachmentContext={project:([x,y,z])=>{
-   const v=m.volume;if(!v)throw new Error('Missing volume mount');
+  const target=(member?:string)=>{
+   const target=member?m.members?.[member]:m;
+   if(!target)throw new Error(`Unknown mount member: ${member}`);
+   return target;
+  };
+  const project=(point:readonly [number,number,number],member?:string)=>{
+   const v=target(member).volume;if(!v)throw new Error('Missing volume mount');
+   const [x,y,z]=point;
    return {x:v.origin.x+v.scale*(x*v.right[0]!+y*v.down[0]!+z*v.forward[0]!),y:v.origin.y+v.scale*(x*v.right[1]!+y*v.down[1]!+z*v.forward[1]!),depth:(v.originDepth??0)+x*v.right[2]!+y*v.down[2]!+z*v.forward[2]!};
+  };
+  const context:AttachmentContext={time,project,surface:([u,v],member)=>{
+   const region=target(member).surface;if(!region)throw new Error('Missing surface region');
+   const [x,y]=region;
+   const z=Math.sqrt(Math.max(0,1-(x+u)**2-(y+v)**2))-Math.sqrt(Math.max(0,1-x*x-y*y));
+   return project([u,v,z],member);
   }};
   if(!parameters||typeof parameters!=='object'||Array.isArray(parameters)||Object.keys(parameters).some(k=>!Object.hasOwn(a.parameters??{},k)))throw new Error('Unknown attachment parameter');
   const resolved:Record<string,number>={};
@@ -104,7 +116,7 @@ export function blendMountFrames(a:MountFrames={},b:MountFrames={},t:number):Mou
    const forward=[right[1]!*down[2]!-right[2]!*down[1]!,right[2]!*down[0]!-right[0]!*down[2]!,right[0]!*down[1]!-right[1]!*down[0]!];
    volume={originDepth:mix(a.originDepth??0,b.originDepth??0),origin:{x:mix(a.origin.x,b.origin.x),y:mix(a.origin.y,b.origin.y)},scale:mix(a.scale,b.scale),right,down,forward};
   } else volume=x.volume??y.volume;
-  result[id]={...(volume?{volume}:{}),kind:'frame',version:1,visibility:mix(x.visibility,y.visibility),matrix:[c*sx,s*sx,c*shear-s*sy,s*shear+c*sy,mix(u[4],v[4]),mix(u[5],v[5])]};
+  result[id]={...(x.members||y.members?{members:blendMountFrames(x.members,y.members,t)}:{}),...(y.surface?{surface:y.surface}:x.surface?{surface:x.surface}:{}),...(volume?{volume}:{}),kind:'frame',version:1,visibility:mix(x.visibility,y.visibility),matrix:[c*sx,s*sx,c*shear-s*sy,s*shear+c*sy,mix(u[4],v[4]),mix(u[5],v[5])]};
  }
  return result;
 }

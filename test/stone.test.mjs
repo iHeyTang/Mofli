@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetEngine} from '@mofli/core';
-import {bloubRig,bloubStates,defineBloubSkin} from '@mofli/rig-bloub';
-import {stoneSkin} from '@mofli/skin-mofli-stone';
+import {bloubRig,bloubStates,defineBloubSkin} from '@mofli/grove/rigs/bloub';
+import {stoneSkin} from '@mofli/grove/skins/mofli-stone';
 test('socket eyes share eyelid transforms and clip pupils through every state',()=>{
  for(const state of bloubStates){
   const e=new PetEngine(bloubRig,stoneSkin,{pose:{state:state.index}});
@@ -26,8 +26,8 @@ test('unsupported eye modes fail validation; default mode retains no pupils',()=
  assert.ok(!new PetEngine(bloubRig,skin).sample(0).shapes.some(s=>s.id.startsWith('pupil-')));
 });
 
-import {doughSkin} from '@mofli/skin-mofli-dough';
-import {beanSkin} from '@mofli/skin-mofli-bean';
+import {doughSkin} from '@mofli/grove/skins/mofli-dough';
+import {beanSkin} from '@mofli/grove/skins/mofli-bean';
 test('three approved character skins keep distinct mother contours across state round trips',()=>{
  const bodies=new Set();
  for(const skin of [doughSkin,beanSkin,stoneSkin]){

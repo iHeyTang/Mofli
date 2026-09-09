@@ -1,10 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetRegistry} from '@mofli/core';
-import {bloubRig} from '@mofli/rig-bloub';
-import {stoneSkin} from '@mofli/skin-mofli-stone';
-import {hat} from '@mofli/attachment-hat';
-import {bow} from '@mofli/attachment-bow';
+import {bloubRig} from '@mofli/grove/rigs/bloub';
+import {stoneSkin} from '@mofli/grove/skins/mofli-stone';
+import {hat} from '@mofli/grove/accessories/hat';
+import {bow} from '@mofli/grove/accessories/bow';
 const registry=()=>new PetRegistry().registerRig(bloubRig).registerAttachment(hat).registerAttachment(bow);
 const config=()=>({version:1,skin:structuredClone(stoneSkin),rigConfig:{},pose:{state:0},attachments:[{id:'my-hat',type:'hat',version:1,parameters:{hoverHeight:.52}},{id:'my-bow',type:'bow',version:1}]});
 test('complete pet JSON roundtrip preserves character, pose and accessory geometry',()=>{

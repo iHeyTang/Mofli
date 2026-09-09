@@ -1,0 +1,146 @@
+{
+  "id": "medal",
+  "mount": "head.lower.front",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "path",
+          "d": "M -0.09 -0.11 C -0.12 -0.16 -0.08 -0.2 -0.04 -0.19 C 0 -0.14 0 -0.08 0.005 -0.05 C 0.01 -0.09 0.02 -0.17 0.07 -0.19 C 0.12 -0.2 0.14 -0.15 0.1 -0.11 C 0.06 -0.04 -0.04 -0.02 -0.09 -0.11 Z"
+        },
+        "attrs": {
+          "fill": "#789174"
+        },
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.09,
+          "rx": 0.145,
+          "ry": 0.15,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#a99065"
+        },
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.07,
+          "rx": 0.13,
+          "ry": 0.135,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.065,
+          "rx": 0.094,
+          "ry": 0.098,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "roundedPolygon",
+          "points": [
+            [
+              0,
+              -0.005,
+              0
+            ],
+            [
+              0.02,
+              0.032,
+              0
+            ],
+            [
+              0.065,
+              0.045,
+              0
+            ],
+            [
+              0.03,
+              0.071,
+              0
+            ],
+            [
+              0.04,
+              0.115,
+              0
+            ],
+            [
+              0,
+              0.092,
+              0
+            ],
+            [
+              -0.04,
+              0.115,
+              0
+            ],
+            [
+              -0.03,
+              0.071,
+              0
+            ],
+            [
+              -0.065,
+              0.045,
+              0
+            ],
+            [
+              -0.02,
+              0.032,
+              0
+            ]
+          ]
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "motion": {
+          "kind": "sway"
+        }
+      }
+    ]
+  }
+}

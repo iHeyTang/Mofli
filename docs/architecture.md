@@ -11,7 +11,7 @@ Amiba / another host
   → neutral Frame → SVG DOM
 ```
 
-The workspace contains independent `@mofli/core`, `@mofli/rig-*`, and `@mofli/skin-*` package projects. Dependencies point skin → one rig → core. Browser integration is the `@mofli/core/browser` subpath. Each project builds independently with installed declared dependencies; names are provisional and all packages remain private. See [package architecture](./packages.md).
+The workspace contains @mofli/core, the optional @mofli/grove collection, and Studio. Official contains all built-in rigs, skins and accessories and depends only on core. Third-party packages may depend on core alone or extend official resources. Logical resource compatibility is independent of npm package boundaries. See [resource packs](./resource-packs.md).
 
 ## Rig contract
 
@@ -66,7 +66,7 @@ See [Bloub design study](./bloub-design-study.md) for source-backed reasoning an
 
 ## Bloub reference integration
 
-The user explicitly requested faithful reproduction after rejecting the initial sample pets. An optional `@mofli/rig-bloub` entry converts attributed MIT upstream calculations into Mofli Frames. The default demo now exercises this rig and the SDK resource renderer; no upstream Vue UI is embedded. The core does not import Bloub. See THIRD_PARTY_NOTICES.md and docs/bloub-reference.md. This supersedes earlier blanket no-source-reuse statements for this explicitly scoped integration.
+The user explicitly requested faithful reproduction after rejecting the initial sample pets. An optional `@mofli/grove/rigs/bloub` entry converts attributed MIT upstream calculations into Mofli Frames. The default demo now exercises this rig and the SDK resource renderer; no upstream Vue UI is embedded. The core does not import Bloub. See THIRD_PARTY_NOTICES.md and docs/bloub-reference.md. This supersedes earlier blanket no-source-reuse statements for this explicitly scoped integration.
 
 
 ### Rig-owned skin transitions

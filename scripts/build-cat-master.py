@@ -1,6 +1,6 @@
 import json,re,math
 from pathlib import Path
-v=json.loads(Path('examples/studio/cat-studies/masters.json').read_text())[0]
+v=json.loads(Path('apps/studio/cat-studies/masters.json').read_text())[0]
 body='M 65 109 C 84 80 109 63 150 63 C 191 63 216 80 235 109 C 251 129 257 150 255 173 C 252 222 211 249 150 249 C 89 249 48 222 45 173 C 43 150 49 129 65 109 Z'
 def sample(path):
  ts=re.findall('[MCZ]|-?\\d+(?:\\.\\d+)?',path); pts=[];i=0;cur=None
@@ -24,5 +24,5 @@ def sample(path):
   rs.append(round(max(hits),7))
  return rs
 r=sample(v['paths'][0]);b=sample(body)
-Path('packages/rig-cat-head/src/soft-master.ts').write_text('// Derived from the user-selected A soft-tuft SVG master, centered at (150,160).\nexport const softMaster='+json.dumps(r)+';\nexport const softQuarter='+json.dumps(sample(v['paths'][1]))+';\nexport const softSide='+json.dumps(sample(v['paths'][2]))+';\nexport const softBody='+json.dumps(b)+';\nimport { buildEarProfile } from "./ear-profile.js";\nexport const masterProfile=(earLength=45,cheek=0)=>buildEarProfile(softMaster,softBody,earLength,cheek);\n')
-Path('packages/rig-cat-head/soft-tuft-master.svg').write_text(Path('examples/studio/cat-studies/a-front.svg').read_text())
+Path('packages/grove/src/rigs/cat-head/soft-master.ts').write_text('// Derived from the user-selected A soft-tuft SVG master, centered at (150,160).\nexport const softMaster='+json.dumps(r)+';\nexport const softQuarter='+json.dumps(sample(v['paths'][1]))+';\nexport const softSide='+json.dumps(sample(v['paths'][2]))+';\nexport const softBody='+json.dumps(b)+';\nimport { buildEarProfile } from "./ear-profile.js";\nexport const masterProfile=(earLength=45,cheek=0)=>buildEarProfile(softMaster,softBody,earLength,cheek);\n')
+Path('packages/grove/soft-tuft-master.svg').write_text(Path('apps/studio/cat-studies/a-front.svg').read_text())

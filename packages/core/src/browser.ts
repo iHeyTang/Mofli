@@ -52,7 +52,7 @@ export function createPet(options: {
   const draw = () => {
     if (!dead)
       renderer.render(
-        composeAttachments(engine.sample(time, options.reducedMotion ?? media.matches),resolved?.instances??[]),
+        composeAttachments(engine.sample(time, options.reducedMotion ?? media.matches),resolved?.instances??[],(options.reducedMotion ?? media.matches)?0:time),
       );
   };
   const tick = (ms: number) => {

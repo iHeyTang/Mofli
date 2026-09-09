@@ -1,0 +1,1838 @@
+{
+  "id": "fireflies",
+  "mount": "character.orbit",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.176,
+          "cy": -0.72,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.72
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.1239999999999999,
+          "cy": -0.72,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.72
+        }
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.15,
+          "cy": -0.7,
+          "rx": 0.035,
+          "ry": 0.047,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d",
+          "opacity": 0.72
+        }
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.1569999999999998,
+          "cy": -0.71,
+          "rx": 0.014,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5",
+          "opacity": 0.72
+        }
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.2098147473866283,
+          "cy": -0.5805123448670217,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.9953517469611245
+        }
+      },
+      {
+        "id": "part-5",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.2618147473866284,
+          "cy": -0.5805123448670217,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.9953517469611245
+        }
+      },
+      {
+        "id": "part-6",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.2358147473866283,
+          "cy": -0.5605123448670217,
+          "rx": 0.035,
+          "ry": 0.047,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d",
+          "opacity": 0.9953517469611245
+        }
+      },
+      {
+        "id": "part-7",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.2288147473866284,
+          "cy": -0.5705123448670217,
+          "rx": 0.014,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5",
+          "opacity": 0.9953517469611245
+        }
+      },
+      {
+        "id": "part-8",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.4423505580697988,
+          "cy": 0.6597865457313105,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.7382843513510244
+        }
+      },
+      {
+        "id": "part-9",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.3903505580697988,
+          "cy": 0.6597865457313105,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.7382843513510244
+        }
+      },
+      {
+        "id": "part-10",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.4163505580697988,
+          "cy": 0.6797865457313105,
+          "rx": 0.035,
+          "ry": 0.047,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d",
+          "opacity": 0.7382843513510244
+        }
+      },
+      {
+        "id": "part-11",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.4233505580697987,
+          "cy": 0.6697865457313105,
+          "rx": 0.014,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5",
+          "opacity": 0.7382843513510244
+        }
+      },
+      {
+        "id": "part-12",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3097946949743005,
+          "cy": 0.48968485624579416,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.9599971912838081
+        }
+      },
+      {
+        "id": "part-13",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3617946949743005,
+          "cy": 0.48968485624579416,
+          "rx": 0.027,
+          "ry": 0.019,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#dae5cc",
+          "opacity": 0.9599971912838081
+        }
+      },
+      {
+        "id": "part-14",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3357946949743005,
+          "cy": 0.5096848562457942,
+          "rx": 0.035,
+          "ry": 0.047,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d",
+          "opacity": 0.9599971912838081
+        }
+      },
+      {
+        "id": "part-15",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3287946949743006,
+          "cy": 0.4996848562457942,
+          "rx": 0.014,
+          "ry": 0.018,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5",
+          "opacity": 0.9599971912838081
+        }
+      }
+    ],
+    "variables": {
+      "t0": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              {
+                "time": true
+              },
+              0.9
+            ]
+          },
+          0
+        ]
+      },
+      "excursion0": {
+        "op": "pow",
+        "args": [
+          {
+            "op": "max",
+            "args": [
+              0,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t0"
+                      },
+                      0.42
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          3
+        ]
+      },
+      "x0": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              -1,
+              {
+                "op": "add",
+                "args": [
+                  1.15,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.24,
+                      {
+                        "variable": "excursion0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.045,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t0"
+                      },
+                      1.6
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y0": {
+        "op": "add",
+        "args": [
+          -0.7,
+          {
+            "op": "mul",
+            "args": [
+              0.12,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t0"
+                      },
+                      0.7
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.1,
+              {
+                "variable": "excursion0"
+              }
+            ]
+          }
+        ]
+      },
+      "t1": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              {
+                "time": true
+              },
+              0.9
+            ]
+          },
+          1.7
+        ]
+      },
+      "excursion1": {
+        "op": "pow",
+        "args": [
+          {
+            "op": "max",
+            "args": [
+              0,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t1"
+                      },
+                      0.42
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          3
+        ]
+      },
+      "x1": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              1,
+              {
+                "op": "add",
+                "args": [
+                  1.15,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.24,
+                      {
+                        "variable": "excursion1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.045,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t1"
+                      },
+                      1.6
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y1": {
+        "op": "add",
+        "args": [
+          -0.7,
+          {
+            "op": "mul",
+            "args": [
+              0.12,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t1"
+                      },
+                      0.7
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.1,
+              {
+                "variable": "excursion1"
+              }
+            ]
+          }
+        ]
+      },
+      "t2": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              {
+                "time": true
+              },
+              0.9
+            ]
+          },
+          3.4
+        ]
+      },
+      "excursion2": {
+        "op": "pow",
+        "args": [
+          {
+            "op": "max",
+            "args": [
+              0,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t2"
+                      },
+                      0.42
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          3
+        ]
+      },
+      "x2": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              -1,
+              {
+                "op": "add",
+                "args": [
+                  1.15,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.24,
+                      {
+                        "variable": "excursion2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.045,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t2"
+                      },
+                      1.6
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y2": {
+        "op": "add",
+        "args": [
+          0.5,
+          {
+            "op": "mul",
+            "args": [
+              0.12,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t2"
+                      },
+                      0.7
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.1,
+              {
+                "variable": "excursion2"
+              }
+            ]
+          }
+        ]
+      },
+      "t3": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              {
+                "time": true
+              },
+              0.9
+            ]
+          },
+          5.1
+        ]
+      },
+      "excursion3": {
+        "op": "pow",
+        "args": [
+          {
+            "op": "max",
+            "args": [
+              0,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t3"
+                      },
+                      0.42
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          3
+        ]
+      },
+      "x3": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              1,
+              {
+                "op": "add",
+                "args": [
+                  1.15,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.24,
+                      {
+                        "variable": "excursion3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.045,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t3"
+                      },
+                      1.6
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y3": {
+        "op": "add",
+        "args": [
+          0.5,
+          {
+            "op": "mul",
+            "args": [
+              0.12,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "variable": "t3"
+                      },
+                      0.7
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.1,
+              {
+                "variable": "excursion3"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "channels": [
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x0"
+            },
+            -0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y0"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t0"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x0"
+            },
+            0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y0"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t0"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x0"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y0"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t0"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x0"
+            },
+            -0.007
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y0"
+            },
+            -0.01
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t0"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x1"
+            },
+            -0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y1"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t1"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x1"
+            },
+            0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y1"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t1"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x1"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y1"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t1"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x1"
+            },
+            -0.007
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y1"
+            },
+            -0.01
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t1"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x2"
+            },
+            -0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y2"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t2"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x2"
+            },
+            0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y2"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t2"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x2"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y2"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t2"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x2"
+            },
+            -0.007
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y2"
+            },
+            -0.01
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t2"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          12,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x3"
+            },
+            -0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          12,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y3"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          12,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t3"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          13,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x3"
+            },
+            0.026
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          13,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y3"
+            },
+            -0.02
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          13,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t3"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          14,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x3"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          14,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y3"
+            },
+            0
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          14,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t3"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          15,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "x3"
+            },
+            -0.007
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          15,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            {
+              "variable": "y3"
+            },
+            -0.01
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          15,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "add",
+          "args": [
+            0.72,
+            {
+              "op": "mul",
+              "args": [
+                0.28,
+                {
+                  "op": "pow",
+                  "args": [
+                    {
+                      "op": "sin",
+                      "args": [
+                        {
+                          "variable": "t3"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

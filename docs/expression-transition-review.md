@@ -18,7 +18,7 @@
 
 ## 独立眼部组件
 
-`packages/rig-bloub/src/eye-component.ts` 定义 EyeComponentPose、端点解析、姿态混合和轮廓渲染。表达配置在目标端解析为 upper/lower/corner/width/heart，混合阶段分别插值，不再从已经混合的宽高重新推导眼睑。新皮肤优先使用该组件输出；原参考角色路径保持兼容。眼窝使用恒定的局部投影缩放；爱心仍是单独的形状通道。
+`packages/grove/src/rigs/bloub/eye-component.ts` 定义 EyeComponentPose、端点解析、姿态混合和轮廓渲染。表达配置在目标端解析为 upper/lower/corner/width/heart，混合阶段分别插值，不再从已经混合的宽高重新推导眼睑。新皮肤优先使用该组件输出；原参考角色路径保持兼容。眼窝使用恒定的局部投影缩放；爱心仍是单独的形状通道。
 
 组件级测试覆盖上下眼睑开口间距、双向一致性和圆角保持；全表情对的实际帧中断测试继续覆盖接入链路。
 

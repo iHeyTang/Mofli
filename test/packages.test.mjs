@@ -4,9 +4,9 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve, relative, dirname } from "node:path";
 import ts from "typescript";
-import { defineBloubSkin, bloubRig } from "@mofli/rig-bloub";
-import { defineCatSkin } from "@mofli/rig-cat-head";
-import { bloubPet } from "@mofli/skin-bloub";
+import { defineBloubSkin, bloubRig } from "@mofli/grove/rigs/bloub";
+import { defineCatSkin } from "@mofli/grove/rigs/cat-head";
+import { bloubPet } from "@mofli/grove/skins/bloub";
 
 const root = resolve("packages");
 function files(path) {
@@ -18,17 +18,12 @@ function files(path) {
         : [],
   );
 }
-test("package dependency direction and source imports enforce 1 + n + m", () => {
+test("core remains independent and all packages declare cross-package imports", () => {
   for (const name of readdirSync(root)) {
     const dir = resolve(root, name),
       m = JSON.parse(readFileSync(resolve(dir, "package.json"), "utf8"));
     const deps = Object.keys({ ...m.dependencies, ...m.peerDependencies });
     if (name === "core") assert.deepEqual(deps, []);
-    else if ((name.startsWith("rig-") || name.startsWith("attachment-"))) assert.deepEqual(deps, ["@mofli/core"]);
-    else {
-      assert.equal(deps.length, 1);
-      assert.ok(deps[0].startsWith("@mofli/rig-"));
-    }
     for (const file of files(resolve(dir, "src"))) {
       const ast = ts.createSourceFile(
         file,
@@ -91,10 +86,10 @@ test("each skin package supplies exactly one skin and its pet definition", async
 });
 
 test("studio owns its toolchain and only imports declared public packages", () => {
-  const dir = resolve('examples/studio');
+  const dir = resolve('apps/studio');
   const manifest = JSON.parse(readFileSync(resolve(dir, 'package.json'), 'utf8'));
   for (const script of ['dev', 'build', 'preview', 'typecheck']) assert.ok(manifest.scripts[script]);
-  for (const dep of ['vite', 'typescript']) assert.ok(manifest.devDependencies[dep]);
+  for (const dep of ['vite', 'typescript']) assert.ok({...manifest.dependencies,...manifest.devDependencies}[dep]);
   for (const name of readdirSync(dir).filter(name => /\.(ts|js)$/.test(name))) {
     const file = resolve(dir, name);
     const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);

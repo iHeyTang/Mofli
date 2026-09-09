@@ -1,0 +1,295 @@
+import {
+  useEffect,
+  useState,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import { Button, Slider, Label } from "@heroui/react";
+import {
+  PetEngine,
+  composeAttachments,
+  type Attachment,
+  type Rig,
+  type Skin,
+  type RigConfig,
+  type RigPose,
+} from "@mofli/core";
+import { createSvgRenderer } from "@mofli/core/browser";
+import { model } from "./model.js";
+export function useModel() {
+  useSyncExternalStore(model.subscribe, model.snapshot);
+  return model;
+}
+export function Action({
+  children,
+  onPress,
+  title,
+  id,
+  primary = false,
+  disabled = false,
+}: {
+  children: ReactNode;
+  onPress: () => void;
+  title?: string;
+  id?: string;
+  primary?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <Button
+      id={id}
+      size="sm"
+      variant={primary ? "primary" : "ghost"}
+      onPress={onPress}
+      aria-label={title}
+      isDisabled={disabled}
+    >
+      {children}
+    </Button>
+  );
+}
+export function Thumbnail({
+  rig,
+  skin,
+  config = {},
+  pose = {},
+  time = 1,
+  attachment,
+  accessoryOnly = false,
+}: {
+  rig: Rig;
+  skin: Skin;
+  config?: RigConfig;
+  pose?: RigPose;
+  time?: number;
+  attachment?: Attachment;
+  accessoryOnly?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const signature = JSON.stringify([skin, config, pose, time, attachment?.id, accessoryOnly]);
+  useEffect(() => {
+    const renderer = createSvgRenderer(ref.current!);
+    const filtered = Object.fromEntries(
+      Object.entries(pose).filter(([k]) => k in (rig.poseParameters ?? {})),
+    );
+    const frame = new PetEngine(rig, skin, { rigConfig: config, pose: filtered }).sample(
+        time,
+        true,
+      );
+    // Catalog thumbnails pack paired pieces together; the actual pet keeps rig spacing.
+    if(accessoryOnly && attachment){
+      const members=frame.mounts?.[attachment.mount]?.members;
+      if(members){
+        const values=Object.values(members),center=values.reduce((sum,m)=>sum+(m.volume?.origin.x??0),0)/values.length;
+        for(const member of values)if(member.volume){
+          const x=center+(member.volume.origin.x-center)*.35;
+          member.volume.origin.x=x;
+          const [a,b,c,d,,y]=member.matrix;member.matrix=[a,b,c,d,x,y];
+        }
+      }
+    }
+    const mounted=attachment ? composeAttachments(frame,[{id:"preview",attachment}]) : frame;
+    if(accessoryOnly) mounted.shapes=mounted.shapes.filter(s=>s.id.startsWith("attachment-preview-"));
+    renderer.render(mounted);
+    if(accessoryOnly){
+      const box=renderer.svg.getBBox();
+      const pad=Math.max(box.width,box.height)*.16+3;
+      renderer.svg.setAttribute("viewBox",`${box.x-pad} ${box.y-pad} ${box.width+pad*2} ${box.height+pad*2}`);
+    }
+    renderer.svg.setAttribute("aria-hidden", "true");
+    return () => renderer.destroy();
+  }, [rig, signature]);
+  return <div className="pet-thumbnail" ref={ref} />;
+}
+export function Range({
+  id,
+  label,
+  value,
+  min,
+  max,
+  onChange,
+  step = 0.01,
+}: {
+  id?: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+  step?: number;
+}) {
+  return (
+    <Slider
+      id={id}
+      className="parameter-slider"
+      aria-label={label}
+      value={value}
+      minValue={min}
+      maxValue={max}
+      step={step}
+      onChange={(v) => onChange(Number(v))}
+    >
+      <Label>{label}</Label>
+      <Slider.Output>{Number(value).toFixed(2)}</Slider.Output>
+      <Slider.Track>
+        <Slider.Fill />
+        <Slider.Thumb />
+      </Slider.Track>
+    </Slider>
+  );
+}
+export function PlaybackSlider() {
+  const m = useModel();
+  const [, refresh] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => refresh(n => n + 1), 100);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <Slider
+      id="seek"
+      className="playback-slider"
+      aria-label="播放进度"
+      minValue={0}
+      maxValue={m.duration}
+      step={0.01}
+      value={m.progress}
+      onChange={(v) => m.seek(Number(v))}
+    >
+      <Slider.Track>
+        <Slider.Fill />
+        <Slider.Thumb />
+      </Slider.Track>
+    </Slider>
+  );
+}
+
+export function PetStage() {
+  const host = useRef<HTMLDivElement>(null);
+  const m = useModel();
+  useEffect(() => {
+    const renderer = createSvgRenderer(host.current!);
+    const svg = renderer.svg;
+    svg.setAttribute("role", "button");
+    svg.setAttribute("tabindex", "0");
+    svg.setAttribute("aria-label", "互动宠物，点击或按 Enter 打招呼");
+    let raf = 0,
+      last = 0,
+      pointer: { id: number; x: number; y: number; moved: boolean } | null =
+        null;
+    const abort = new AbortController();
+    const signal = abort.signal;
+    const draw = () => {
+      renderer.setDebug(model.debug);
+      renderer.render(model.frame());
+    };
+    const tick = (now: number) => {
+      if (model.playing && !document.hidden)
+        model.time += last ? Math.min(0.05, (now - last) / 1000) : 0;
+      last = now;
+      draw();
+      const code = document.getElementById("timecode");
+      if (code)
+        code.textContent = `${(model.progress).toFixed(2)} / ${model.duration.toFixed(2)} s`;
+      raf = requestAnimationFrame(tick);
+    };
+    svg.addEventListener(
+      "pointermove",
+      (e) => {
+        const r = svg.getBoundingClientRect();
+        model.engine.handle(
+          {
+            type: "look",
+            value: {
+              x: Math.max(
+                -1,
+                Math.min(1, (2 * (e.clientX - r.left)) / r.width - 1),
+              ),
+              y: Math.max(
+                -1,
+                Math.min(1, (2 * (e.clientY - r.top)) / r.height - 1),
+              ),
+            },
+          },
+          model.time,
+        );
+        if (pointer) {
+          if (Math.hypot(e.clientX - pointer.x, e.clientY - pointer.y) > 5)
+            pointer.moved = true;
+          if (pointer.moved)
+            model.engine.handle(
+              {
+                type: "drag",
+                value: {
+                  x: (e.clientX - pointer.x) / r.width,
+                  y: (e.clientY - pointer.y) / r.height,
+                },
+              },
+              model.time,
+            );
+        }
+      },
+      { signal },
+    );
+    svg.addEventListener(
+      "pointerdown",
+      (e) => {
+        if (e.button !== 0) return;
+        pointer = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+        svg.setPointerCapture(e.pointerId);
+      },
+      { signal },
+    );
+    const release = (e: PointerEvent) => {
+      if (!pointer) return;
+      if (e.type === "pointerup" && !pointer.moved)
+        model.engine.handle({ type: "tap" }, model.time);
+      model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
+      pointer = null;
+    };
+    svg.addEventListener("pointerup", release, { signal });
+    svg.addEventListener("pointercancel", release, { signal });
+    svg.addEventListener(
+      "pointerleave",
+      () => {
+        if (!pointer)
+          model.engine.handle(
+            { type: "look", value: { x: 0, y: 0 } },
+            model.time,
+          );
+      },
+      { signal },
+    );
+    svg.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          model.engine.handle({ type: "tap" }, model.time);
+        }
+      },
+      { signal },
+    );
+    raf = requestAnimationFrame(tick);
+    return () => {
+      abort.abort();
+      cancelAnimationFrame(raf);
+      renderer.destroy();
+    };
+  }, []);
+  return (
+    <div
+      className="canvas"
+      id="stage"
+      style={{ backgroundColor: m.skin.colors.paper ?? "#f6f7f3" }}
+    >
+      <div className="canvas-label">
+        <span className="live-dot" />
+        实时预览<span>SVG / {m.entry.name}</span>
+      </div>
+      <div id="avatar" ref={host} style={{ transform: `scale(${m.zoom})` }} />
+      <div className="canvas-hint">移动鼠标与它对视 · 点击打个招呼</div>
+    </div>
+  );
+}

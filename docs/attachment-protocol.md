@@ -11,9 +11,9 @@ Core 定义与组合协议；骨架解释身体并提供动态绑定；部件解
 ## 包依赖
 
 - @mofli/core：协议类型、校验、部件注册与实例生命周期、组合器、资源命名空间、渲染。
-- @mofli/rig-* -> core：声明挂载契约，输出动态挂载帧。
-- @mofli/attachment-* -> core：声明所需契约，生成自己的图形。无需依赖具体骨架或皮肤。
-- @mofli/skin-* -> 对应 rig：可存储部件 ID 与默认配置，不在可序列化皮肤中嵌入函数或动态导入路径。
+- official rigs -> core：声明挂载契约，输出动态挂载帧。
+- @mofli/grove/accessories -> core：声明所需契约，生成自己的图形。无需依赖具体骨架或皮肤。
+- official skins -> 对应 rig：可存储部件 ID 与默认配置，不在可序列化皮肤中嵌入函数或动态导入路径。
 - Studio / 宿主：显式导入并注册部件实现，解析皮肤引用，维护最终穿戴清单。
 
 缺失注册实现需报告错误，不能根据 JSON 自动下载或执行代码。部件与骨架一样是受信任可执行代码，不宣称沙箱隔离。
@@ -93,7 +93,7 @@ connection 首期只支持同色轮廓重叠接合：部件根部位于宿主填
 
 ## 第一阶段已实现（2026-09-09）
 
-已实现 `Rig.mounts`、`Frame.mounts/slots`、`composeAttachments`，以及两个只依赖 Core 的独立私有包 `@mofli/attachment-hat`、`@mofli/attachment-bow`。Bloub 和猫头提供 `head.crown` 与 `head.lower.front`。Studio 顶部饰品开关使用同一公共组合器；不佩戴时直接返回原 Frame。
+已实现 `Rig.mounts`、`Frame.mounts/slots`、`composeAttachments`，以及两个只依赖 Core 的独立私有包 `@mofli/grove/accessories/hat`、`@mofli/grove/accessories/bow`。Bloub 和猫头提供 `head.crown` 与 `head.lower.front`。Studio 顶部饰品开关使用同一公共组合器；不佩戴时直接返回原 Frame。
 
 当前协议刻意限定为 frame v1、纯 Shape 图形和骨架声明的绘制插槽，不支持部件资源、局部动画生命周期或任意曲面。挂载矩阵由真实当前轮廓的射线交点生成，参考尺寸包含在矩阵内；左右旋转使用头部 roll。它是轮廓绑定的二维近似，不是真实三维帽子透视。符号状态的挂载可见性随骨架姿态一起混合；frame 级混合也保留挂载数据。组合器检查重复实例、占用冲突、缺失挂载、无效数值，并为图形加实例前缀。
 
@@ -103,8 +103,8 @@ connection 首期只支持同色轮廓重叠接合：部件根部位于宿主填
 
 ```ts
 import {composeAttachments} from '@mofli/core';
-import {hat} from '@mofli/attachment-hat';
-import {bow} from '@mofli/attachment-bow';
+import {hat} from '@mofli/grove/accessories/hat';
+import {bow} from '@mofli/grove/accessories/bow';
 const frame = composeAttachments(engine.sample(time), [
   {id: 'my-hat', attachment: hat},
   {id: 'my-bow', attachment: bow},

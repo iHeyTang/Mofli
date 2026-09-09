@@ -2,8 +2,8 @@
  * Oracle deliberately bypasses Mofli Frame conversion and SVG renderer.
  * Upstream source and MIT attribution: THIRD_PARTY_NOTICES.md.
  */
-import type { BotFrame } from "../../packages/rig-bloub/src/vendor/engine.js";
-import { mixHex } from "../../packages/rig-bloub/src/vendor/skins.js";
+import type { BotFrame } from "../../packages/grove/src/rigs/bloub/vendor/engine.js";
+import { mixHex } from "../../packages/grove/src/rigs/bloub/vendor/skins.js";
 export function originalSvg(f: BotFrame, id: string) {
   const ink = "#0a0a0c",
     paper = "#f9f9f9";

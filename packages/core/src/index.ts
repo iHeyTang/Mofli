@@ -1,5 +1,9 @@
+export {defineResourcePack,collectResourcePacks,type ResourcePack} from './resource-pack.js';
+export type {SceneValue,SceneChannels} from './scene-values.js';
+export type {AttachmentSolid,AttachmentFace} from './attachment-solids.js';
+export {defineAttachment,renderAttachmentScene,attachmentSceneBuilder,type AttachmentDefinition,type AttachmentScene,type AttachmentNode,type AttachmentPoint,type AttachmentMotion,type AttachmentMesh,type AttachmentGeometry,type AttachmentSceneInput} from './attachment-scene.js';
 export {PetRegistry,type PetConfig} from "./pet-config.js";
-export {headMounts,type HeadMountInput} from "./mount-space.js";
+export {headMounts,headMountCapabilities,type HeadMountInput} from "./mount-space.js";
 export {composeAttachments,contourMounts,type MountFrame,type MountFrames,type Attachment,type AttachmentInstance,type VolumeMount,type AttachmentContext} from "./attachments.js";
 import type { SvgResource } from "./resources.js";
 export type { SvgResource } from "./resources.js";

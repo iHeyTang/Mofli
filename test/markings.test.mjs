@@ -1,10 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PetEngine, validateSkin } from "@mofli/core";
-import { catHeadRig, catStates } from "@mofli/rig-cat-head";
-import { bloubRig } from "@mofli/rig-bloub";
-import { sesame } from "@mofli/skin-cat-ink";
-import { patches } from "@mofli/skin-cat-patches";
+import { catHeadRig, catStates } from "@mofli/grove/rigs/cat-head";
+import { bloubRig } from "@mofli/grove/rigs/bloub";
+import { sesame } from "@mofli/grove/skins/cat-ink";
+import { patches } from "@mofli/grove/skins/cat-patches";
 const marks = (f) => f.shapes.filter((s) => s.id.startsWith("mark-"));
 test("one immutable pattern definition follows all states and shape choices", () => {
   const saved = JSON.stringify(patches);

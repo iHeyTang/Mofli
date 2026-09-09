@@ -4,14 +4,14 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { PoseController, transformPoint } from "@mofli/core";
 import { blend, toPoints } from "@mofli/core/radial";
-import { catHeadRig, catStates } from "@mofli/rig-cat-head";
-import { sesame } from "@mofli/skin-cat-ink";
-import { patches } from "@mofli/skin-cat-patches";
+import { catHeadRig, catStates } from "@mofli/grove/rigs/cat-head";
+import { sesame } from "@mofli/grove/skins/cat-ink";
+import { patches } from "@mofli/grove/skins/cat-patches";
 const catSkins = [sesame, patches];
-import { BotEngine as CatEngine } from "../packages/rig-cat-head/dist/vendor/engine.js";
-import { masterProfile } from "../packages/rig-cat-head/dist/soft-master.js";
-import { bloubStates } from "@mofli/rig-bloub";
-import { BotEngine } from "../packages/rig-bloub/dist/vendor/engine.js";
+import { BotEngine as CatEngine } from "../packages/grove/dist/rigs/cat-head/vendor/engine.js";
+import { masterProfile } from "../packages/grove/dist/rigs/cat-head/soft-master.js";
+import { bloubStates } from "@mofli/grove/rigs/bloub";
+import { BotEngine } from "../packages/grove/dist/rigs/bloub/vendor/engine.js";
 // Upstream decor prefixes resource ids when freezing a transition; compare
 // rendered geometry and references, independent of those internal names.
 function visible(frame) {
@@ -146,7 +146,7 @@ test("symbol states retract ears geometrically; changing skin keeps interrupted 
 
 test("head silhouette follows yaw with mirrored views and preserves the frontal master", async () => {
   const { turnedProfile } =
-    await import("../packages/rig-cat-head/dist/head-turn.js");
+    await import("../packages/grove/dist/rigs/cat-head/head-turn.js");
   const p = masterProfile(45, 0),
     front = turnedProfile(p, 0, 0, 1),
     right = turnedProfile(p, 30, 0, 1),

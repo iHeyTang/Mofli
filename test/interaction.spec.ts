@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test("studio connects pointer gaze and primary click to both rigs", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173");
+  await page.goto("http://127.0.0.1:4173/reference.html");
   for (const rig of ["bloub-reference", "cat-head"]) {
     await page.selectOption("#rig-select", rig);
     await page.locator('[data-state="idle"]').click();

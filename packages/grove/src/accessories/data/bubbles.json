@@ -1,0 +1,1990 @@
+{
+  "id": "bubbles",
+  "mount": "character.orbit",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.13,
+          "cy": 0.95,
+          "rx": 0.06300000000000001,
+          "ry": 0.06300000000000001,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#bad0c8",
+          "opacity": 0
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.13,
+          "cy": 0.95,
+          "rx": 0.04914000000000001,
+          "ry": 0.04914000000000001,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e0ebe3",
+          "opacity": 0
+        }
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.1457499999999998,
+          "cy": 0.9279499999999999,
+          "rx": 0.013860000000000003,
+          "ry": 0.010080000000000002,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fffaf0",
+          "opacity": 0
+        }
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3545146639710088,
+          "cy": 0.36934999999999996,
+          "rx": 0.10645411081217114,
+          "ry": 0.10645411081217114,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#bad0c8",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.3545146639710088,
+          "cy": 0.36934999999999996,
+          "rx": 0.08303420643349349,
+          "ry": 0.08303420643349349,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e0ebe3",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-5",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 1.327901136267966,
+          "cy": 0.33209106121574006,
+          "rx": 0.02341990437867765,
+          "ry": 0.017032657729947383,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fffaf0",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-6",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.0301741620651303,
+          "cy": -0.21130000000000004,
+          "rx": 0.06997666149623821,
+          "ry": 0.06997666149623821,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#bad0c8",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-7",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.0301741620651303,
+          "cy": -0.21130000000000004,
+          "rx": 0.054581795967065805,
+          "ry": 0.054581795967065805,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e0ebe3",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-8",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -1.0476683274391898,
+          "cy": -0.2357918315236834,
+          "rx": 0.015394865529172406,
+          "ry": 0.011196265839398114,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fffaf0",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-9",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0.9734504687993604,
+          "cy": -0.7919500000000002,
+          "rx": 0.10767048173189485,
+          "ry": 0.10767048173189485,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#bad0c8",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-10",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0.9734504687993604,
+          "cy": -0.7919500000000002,
+          "rx": 0.08398297575087799,
+          "ry": 0.08398297575087799,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#e0ebe3",
+          "opacity": 1
+        }
+      },
+      {
+        "id": "part-11",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0.9465328483663866,
+          "cy": -0.8296346686061633,
+          "rx": 0.023687505981016866,
+          "ry": 0.017227277077103177,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fffaf0",
+          "opacity": 1
+        }
+      }
+    ],
+    "variables": {
+      "age0": {
+        "op": "mod",
+        "args": [
+          {
+            "op": "add",
+            "args": [
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "time": true
+                  },
+                  0.16
+                ]
+              },
+              0
+            ]
+          },
+          1
+        ]
+      },
+      "x0": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              -1,
+              {
+                "op": "add",
+                "args": [
+                  1.13,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.18,
+                      {
+                        "op": "sin",
+                        "args": [
+                          {
+                            "op": "add",
+                            "args": [
+                              {
+                                "op": "mul",
+                                "args": [
+                                  {
+                                    "variable": "age0"
+                                  },
+                                  3
+                                ]
+                              },
+                              0
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.055,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "time": true
+                          },
+                          0.8
+                        ]
+                      },
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y0": {
+        "op": "sub",
+        "args": [
+          0.95,
+          {
+            "op": "mul",
+            "args": [
+              {
+                "variable": "age0"
+              },
+              2.45
+            ]
+          }
+        ]
+      },
+      "r0": {
+        "op": "mul",
+        "args": [
+          0.07,
+          {
+            "op": "add",
+            "args": [
+              0.9,
+              {
+                "op": "mul",
+                "args": [
+                  0.1,
+                  {
+                    "op": "sin",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "variable": "age0"
+                          },
+                          3.141592653589793
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "age1": {
+        "op": "mod",
+        "args": [
+          {
+            "op": "add",
+            "args": [
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "time": true
+                  },
+                  0.16
+                ]
+              },
+              0.237
+            ]
+          },
+          1
+        ]
+      },
+      "x1": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              1,
+              {
+                "op": "add",
+                "args": [
+                  1.13,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.18,
+                      {
+                        "op": "sin",
+                        "args": [
+                          {
+                            "op": "add",
+                            "args": [
+                              {
+                                "op": "mul",
+                                "args": [
+                                  {
+                                    "variable": "age1"
+                                  },
+                                  3
+                                ]
+                              },
+                              1
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.055,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "time": true
+                          },
+                          0.8
+                        ]
+                      },
+                      1
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y1": {
+        "op": "sub",
+        "args": [
+          0.95,
+          {
+            "op": "mul",
+            "args": [
+              {
+                "variable": "age1"
+              },
+              2.45
+            ]
+          }
+        ]
+      },
+      "r1": {
+        "op": "mul",
+        "args": [
+          0.11000000000000001,
+          {
+            "op": "add",
+            "args": [
+              0.9,
+              {
+                "op": "mul",
+                "args": [
+                  0.1,
+                  {
+                    "op": "sin",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "variable": "age1"
+                          },
+                          3.141592653589793
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "age2": {
+        "op": "mod",
+        "args": [
+          {
+            "op": "add",
+            "args": [
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "time": true
+                  },
+                  0.16
+                ]
+              },
+              0.474
+            ]
+          },
+          1
+        ]
+      },
+      "x2": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              -1,
+              {
+                "op": "add",
+                "args": [
+                  1.13,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.18,
+                      {
+                        "op": "sin",
+                        "args": [
+                          {
+                            "op": "add",
+                            "args": [
+                              {
+                                "op": "mul",
+                                "args": [
+                                  {
+                                    "variable": "age2"
+                                  },
+                                  3
+                                ]
+                              },
+                              2
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.055,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "time": true
+                          },
+                          0.8
+                        ]
+                      },
+                      2
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y2": {
+        "op": "sub",
+        "args": [
+          0.95,
+          {
+            "op": "mul",
+            "args": [
+              {
+                "variable": "age2"
+              },
+              2.45
+            ]
+          }
+        ]
+      },
+      "r2": {
+        "op": "mul",
+        "args": [
+          0.07,
+          {
+            "op": "add",
+            "args": [
+              0.9,
+              {
+                "op": "mul",
+                "args": [
+                  0.1,
+                  {
+                    "op": "sin",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "variable": "age2"
+                          },
+                          3.141592653589793
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "age3": {
+        "op": "mod",
+        "args": [
+          {
+            "op": "add",
+            "args": [
+              {
+                "op": "mul",
+                "args": [
+                  {
+                    "time": true
+                  },
+                  0.16
+                ]
+              },
+              0.711
+            ]
+          },
+          1
+        ]
+      },
+      "x3": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              1,
+              {
+                "op": "add",
+                "args": [
+                  1.13,
+                  {
+                    "op": "mul",
+                    "args": [
+                      0.18,
+                      {
+                        "op": "sin",
+                        "args": [
+                          {
+                            "op": "add",
+                            "args": [
+                              {
+                                "op": "mul",
+                                "args": [
+                                  {
+                                    "variable": "age3"
+                                  },
+                                  3
+                                ]
+                              },
+                              3
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mul",
+            "args": [
+              0.055,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "time": true
+                          },
+                          0.8
+                        ]
+                      },
+                      3
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "y3": {
+        "op": "sub",
+        "args": [
+          0.95,
+          {
+            "op": "mul",
+            "args": [
+              {
+                "variable": "age3"
+              },
+              2.45
+            ]
+          }
+        ]
+      },
+      "r3": {
+        "op": "mul",
+        "args": [
+          0.11000000000000001,
+          {
+            "op": "add",
+            "args": [
+              0.9,
+              {
+                "op": "mul",
+                "args": [
+                  0.1,
+                  {
+                    "op": "sin",
+                    "args": [
+                      {
+                        "op": "mul",
+                        "args": [
+                          {
+                            "variable": "age3"
+                          },
+                          3.141592653589793
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "channels": [
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x0"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y0"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age0"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age0"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x0"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y0"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          1,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age0"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age0"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "x0"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r0"
+                },
+                0.25
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "y0"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r0"
+                },
+                0.35
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            0.22
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r0"
+            },
+            0.16
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          2,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age0"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age0"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x1"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y1"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          3,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age1"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age1"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x1"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y1"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          4,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age1"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age1"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "x1"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r1"
+                },
+                0.25
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "y1"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r1"
+                },
+                0.35
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            0.22
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r1"
+            },
+            0.16
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          5,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age1"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age1"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x2"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y2"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          6,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age2"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age2"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x2"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y2"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          7,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age2"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age2"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "x2"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r2"
+                },
+                0.25
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "y2"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r2"
+                },
+                0.35
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            0.22
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r2"
+            },
+            0.16
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          8,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age2"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age2"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x3"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y3"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            1
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          9,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age3"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age3"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "variable": "x3"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "variable": "y3"
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            0.78
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          10,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age3"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age3"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "cx"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "x3"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r3"
+                },
+                0.25
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "cy"
+        ],
+        "value": {
+          "op": "sub",
+          "args": [
+            {
+              "variable": "y3"
+            },
+            {
+              "op": "mul",
+              "args": [
+                {
+                  "variable": "r3"
+                },
+                0.35
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "rx"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            0.22
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "geometry",
+          "ry"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            {
+              "variable": "r3"
+            },
+            0.16
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          11,
+          "attrs",
+          "opacity"
+        ],
+        "value": {
+          "op": "min",
+          "args": [
+            1,
+            {
+              "op": "div",
+              "args": [
+                {
+                  "variable": "age3"
+                },
+                0.12
+              ]
+            },
+            {
+              "op": "div",
+              "args": [
+                {
+                  "op": "sub",
+                  "args": [
+                    1,
+                    {
+                      "variable": "age3"
+                    }
+                  ]
+                },
+                0.2
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -7,11 +7,11 @@ import {
   shapeOptions,
   expressionOptions,
   colorOptions,
-} from "@mofli/rig-bloub";
-import { catHeadRig } from "@mofli/rig-cat-head";
-import { bloubSkin } from "@mofli/skin-bloub";
-import { sesame } from "@mofli/skin-cat-ink";
-import { patches } from "@mofli/skin-cat-patches";
+} from "@mofli/grove/rigs/bloub";
+import { catHeadRig } from "@mofli/grove/rigs/cat-head";
+import { bloubSkin } from "@mofli/grove/skins/bloub";
+import { sesame } from "@mofli/grove/skins/cat-ink";
+import { patches } from "@mofli/grove/skins/cat-patches";
 const catSkins = [sesame, patches];
 test("complete shape and expression catalogs render across both rigs", () => {
   assert.equal(shapeOptions.length, 11);

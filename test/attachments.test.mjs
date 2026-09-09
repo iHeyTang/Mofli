@@ -1,12 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetEngine,composeAttachments,blendFrames} from '@mofli/core';
-import {bloubRig} from '@mofli/rig-bloub';
-import {catHeadRig} from '@mofli/rig-cat-head';
-import {bloubSkin} from '@mofli/skin-bloub';
-import {sesame} from '@mofli/skin-cat-ink';
-import {hat} from '@mofli/attachment-hat';
-import {bow} from '@mofli/attachment-bow';
+import {bloubRig} from '@mofli/grove/rigs/bloub';
+import {catHeadRig} from '@mofli/grove/rigs/cat-head';
+import {bloubSkin} from '@mofli/grove/skins/bloub';
+import {sesame} from '@mofli/grove/skins/cat-ink';
+import {hat} from '@mofli/grove/accessories/hat';
+import {bow} from '@mofli/grove/accessories/bow';
 test('independent attachments share both rigs, disappear on symbols, and isolate instances',()=>{
  for(const [rig,skin] of [[bloubRig,bloubSkin],[catHeadRig,sesame]]){
   const engine=new PetEngine(rig,skin,{pose:{state:0}}),frame=engine.sample(1);

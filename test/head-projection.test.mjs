@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {projectHead} from '../packages/rig-bloub/dist/head-projection.js';
+import {projectHead} from '../packages/grove/dist/rigs/bloub/head-projection.js';
 test('head projection preserves the front profile and a sphere, and remains bounded across turns',()=>{
  const shape=Array.from({length:64},(_,i)=>1+.15*Math.cos(i/64*Math.PI*4)+.08*Math.sin(i/64*Math.PI*6));
  const front=projectHead(shape,{yaw:0,pitch:0,roll:0});

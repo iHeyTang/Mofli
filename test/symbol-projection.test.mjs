@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {BotEngine} from '../packages/rig-bloub/dist/vendor/engine.js';
-import {STATES} from '../packages/rig-bloub/dist/vendor/states.js';
-import {EXPRESSIONS} from '../packages/rig-bloub/dist/vendor/expressions.js';
-import {characterExpression} from '../packages/rig-bloub/dist/character-expression.js';
+import {BotEngine} from '../packages/grove/dist/rigs/bloub/vendor/engine.js';
+import {STATES} from '../packages/grove/dist/rigs/bloub/vendor/states.js';
+import {EXPRESSIONS} from '../packages/grove/dist/rigs/bloub/vendor/expressions.js';
+import {characterExpression} from '../packages/grove/dist/rigs/bloub/character-expression.js';
 test('symbol and special-state silhouettes retain the original geometry for every character',()=>{
  for(const style of ['mellow','spry','steady'])for(const state of STATES.filter(s=>!s.baseBody)){
   const base=new BotEngine(100,state.id);

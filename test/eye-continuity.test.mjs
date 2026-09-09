@@ -1,10 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PetEngine} from '@mofli/core';
-import {bloubRig} from '@mofli/rig-bloub';
-import {stoneSkin} from '@mofli/skin-mofli-stone';
-import {doughSkin} from '@mofli/skin-mofli-dough';
-import {beanSkin} from '@mofli/skin-mofli-bean';
+import {bloubRig} from '@mofli/grove/rigs/bloub';
+import {stoneSkin} from '@mofli/grove/skins/mofli-stone';
+import {doughSkin} from '@mofli/grove/skins/mofli-dough';
+import {beanSkin} from '@mofli/grove/skins/mofli-bean';
 const values=frame=>[...frame.resources[0].shapes.filter(s=>s.id.startsWith('eye-')),...frame.shapes.filter(s=>s.id.startsWith('pupil-'))].flatMap(s=>[...(s.attrs.d.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),...s.transform, s.attrs.opacity]);
 const jump=(a,b,label)=>{assert.equal(a.length,b.length,label);assert.ok(Math.max(...a.map((v,i)=>Math.abs(v-b[i])))<.08,label);};
 test('every directed expression pair has continuous eye geometry at entry and during interruption',()=>{

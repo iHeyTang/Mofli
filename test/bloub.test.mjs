@@ -1,5 +1,5 @@
 import { FixtureEngine as PetEngine } from "./fixtures/configured-engine.mjs";
-import { bloubSkin } from "@mofli/skin-bloub";
+import { bloubSkin } from "@mofli/grove/skins/bloub";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
@@ -8,8 +8,8 @@ import {
   bloubStates,
   bloubDuration,
   bloubFrame,
-} from "@mofli/rig-bloub";
-import { BotEngine } from "../packages/rig-bloub/dist/vendor/engine.js";
+} from "@mofli/grove/rigs/bloub";
+import { BotEngine } from "../packages/grove/dist/rigs/bloub/vendor/engine.js";
 test("all 14 isolated states preserve upstream geometry and resources", () => {
   for (const state of bloubStates) {
     const engine = new PetEngine(bloubRig, {
@@ -153,7 +153,7 @@ test("automatic/manual handoff retains pose clock and recoloring retains the act
 
 test("alert tear preserves subpixel precision before its 100x decoration scale", async () => {
   const { hullOfCircles } =
-    await import("../packages/rig-bloub/dist/vendor/shape.js");
+    await import("../packages/grove/dist/rigs/bloub/vendor/shape.js");
   const dot = new BotEngine(100, "alert").sample(0.75).dots.find((d) => d.d);
   const coordinates = dot.d.match(/-?(?:\d*\.\d+|\d+)/g).map(Number);
   const expected = hullOfCircles(0, 0, 0.118, 0, 0.172, 0.012).flatMap((p) => [

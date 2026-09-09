@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test("pattern skin needs no per-state artwork and exports its definitions", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173");
+  await page.goto("http://127.0.0.1:4173/reference.html");
   await page.selectOption("#rig-select", "cat-head");
   await page.selectOption("#skin-select", "patches");
   await page.locator("#seek").fill("1");

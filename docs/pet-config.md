@@ -23,9 +23,9 @@
 ```ts
 import { PetRegistry } from '@mofli/core';
 import { createPet } from '@mofli/core/browser';
-import { bloubRig } from '@mofli/rig-bloub';
-import { hat } from '@mofli/attachment-hat';
-import { bow } from '@mofli/attachment-bow';
+import { bloubRig } from '@mofli/grove/rigs/bloub';
+import { hat } from '@mofli/grove/accessories/hat';
+import { bow } from '@mofli/grove/accessories/bow';
 
 const registry = new PetRegistry()
   .registerRig(bloubRig)

@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PetEngine, validateSkin } from "@mofli/core";
-import { catHeadRig, defineCatSkin } from "@mofli/rig-cat-head";
-import { sesame } from "@mofli/skin-cat-ink";
-import { patches } from "@mofli/skin-cat-patches";
+import { catHeadRig, defineCatSkin } from "@mofli/grove/rigs/cat-head";
+import { sesame } from "@mofli/grove/skins/cat-ink";
+import { patches } from "@mofli/grove/skins/cat-patches";
 
 const biscuit = defineCatSkin({ id: "test-short", name: "Test configuration", rigConfig: { earLength: 35, cheek: 0.3 } });
 

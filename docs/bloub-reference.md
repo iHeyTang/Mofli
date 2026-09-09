@@ -4,13 +4,13 @@ The homepage offers Bloub and cat-head with three compatible skins. The old soft
 
 ## Provenance and scope
 
-Upstream: https://github.com/jeremy-prt/bloub, commit `b4bb3c1b5f93c7b87a2e8d620f667c4093d97749`, MIT, Jérémy Perret. `packages/rig-bloub/src/vendor` retains the character-specific engine, shapes, measured profiles, face logic, states and decoration calculations. Adaptation: .js import extensions, attribution headers, and a `fork()` method that copies dated engine state with a separate scratch buffer. Full license is in THIRD_PARTY_NOTICES.md and included in package files.
+Upstream: https://github.com/jeremy-prt/bloub, commit `b4bb3c1b5f93c7b87a2e8d620f667c4093d97749`, MIT, Jérémy Perret. `packages/grove/src/rigs/bloub/vendor` retains the character-specific engine, shapes, measured profiles, face logic, states and decoration calculations. Adaptation: .js import extensions, attribution headers, and a `fork()` method that copies dated engine state with a separate scratch buffer. Full license is in THIRD_PARTY_NOTICES.md and included in package files.
 
 This is a source-based reference port, not an independently recreated animation algorithm and not an iframe/Vue embed. The user explicitly requested faithful reproduction after the independent sample pets failed the visual goal. Mofli Core, public Rig interface, Frame conversion, SVG resource handling and playback UI remain Mofli code. The reference is not Mofli's original mascot or an assertion of ownership over the imitated avatar design.
 
 ## Architecture
 
-`@mofli/rig-bloub` → upstream character calculation → `bloubFrame()` → Mofli `Frame` → `createSvgRenderer()`.
+`@mofli/grove/rigs/bloub` → upstream character calculation → `bloubFrame()` → Mofli `Frame` → `createSvgRenderer()`.
 
 - 14 state IDs, original duration/geometry/eye matrices and decorative color calculations.
 - `parameters.state=-1`: full repeating sequence; integers 0–13: isolated state.

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test("public renderer and external rig work without the studio UI", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/");
+  await page.goto("http://127.0.0.1:4173/reference.html");
   const root = process.cwd();
   const result = await page.evaluate(async (root) => {
     const { createSvgRenderer, createPet } = await import(
@@ -62,7 +62,7 @@ test("public renderer and external rig work without the studio UI", async ({
 test("renderer applies typed matrices, removes stale ones and rejects invalid transforms atomically", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/");
+  await page.goto("http://127.0.0.1:4173/reference.html");
   const result = await page.evaluate(async (root) => {
     const { createSvgRenderer } = await import(
       "/@fs" + root + "/packages/core/src/browser.ts"

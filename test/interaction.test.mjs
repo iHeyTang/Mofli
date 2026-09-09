@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PetEngine } from "@mofli/core";
-import { catHeadRig } from "@mofli/rig-cat-head";
-import { bloubRig } from "@mofli/rig-bloub";
-import { sesame } from "@mofli/skin-cat-ink";
-import { patches } from "@mofli/skin-cat-patches";
-import { bloubSkin } from "@mofli/skin-bloub";
+import { catHeadRig } from "@mofli/grove/rigs/cat-head";
+import { bloubRig } from "@mofli/grove/rigs/bloub";
+import { sesame } from "@mofli/grove/skins/cat-ink";
+import { patches } from "@mofli/grove/skins/cat-patches";
+import { bloubSkin } from "@mofli/grove/skins/bloub";
 for (const [rig, skin] of [
   [catHeadRig, sesame],
   [catHeadRig, patches],
@@ -38,8 +38,8 @@ for (const [rig, skin] of [
 }
 
 test('cat click shakes the head in both directions without a forced wink', async () => {
-  const { BotEngine } = await import('../packages/rig-cat-head/dist/vendor/engine.js');
-  const { masterProfile } = await import('../packages/rig-cat-head/dist/soft-master.js');
+  const { BotEngine } = await import('../packages/grove/dist/rigs/cat-head/vendor/engine.js');
+  const { masterProfile } = await import('../packages/grove/dist/rigs/cat-head/soft-master.js');
   const engine = new BotEngine(100,'idle',masterProfile(45,0));
   const turns=[];
   for(const t of [.12,.25,.4,.53]) {

@@ -14,7 +14,11 @@
     "format": "prettier --write packages examples test docs README.md package.json scripts",
     "test:packages": "npm run build && node scripts/check-packages.mjs",
     "predev": "npm run build",
-    "prebuild:demo": "npm run build"
+    "prebuild:demo": "npm run build",
+    "build:studio": "npm run build --workspace @mofli/studio",
+    "prebuild:studio": "npm run build",
+    "studio": "npm run start --workspace @mofli/studio --",
+    "prestudio": "npm run build"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
@@ -24,6 +28,6 @@
   },
   "workspaces": [
     "packages/*",
-    "examples/studio"
+    "apps/studio"
   ]
 }

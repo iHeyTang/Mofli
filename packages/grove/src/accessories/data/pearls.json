@@ -1,0 +1,342 @@
+{
+  "id": "pearls",
+  "mount": "head.lower.sides",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scaleParameter": "size",
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "id": "part-0",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.048,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-1",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.035,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-2",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.018000000000000002,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-3",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.16300000000000003,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-4",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.15000000000000002,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-5",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.133,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-6",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.278,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-7",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.265,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-8",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.248,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "left",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-9",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.048,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-10",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.035,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-11",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.018000000000000002,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-12",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.16300000000000003,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-13",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.15000000000000002,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#eee6d5"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-14",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.133,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-15",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.278,
+          "rx": 0.049,
+          "ry": 0.05,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c8bca4"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-16",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0.265,
+          "rx": 0.047,
+          "ry": 0.048,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#c5a46d"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      },
+      {
+        "id": "part-17",
+        "geometry": {
+          "kind": "ellipse",
+          "cx": -0.015,
+          "cy": 0.248,
+          "rx": 0.014,
+          "ry": 0.013,
+          "z": 0
+        },
+        "attrs": {
+          "fill": "#fff8e8"
+        },
+        "member": "right",
+        "motion": {
+          "kind": "sway"
+        }
+      }
+    ]
+  }
+}

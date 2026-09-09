@@ -1,0 +1,142 @@
+{
+  "id": "halo",
+  "mount": "head.crown",
+  "slot": "head.overlay",
+  "parameters": {
+    "size": {
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1
+    }
+  },
+  "scene": {
+    "version": 1,
+    "nodes": [
+      {
+        "kind": "mesh",
+        "id": "surface-",
+        "cull": "negative",
+        "seamWidth": 0.24,
+        "faces": [
+          {
+            "kind": "torus",
+            "offset": [
+              0,
+              -0.43,
+              0
+            ],
+            "radius": 0.45,
+            "tubeRadius": 0.06,
+            "tubeHeight": 0.055,
+            "depthRatio": 0.7,
+            "yWave": 0.15,
+            "colors": [
+              "#d4c8ac",
+              "#d4c8ac",
+              "#d4c8ac",
+              "#d4c8ac",
+              "#e7ddc6",
+              "#e7ddc6",
+              "#e7ddc6",
+              "#e7ddc6",
+              "#f3edde",
+              "#f3edde",
+              "#f3edde",
+              "#f3edde"
+            ]
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "breath": {
+        "op": "add",
+        "args": [
+          1,
+          {
+            "op": "mul",
+            "args": [
+              0.014,
+              {
+                "op": "sin",
+                "args": [
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "time": true
+                      },
+                      1.4
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "channels": [
+      {
+        "path": [
+          "nodes",
+          0,
+          "faces",
+          0,
+          "radius"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            0.45,
+            {
+              "parameter": "size"
+            },
+            {
+              "variable": "breath"
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "faces",
+          0,
+          "tubeRadius"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            0.06,
+            {
+              "parameter": "size"
+            },
+            {
+              "variable": "breath"
+            }
+          ]
+        }
+      },
+      {
+        "path": [
+          "nodes",
+          0,
+          "faces",
+          0,
+          "tubeHeight"
+        ],
+        "value": {
+          "op": "mul",
+          "args": [
+            0.055,
+            {
+              "parameter": "size"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

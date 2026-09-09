@@ -1,12 +1,14 @@
-# 1 + N + M 包架构
+# 逻辑分层与资源包
+
+核心、骨架、皮肤、饰品是逻辑职责，不要求分别对应 npm 包。一个 npm 包可实现多个骨架、多款皮肤和饰品，通过 ResourcePack 导出。参见 [资源包指南](resource-packs.md)。下面的独立骨架、皮肤包示例仍可使用，但不是唯一组织方式。
 
 ## 项目边界
 
 每个 `packages/*` 都是独立 npm 项目，拥有自己的 `package.json`、`tsconfig.json`、`src` 和 `dist`。没有跨包相对源码引用、共享编译配置或 workspace 专用版本协议。源码可以复制到单独仓库；本地 monorepo 只是一起开发与验证的管理方式。本轮没有创建远程仓库或发布 npm 包。
 
 - 核心：定义“如何运行与渲染一个骨架”，不知道角色名称、形状、状态列表或皮肤目录。
-- 骨架：只依赖核心，定义拓扑、设计空间、几何约束、绑定准备、动作、连续性以及皮肤创建入口。不能引用其他骨架或皮肤。
-- 皮肤：一款皮肤一个包，只直接依赖一个骨架，通过其导出的工厂/类型定义外观。不能绕到核心或跨骨架装配。
+- 骨架：定义拓扑、设计空间、几何约束、绑定准备、动作、连续性以及皮肤创建入口。
+- 皮肤：每款皮肤绑定一种骨架协议。一个资源包可包含分别绑定不同骨架的多款皮肤，并声明所需的 npm 依赖。
 - 宿主：可依赖核心及多个皮肤/骨架，按需要注册和展示。演示页的预设聚合留在客户端。
 
 ## 为什么骨架用 peer dependency
@@ -71,8 +73,8 @@ export const pet: PetDefinition = { rig: orbRig, skin };
 | --- | --- |
 | mofli | @mofli/core |
 | mofli/browser | @mofli/core/browser |
-| mofli/rigs/bloub（算法） | @mofli/rig-bloub |
-| mofli/rigs/bloub（bloubSkin） | @mofli/skin-bloub |
+| mofli/rigs/bloub（算法） | @mofli/grove/rigs/bloub |
+| mofli/rigs/bloub（bloubSkin） | @mofli/grove/skins/bloub |
 | mofli/rigs（presets） | 各皮肤包，由宿主聚合 |
 
 旧的单包入口被移除，根项目现在只是 workspace 工具。Bloub 的参考算法保留在 `rig-bloub` 内，没有尝试把特定角色的测量常数移入核心。
@@ -83,12 +85,12 @@ export const pet: PetDefinition = { rig: orbRig, skin };
 
 ## 独立预览项目与皮肤拆分
 
-`examples/studio` 是 `@mofli/studio`，自带 Vite、TypeScript 开发依赖和 dev/build/preview/typecheck 命令，构建输出到自己的 `dist/`。根目录的 dev/build:demo 仅用于先构建库再转发命令。移除 studio 不影响库构建；库构建顺序由 manifest 依赖图自动计算。
+`apps/studio` 是 `@mofli/studio`，自带 Vite、TypeScript 开发依赖和 dev/build/preview/typecheck 命令，构建输出到自己的 `dist/`。根目录的 dev/build:demo 仅用于先构建库再转发命令。移除 studio 不影响库构建；库构建顺序由 manifest 依赖图自动计算。
 
-原 `@mofli/skin-cat-head` 已拆为 `@mofli/skin-cat-ink`（sesame/sesamePet）与 `@mofli/skin-cat-patches`（patches/patchesPet）。旧聚合包被移除，宿主自行组合列表。几何参数变体不自动成为新皮肤。
+原 `@mofli/skin-cat-head` 已拆为 `@mofli/grove/skins/cat-ink`（sesame/sesamePet）与 `@mofli/grove/skins/cat-patches`（patches/patchesPet）。旧聚合包被移除，宿主自行组合列表。几何参数变体不自动成为新皮肤。
 
 `npm run test:packages` 为每个库在临时目录安装声明的工具链和打包依赖，执行自己的 build/typecheck，再打包其独立构建产物。随后复制 studio 到另一个临时目录，仅安装已打包的库和自身工具链，检查类型并构建首页和设计页。全程不引用仓库内 node_modules 或源码别名。
 
 软体、机械实验骨架及对应皮肤已移除。当前为 1 个 Core、2 个骨架、6 个皮肤及 1 个 Studio。通用圆润轮廓的变化由现有 Bloub/猫头骨架的参数表达。
 
-`@mofli/skin-mofli-dough`、`@mofli/skin-mofli-bean`、`@mofli/skin-mofli-stone` 各自仅依赖 `@mofli/rig-bloub`。母版与五官控制属于骨架能力，皮肤通过 rigConfig 与 variants 使用。
+`@mofli/grove/skins/mofli-dough`、`@mofli/grove/skins/mofli-bean`、`@mofli/grove/skins/mofli-stone` 各自仅依赖 `@mofli/grove/rigs/bloub`。母版与五官控制属于骨架能力，皮肤通过 rigConfig 与 variants 使用。

@@ -1,5 +1,5 @@
-import { bloubRig } from "@mofli/rig-bloub";
-import { bloubSkin } from "@mofli/skin-bloub";
+import { bloubRig } from "@mofli/grove/rigs/bloub";
+import { bloubSkin } from "@mofli/grove/skins/bloub";
 export { bloubRig };
 // Minimal test-only rectangle: checks generic core transitions and motion channels.
 // Not a character rig, skin package or Studio entry.
