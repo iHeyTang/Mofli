@@ -1,3 +1,8 @@
+import {hat} from "@mofli/attachment-hat";
+import {bow} from "@mofli/attachment-bow";
+import {PetRegistry,type PetConfig,composeAttachments} from "@mofli/core";
+import {doughSkin} from "@mofli/skin-mofli-dough";
+import {beanSkin} from "@mofli/skin-mofli-bean";
 import { shapeOptions, expressionOptions } from "@mofli/rig-bloub";
 import {
   expressionOptions as catExpressions,
@@ -7,6 +12,7 @@ import {
 import { sesame } from "@mofli/skin-cat-ink";
 import { patches } from "@mofli/skin-cat-patches";
 const catSkins = [sesame, patches];
+import { stoneSkin } from "@mofli/skin-mofli-stone";
 import { bloubSkin } from "@mofli/skin-bloub";
 import "./reference.css";
 import {
@@ -41,9 +47,16 @@ const copy: Record<string, [string, string]> = {
   comet: ["彗星", "核心留在原地，彩色尾迹环绕流动。"],
 };
 const catalog = [
-  { rig: bloubRig, name: "Bloub · 参考骨架", skins: [bloubSkin] },
+  { rig: bloubRig, name: "Bloub · 参考骨架", skins: [bloubSkin, doughSkin, beanSkin, stoneSkin] },
   { rig: catHeadRig, name: "猫头 · 部件骨架", skins: catSkins },
 ];
+const petRegistry=new PetRegistry().registerRig(bloubRig).registerRig(catHeadRig).registerAttachment(hat).registerAttachment(bow);
+const petStorageKey='mofli.pet.v1';
+const importedSkins=new Map<string,Skin>();
+let attachmentIds={hat:'hat',bow:'bow'};
+function selectedAttachments():PetConfig['attachments'] {
+ return [...($<HTMLInputElement>('wear-hat').checked?[{id:attachmentIds.hat,type:'hat',version:1 as const,parameters:{hoverHeight:Number($<HTMLInputElement>('hat-height').value)}}]:[]),...($<HTMLInputElement>('wear-bow').checked?[{id:attachmentIds.bow,type:'bow',version:1 as const}]:[])];
+}
 let entry = catalog[0]!;
 let preset = bloubSkin;
 const isBloub = () => entry.rig.id === bloubRig.id;
@@ -107,8 +120,8 @@ function rebuildChoices() {
     const items =
       key === "shape"
         ? [
-            { index: -1, name: isBloub() ? "原始圆形" : "软团母版" },
-            ...shapeOptions,
+            { index: preset.rigConfig?.shape ?? entry.rig.parameters.shape!.default, name: "皮肤默认" },
+            ...shapeOptions.filter(option => option.index < 8 && option.index !== (preset.rigConfig?.shape ?? entry.rig.parameters.shape!.default)),
           ]
         : [
             { index: -1, name: "默认" },
@@ -157,7 +170,7 @@ function duration() {
   return selected < 0 ? bloubDuration : states()[selected]!.duration;
 }
 function render() {
-  renderer.render(engine.sample(clock));
+  renderer.render(composeAttachments(engine.sample(clock),[...($("wear-hat") as HTMLInputElement).checked?[{id:attachmentIds.hat,attachment:hat,parameters:{hoverHeight:Number($<HTMLInputElement>("hat-height").value)}}]:[],...($("wear-bow") as HTMLInputElement).checked?[{id:attachmentIds.bow,attachment:bow}]:[]]));
   const elapsed = Math.max(0, clock - start),
     position =
       selected < 0
@@ -304,7 +317,7 @@ function syncColors(value: Skin) {
   $("stage").style.background = value.colors.paper ?? "#f9f9f9";
 }
 function loadSkin(id: string, changeRig = false) {
-  preset = entry.skins.find((s) => s.id === id)!;
+  preset = importedSkins.get(id) ?? entry.skins.find((s) => s.id === id)!;
   skin = structuredClone(preset);
   if (changeRig) {
     selected = isBloub() ? -1 : 0;
@@ -338,7 +351,7 @@ function loadSkin(id: string, changeRig = false) {
   $("cycle").setAttribute("aria-pressed", String(selected < 0));
   $("assembly").textContent = `${entry.name} / ${preset.name}`;
   $("rig-note").textContent = isBloub()
-    ? "Bloub 目前提供 1 款原色皮肤，可在下方调整配色。"
+    ? "同一骨架，四款皮肤；糯团、芽豆、绒石各自携带母版轮廓与五官布局。"
     : "皮肤包含外观与默认耳长、脸型；换肤保留动作和表情。";
   $("reference-note").hidden = !isBloub();
   $("attribution").hidden = !isBloub();
@@ -350,7 +363,7 @@ function loadSkin(id: string, changeRig = false) {
 function syncRigControls() {
   $("rig-parameters").replaceChildren();
   for (const [key, rule] of Object.entries(entry.rig.parameters)) {
-    if (key === "shape") continue;
+    if (key === "shape" || ["customFace","eyeWidth","eyeHeight","eyeSpacing","faceYaw","facePitch","faceRoll"].includes(key)) continue;
     const label = document.createElement("label");
     const title =
       ({earLength: "耳长", cheek: "脸部饱满度"} as Record<string, string>)[key] ?? key;
@@ -381,7 +394,7 @@ function syncRigControls() {
 }
 function populateSkins() {
   $<HTMLSelectElement>("skin-select").replaceChildren(
-    ...entry.skins.map((s) => new Option(s.name, s.id)),
+    ...[...entry.skins,...Array.from(importedSkins.values()).filter(s=>s.rig===entry.rig.id&&!entry.skins.some(p=>p.id===s.id))].map((s) => new Option(s.name, s.id)),
   );
 }
 $<HTMLSelectElement>("rig-select").replaceChildren(
@@ -491,3 +504,46 @@ interactionHost.addEventListener("keydown", (e) => {
     render();
   }
 });
+
+for(const id of ["wear-hat","wear-bow"])$(id).addEventListener("change",render);
+
+$('hat-height').addEventListener('input',render);
+function applyPet(value:unknown){
+ const resolved=petRegistry.resolve(value); // Complete validation before mutating the studio.
+ const nextEntry=catalog.find(e=>e.rig.id===resolved.config.skin.rig)!;
+ entry=nextEntry;skin=resolved.config.skin;preset=skin;engine=resolved.engine;
+ importedSkins.set(skin.id,structuredClone(skin));
+ rigConfig=engine.getRigConfig();pose=engine.getPose();selected=pose.state??0;active=-2;clock=start=last=0;
+ $<HTMLSelectElement>('rig-select').value=entry.rig.id;populateSkins();
+ const picker=$<HTMLSelectElement>('skin-select');
+ if(!Array.from(picker.options).some(o=>o.value===skin.id))picker.add(new Option(skin.name,skin.id));
+ picker.value=skin.id;
+ const refs=resolved.config.attachments;
+ attachmentIds={hat:refs.find(r=>r.type==='hat')?.id??'hat',bow:refs.find(r=>r.type==='bow')?.id??'bow'};
+ $<HTMLInputElement>('wear-hat').checked=refs.some(r=>r.type==='hat');
+ $<HTMLInputElement>('wear-bow').checked=refs.some(r=>r.type==='bow');
+ $<HTMLInputElement>('hat-height').value=String(refs.find(r=>r.type==='hat')?.parameters?.hoverHeight??.45);
+ syncColors(skin);syncRigControls();rebuildStates();rebuildChoices();
+ $('cycle').hidden=!isBloub();$('face-control').hidden=isBloub();$('accent-control').hidden=!entry.rig.colors.accent;
+ $('reference-note').hidden=!isBloub();$('attribution').hidden=!isBloub();
+ $('assembly').textContent=`${entry.name} / ${skin.name}`;
+ $('mode-label').textContent=isBloub()?(selected<0?'ORIGINAL SEQUENCE':'SINGLE STATE'):'CAT HEAD RIG';
+ $('cycle').setAttribute('aria-pressed',String(selected<0));
+ $<HTMLInputElement>('seek').max=String(duration());render();
+ $('status').textContent='已还原宠物：皮肤、骨架参数、表情状态与饰品';
+}
+$('save-pet').onclick=()=>{
+ try{
+  const config=petRegistry.export(engine,selectedAttachments()),json=JSON.stringify(config,null,2);
+  localStorage.setItem(petStorageKey,json);
+  const url=URL.createObjectURL(new Blob([json],{type:'application/json'})),a=document.createElement('a');
+  a.href=url;a.download=skin.id+'.pet.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $('status').textContent='完整宠物已导出，并保存到本地';
+ }catch(error){$('status').textContent=String(error)}
+};
+$('import-pet').onclick=()=>$<HTMLInputElement>('pet-file').click();
+$('pet-file').onchange=async()=>{
+ const input=$<HTMLInputElement>('pet-file'),file=input.files?.[0];if(!file)return;
+ try{if(file.size>500000)throw new Error('宠物配置文件过大');applyPet(JSON.parse(await file.text()));}catch(error){$('status').textContent=`导入失败，当前宠物保持不变：${error}`;}finally{input.value=''}
+};
+$('restore-pet').onclick=()=>{try{const saved=localStorage.getItem(petStorageKey);if(!saved)throw new Error('尚无本地保存');applyPet(JSON.parse(saved));}catch(error){$('status').textContent=String(error)}};

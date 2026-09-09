@@ -2,7 +2,7 @@
 
 框架无关的 SVG 角色引擎，按 **1 个核心 + N 个骨架包 + M 个皮肤包** 组织。React、Vue、Amiba 和演示页都属于使用方，不是引擎依赖。
 
-当前在同一个 npm workspace 管理 6 个引擎包及 1 个独立预览项目。每个包有自己的 manifest、源码、编译配置和产物；可以移到独立仓库，在安装声明的依赖后单独构建。包名暂用 `@mofli/*`，全部 private，尚未发布，也未验证 npm scope 归属。
+当前在同一个 npm workspace 管理 9 个引擎包及 1 个独立预览项目。每个包有自己的 manifest、源码、编译配置和产物；可以移到独立仓库，在安装声明的依赖后单独构建。包名暂用 `@mofli/*`，全部 private，尚未发布，也未验证 npm scope 归属。
 
 ```mermaid
 graph BT
@@ -100,3 +100,9 @@ Rig 是可信可执行代码；当前没有不可信插件沙箱。引擎支持�
 ## 配置分层
 
 皮肤可以携带 rigConfig 默认几何值。换肤应用外观和几何，保留当前动作与表情。exportSkin 保存调整后的外观与几何。没有独立骨架预设概念，见 [分层协议](docs/character-layers.md)。
+
+绒石皮肤 `@mofli/skin-mofli-stone` 使用 Bloub 骨架新增的 `variants.eyes: "socket"` 能力。五官投影、眼睑裁剪和瞳孔边界由骨架管理；皮肤只提供外观配置。当前动作仍沿用 Bloub。
+
+Studio 已提供糯团、芽豆、绒石三款独立皮肤。骨架支持三组 64 角度母版，以及受限的眼睛宽高、间距、静候朝向配置；原 Bloub 默认配置保持不变。静候与基础身体状态使用母版，特殊符号/粒子状态仍沿用现有动作，不等同于三套全新动画。
+
+完整宠物支持 JSON 保存、导入与本地恢复；可通过公共 `PetRegistry` 和浏览器 `createPet({container, registry, config})` 加载一个皮肤与多个饰品。协议、分层职责与接入示例见 [完整宠物配置](docs/pet-config.md)。

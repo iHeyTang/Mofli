@@ -89,4 +89,6 @@ export const pet: PetDefinition = { rig: orbRig, skin };
 
 `npm run test:packages` 为每个库在临时目录安装声明的工具链和打包依赖，执行自己的 build/typecheck，再打包其独立构建产物。随后复制 studio 到另一个临时目录，仅安装已打包的库和自身工具链，检查类型并构建首页和设计页。全程不引用仓库内 node_modules 或源码别名。
 
-软体、机械实验骨架及对应皮肤已移除。当前为 1 个 Core、2 个骨架、3 个皮肤及 1 个 Studio。通用圆润轮廓的变化由现有 Bloub/猫头骨架的参数表达。
+软体、机械实验骨架及对应皮肤已移除。当前为 1 个 Core、2 个骨架、6 个皮肤及 1 个 Studio。通用圆润轮廓的变化由现有 Bloub/猫头骨架的参数表达。
+
+`@mofli/skin-mofli-dough`、`@mofli/skin-mofli-bean`、`@mofli/skin-mofli-stone` 各自仅依赖 `@mofli/rig-bloub`。母版与五官控制属于骨架能力，皮肤通过 rigConfig 与 variants 使用。

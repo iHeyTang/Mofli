@@ -6,6 +6,7 @@ test("studio connects pointer gaze and primary click to both rigs", async ({
   for (const rig of ["bloub-reference", "cat-head"]) {
     await page.selectOption("#rig-select", rig);
     await page.locator('[data-state="idle"]').click();
+    await page.locator("#avatar").scrollIntoViewIfNeeded();
     const host = page.locator("#avatar"),
       box = (await host.boundingBox())!;
     const x = () =>

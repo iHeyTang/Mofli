@@ -28,6 +28,16 @@ import {
 } from './shape.js'
 
 export interface EyeCfg {
+  lid?: import("../eye-component.js").EyeComponentPose
+  /** Mofli: bounded pupil size, interpolated with the eyelids. */
+  pupil?: number
+  pupilX?: number
+  pupilY?: number
+  pupilAlpha?: number
+  heart?: number
+  eyeHeart?: number
+  bend?: number
+  curveWeight?: number
   /** largeur locale (axe court de la gelule), en unites de rayon de boule */
   w: number
   /** hauteur locale (axe long) */
@@ -44,6 +54,8 @@ export interface EyeCfg {
 }
 
 export interface Pose {
+  /** Head-only deformation weight; interpolated when entering symbolic states. */
+  headProjection?: number
   /** silhouette du corps, en unites de rayon de boule */
   sil: Silhouette
   /** decalage global du corps ET des yeux */

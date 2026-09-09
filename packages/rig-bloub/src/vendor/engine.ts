@@ -1,3 +1,8 @@
+import {headMounts,type MountFrames} from "@mofli/core";
+import {projectHead} from "../head-projection.js";
+import {blendEyeComponent,resolveEyeComponent} from "../eye-component.js";
+import {roundedEye,pupilPath} from "../eye-geometry.js";
+import {characterExpression} from "../character-expression.js";
 /*! Bloub © 2026 Jérémy Perret, MIT. See THIRD_PARTY_NOTICES.md. */
 import { arcRender, type ArcRender, type DotRender } from './decor.js'
 import { EXPRESSIONS, blendExpression, type BotExpression } from './expressions.js'
@@ -16,12 +21,21 @@ import {
 import { STATE_BY_ID, type Pose, type StateDef, type StateId } from './states.js'
 
 export interface RenderedEye {
+  lid?: import("../eye-component.js").EyeComponentPose
+  geometry?: import("../eye-geometry.js").EyeGeometry
+  pupil?: number
+  pupilX?: number
+  pupilY?: number
+  pupilAlpha?: number
+  heart?: number
+  curved?: boolean
   d: string
   matrix: string
   alpha: number
 }
 
 export interface BotFrame {
+  mounts?: MountFrames
   bodyPath: string
   bodyAlpha: number
   eyes: RenderedEye[]
@@ -84,6 +98,15 @@ const lerpLook = (a: Look, b: Look, t: number): Look => ({
 })
 
 const lerpEye = (a: Pose['eyes'][number], b: Pose['eyes'][number], t: number) => ({
+  ...(a.lid || b.lid ? {lid:blendEyeComponent(a.lid??resolveEyeComponent(a),b.lid??resolveEyeComponent(b),t)} : {}),
+  pupilAlpha: lerp(a.pupilAlpha ?? 1,b.pupilAlpha ?? 1,t),
+  pupilX: lerp(a.pupilX ?? 0,b.pupilX ?? 0,t),
+  pupilY: lerp(a.pupilY ?? 0,b.pupilY ?? 0,t),
+  eyeHeart: lerp(a.eyeHeart ?? 0,b.eyeHeart ?? 0,t),
+  heart: lerp(a.heart ?? 0,b.heart ?? 0,t),
+  curveWeight: lerp(a.curveWeight ?? (a.bend ? 1 : 0),b.curveWeight ?? (b.bend ? 1 : 0),t),
+  bend: lerp(a.bend ?? 0, b.bend ?? 0, t),
+  pupil: lerp(a.pupil ?? 1, b.pupil ?? 1, t),
   w: lerp(a.w, b.w, t),
   h: lerp(a.h, b.h, t),
   open: lerp(a.open, b.open, t),
@@ -94,6 +117,7 @@ const lerpEye = (a: Pose['eyes'][number], b: Pose['eyes'][number], t: number) =>
 function blendPose(a: Pose, b: Pose, t: number): Pose {
   const out = 1 - t
   return {
+    headProjection: lerp(a.headProjection ?? 0,b.headProjection ?? 0,t),
     sil: blend(a.sil, b.sil, t),
     offX: lerp(a.offX, b.offX, t),
     offY: lerp(a.offY, b.offY, t),
@@ -281,12 +305,28 @@ export class BotEngine {
     expr: BotExpression | null
   ): Pose {
     let pose = def.pose(t)
+    pose = {...pose,headProjection:def.baseBody?1:0}
     if (def.baseBody && shape) {
       // on garde la pose (rotation, decalage, squash) et on n'echange que le profil
       pose = { ...pose, sil: { ...pose.sil, radii: shape } }
     }
     if (def.baseFace && expr) {
       pose = { ...pose, gaze: expr.gaze, split: expr.split, eyes: expr.eyes }
+    }
+    if (expr?.character && def.baseBody) {
+      if (!def.baseFace) {
+        const mood = def.id === 'wide' ? 'startled' : def.id === 'wink' ? 'happy' : 'curious';
+        const face = characterExpression(expr,expr.character,mood);
+        // Character styling replaces the eyes, not the state-authored head motion.
+        pose = {...pose,eyes:face.eyes,split:face.split};
+      }
+      // Small, bounded secondary motion: no topology changes or per-frame randomness.
+      const speed = expr.character === 'mellow' ? 2.2 : expr.character === 'spry' ? 4.6 : 1.4;
+      const pulse = Math.sin(t*speed);
+      const amount = expr.character === 'mellow' ? .025 : expr.character === 'spry' ? .012 : .005;
+      pose = {...pose,sil:{...pose.sil,sx:pose.sil.sx*(1+amount*pulse),sy:pose.sil.sy*(1-amount*pulse)},
+        gaze:{...pose.gaze,roll:pose.gaze.roll+(expr.character==='spry'?2:0)*pulse},
+        eyes:pose.eyes.map((eye,i)=>({...eye,open:eye.open*(expr.character==='spry'&&i===1?1-.22*Math.pow(Math.max(0,Math.sin(t*2.4)),12):1)})) as Pose['eyes']};
     }
     return pose
   }
@@ -501,6 +541,10 @@ export class BotEngine {
     }
     sil.sx *= 1+squash;
     sil.sy *= 1-squash;
+    if (expr?.character && (pose.headProjection ?? 0)>0) {
+      const projected = projectHead(sil.radii,gaze,expr.character==='steady'?.72:expr.character==='mellow'?.58:.62);
+      sil.radii = sil.radii.map((r,i)=>lerp(r,projected[i]!,pose.headProjection!));
+    }
     const bodyPath = closedPath(toPoints(sil, R, this.pts))
 
     // --- yeux -------------------------------------------------------------
@@ -508,7 +552,7 @@ export class BotEngine {
     // plus un cercle, on les ramene au prorata du rayon reel dans leur
     // direction, sinon ils debordent et le masque les coupe.
     const bodyRadius = (x: number, y: number) =>
-      radiusAtAngle(pose.sil.radii, Math.atan2(y, x) - pose.sil.rot)
+      radiusAtAngle(sil.radii, Math.atan2(y, x) - sil.rot)
 
     const eyes: RenderedEye[] = []
     if (pose.eyeAlpha > 0.01) {
@@ -532,7 +576,15 @@ export class BotEngine {
         // a l'ecran, pas le long de l'axe de la gelule.
         const k = blinkScale(Math.min(lid, cfg.open)) * (i === 0 ? 1-tap*.9 : 1)
         eyes.push({
-          d: capsulePath(cfg.w * R, cfg.h * R),
+          ...(cfg.lid ? {lid:cfg.lid} : {}),
+          ...(expr?.character ? {geometry:{w:cfg.w*R,h:cfg.h*R,bend:(cfg.bend??0)*R,curve:cfg.curveWeight??(cfg.bend?1:0),heart:cfg.eyeHeart??0}} : {}),
+          ...(cfg.pupil !== undefined && cfg.pupil !== 1 ? {pupil:cfg.pupil} : {}),
+          ...(cfg.pupilAlpha !== undefined && cfg.pupilAlpha !== 1 ? {pupilAlpha:cfg.pupilAlpha} : {}),
+          ...(cfg.pupilX ? {pupilX:cfg.pupilX} : {}),
+          ...(cfg.pupilY ? {pupilY:cfg.pupilY} : {}),
+          ...(cfg.heart ? {heart:cfg.heart} : {}),
+          ...(cfg.bend || cfg.eyeHeart ? {curved:true} : {}),
+          d: cfg.eyeHeart ? pupilPath(0,0,cfg.w*R/2,cfg.h*R/2,cfg.eyeHeart) : cfg.bend ? roundedEye(cfg.w*R,cfg.h*R,cfg.bend*R) : capsulePath(cfg.w * R, cfg.h * R),
           matrix: `matrix(${r2(ax)},${r2(ay * k)},${r2(cx2)},${r2(cy2 * k)},${r2(e.x * fit + (offX + decalage.x) * R)},${r2(e.y * fit + (offY + decalage.y) * R)})`,
           alpha: pose.eyeAlpha * clamp(e.depth / 0.12)
         })
@@ -551,7 +603,7 @@ export class BotEngine {
     const notif = pose.notif ? { x: nx, y: ny, r: pose.notif.r * R } : null
     const notch = pose.notif ? { x: nx, y: ny, r: pose.notif.notch * R } : null
 
-    return {
+    const result:BotFrame = {
       bodyPath,
       bodyAlpha: pose.bodyAlpha,
       eyes,
@@ -565,6 +617,8 @@ export class BotEngine {
       notif,
       notch
     }
+    Object.defineProperty(result,'mounts',{value:headMounts({center:{x:sil.cx*R,y:sil.cy*R},radius:R*Math.min(Math.abs(sil.sx),Math.abs(sil.sy)),top:radiusAtAngle(pose.sil.radii,-Math.PI/2)*R*Math.abs(sil.sy),bottom:Math.max(...this.pts.map(p=>p.y)),visibility:pose.headProjection??0,gaze})});
+    return result;
   }
 }
 

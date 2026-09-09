@@ -1,3 +1,5 @@
+import {PetRegistry,type PetConfig} from './pet-config.js';
+import {composeAttachments} from './attachments.js';
 import { createSvgRenderer } from "./svg.js";
 export { createSvgRenderer } from "./svg.js";
 import {
@@ -12,15 +14,14 @@ import {
 } from "./index.js";
 export function createPet(options: {
   container: HTMLElement;
-  rig: Rig;
-  skin: unknown;
   debug?: boolean;
   reducedMotion?: boolean;
   rigConfig?: EngineOptions["rigConfig"];
   pose?: EngineOptions["pose"];
   transitionDuration?: EngineOptions["transitionDuration"];
-}) {
-  const engine = new PetEngine(options.rig, options.skin, {
+} & ({rig:Rig;skin:unknown;registry?:never;config?:never}|{registry:PetRegistry;config:unknown;rig?:never;skin?:never})) {
+  const resolved=options.registry?.resolve(options.config);
+  const engine = resolved?.engine ?? new PetEngine(options.rig!, options.skin, {
     transitionDuration: options.transitionDuration,
     rigConfig: options.rigConfig,
     pose: options.pose,
@@ -51,7 +52,7 @@ export function createPet(options: {
   const draw = () => {
     if (!dead)
       renderer.render(
-        engine.sample(time, options.reducedMotion ?? media.matches),
+        composeAttachments(engine.sample(time, options.reducedMotion ?? media.matches),resolved?.instances??[]),
       );
   };
   const tick = (ms: number) => {
@@ -191,6 +192,7 @@ export function createPet(options: {
     getPose: () => engine.getPose(),
     getCharacter: () => engine.getCharacter(),
     exportSkin: () => engine.exportSkin(),
+    exportConfig: ():PetConfig => ({version:1,skin:engine.getSkin(),rigConfig:engine.getRigConfig(),pose:engine.getPose(),attachments:structuredClone(resolved?.config.attachments??[])}),
     getSkin: () => engine.getSkin(),
     setDebug(value: boolean) {
       renderer.setDebug(value);

@@ -15,7 +15,12 @@
     "@mofli/skin-bloub": "^0.1.0",
     "@mofli/rig-cat-head": "^0.1.0",
     "@mofli/skin-cat-ink": "^0.1.0",
-    "@mofli/skin-cat-patches": "^0.1.0"
+    "@mofli/skin-cat-patches": "^0.1.0",
+    "@mofli/skin-mofli-stone": "^0.1.0",
+    "@mofli/skin-mofli-dough": "^0.1.0",
+    "@mofli/skin-mofli-bean": "^0.1.0",
+    "@mofli/attachment-hat": "^0.1.0",
+    "@mofli/attachment-bow": "^0.1.0"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

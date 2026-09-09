@@ -1,3 +1,6 @@
+export {PetRegistry,type PetConfig} from "./pet-config.js";
+export {headMounts,type HeadMountInput} from "./mount-space.js";
+export {composeAttachments,contourMounts,type MountFrame,type MountFrames,type Attachment,type AttachmentInstance,type VolumeMount,type AttachmentContext} from "./attachments.js";
 import type { SvgResource } from "./resources.js";
 export type { SvgResource } from "./resources.js";
 import type { Affine2D } from "./bindings.js";
@@ -40,6 +43,7 @@ export interface SurfaceMark {
   points: Point[];
 }
 export interface Skin {
+  design?: unknown;
   version: 1;
   id: string;
   name: string;
@@ -81,6 +85,8 @@ export interface Shape {
   attrs: Record<string, string | number>;
 }
 export interface Frame {
+  mounts?: import("./attachments.js").MountFrames;
+  slots?: Record<string,number>;
   resources?: SvgResource[];
   viewBox?: { x: number; y: number; width: number; height: number };
   shapes: Shape[];
@@ -88,6 +94,8 @@ export interface Frame {
   bounds: { x: number; y: number; width: number; height: number };
 }
 export interface Rig {
+  validateDesign?(value:unknown):unknown;
+  mounts?: Record<string,{kind:"frame";version:1}>;
   id: string;
   version: 1;
   name: string;
@@ -134,6 +142,7 @@ export function validateSkin(value: unknown, rig: Rig): Skin {
     "rigConfig",
     "markings",
     "variants",
+    "design",
   ];
   if (Object.keys(value).some((k) => !allowed.includes(k)))
     throw new Error("Unknown skin field");
@@ -164,6 +173,7 @@ export function validateSkin(value: unknown, rig: Rig): Skin {
     colors[key] = color;
   }
   return {
+    ...(value.design!==undefined?{design:rig.validateDesign?rig.validateDesign(value.design):(()=>{throw new Error("Rig does not support design data")})()}:{}),
     version: 1,
     id: value.id,
     name: value.name,
@@ -531,6 +541,7 @@ export interface PetDefinition {
   rigConfig?: RigConfig;
 }
 export interface SkinInput {
+  design?: unknown;
   variants?: Record<string, string>;
   markings?: SurfaceMark[];
   id: string;

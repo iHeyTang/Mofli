@@ -24,7 +24,7 @@ test("package dependency direction and source imports enforce 1 + n + m", () => 
       m = JSON.parse(readFileSync(resolve(dir, "package.json"), "utf8"));
     const deps = Object.keys({ ...m.dependencies, ...m.peerDependencies });
     if (name === "core") assert.deepEqual(deps, []);
-    else if (name.startsWith("rig-")) assert.deepEqual(deps, ["@mofli/core"]);
+    else if ((name.startsWith("rig-") || name.startsWith("attachment-"))) assert.deepEqual(deps, ["@mofli/core"]);
     else {
       assert.equal(deps.length, 1);
       assert.ok(deps[0].startsWith("@mofli/rig-"));

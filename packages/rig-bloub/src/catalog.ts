@@ -42,16 +42,23 @@ const colorNames = [
   "灰色",
   "奶油",
 ];
-export const shapeOptions = SHAPES.map((s, index) => ({
-  id: s.id,
-  index,
-  name: shapeNames[index]!,
-}));
-export const expressionOptions = EXPRESSIONS.map((s, index) => ({
+export const shapeOptions: { id: string; index: number; name: string }[] = [
+  ...SHAPES.map((s, index) => ({
+    id: s.id,
+    index,
+    name: shapeNames[index]!,
+  })),
+  ...[
+    { id: "mofli-dough", index: 8, name: "糯团母版" },
+    { id: "mofli-bean", index: 9, name: "芽豆母版" },
+    { id: "mofli-stone", index: 10, name: "绒石母版" },
+  ],
+];
+export const expressionOptions = [...EXPRESSIONS.map((s, index) => ({
   id: s.id,
   index,
   name: expressionNames[index]!,
-}));
+})), {id:"irritated",index:16,name:"不耐烦"},{id:"love",index:17,name:"喜欢"}];
 export const colorOptions = COLORS.map((s, index) => ({
   ...s,
   name: colorNames[index]!,

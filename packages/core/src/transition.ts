@@ -1,3 +1,4 @@
+import {blendMountFrames} from "./attachments.js";
 import type { SvgResource } from "./resources.js";
 import { identity2D, type Affine2D } from "./bindings.js";
 import type { Frame, Shape } from "./index.js";
@@ -135,6 +136,8 @@ export function blendFrames(a: Frame, b: Frame, k: number): Frame {
     ...(resources.length ? { resources } : {}),
     ...(b.viewBox ? { viewBox: b.viewBox } : {}),
     shapes,
+    ...((a.mounts||b.mounts)?{mounts:blendMountFrames(a.mounts,b.mounts,k)}:{}),
+    ...(b.slots?{slots:Object.fromEntries(Object.entries(b.slots).map(([id,index])=>[id,index===b.shapes.length?shapes.length:index]))}:{}),
     bounds,
     anchors:
       a.anchors.length === b.anchors.length

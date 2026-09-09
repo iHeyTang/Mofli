@@ -14,16 +14,16 @@ import { sesame } from "@mofli/skin-cat-ink";
 import { patches } from "@mofli/skin-cat-patches";
 const catSkins = [sesame, patches];
 test("complete shape and expression catalogs render across both rigs", () => {
-  assert.equal(shapeOptions.length, 8);
-  assert.equal(expressionOptions.length, 16);
+  assert.equal(shapeOptions.length, 11);
+  assert.equal(expressionOptions.length, 18);
   assert.equal(colorOptions.length, 12);
   for (const [rig, skin] of [
     [bloubRig, bloubSkin],
     [catHeadRig, catSkins[0]],
   ]) {
     const silhouettes = new Set();
-    for (const shape of shapeOptions) {
-      for (const expression of expressionOptions) {
+    for (const shape of shapeOptions.filter(s => rig === bloubRig || s.index < 8)) {
+      for (const expression of expressionOptions.filter(e=>rig===bloubRig || e.index<17)) {
         const e = new PetEngine(rig, {
           ...skin,
           parameters: {
@@ -39,7 +39,7 @@ test("complete shape and expression catalogs render across both rigs", () => {
           silhouettes.add(frame.resources[0].shapes[0].attrs.d);
       }
     }
-    assert.equal(silhouettes.size, 8);
+    assert.equal(silhouettes.size, rig === bloubRig ? 11 : 8);
     assert.throws(
       () =>
         new PetEngine(rig, {

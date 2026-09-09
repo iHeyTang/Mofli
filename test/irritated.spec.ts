@@ -22,5 +22,5 @@ test("cat irritated expression can be previewed separately from click shake", as
     fullPage: true,
   });
   await page.selectOption("#rig-select", "bloub-reference");
-  await expect(page.locator('[data-expression="16"]')).toHaveCount(0);
+  await expect(page.locator('[data-expression="16"]')).toContainText("不耐烦");
 });

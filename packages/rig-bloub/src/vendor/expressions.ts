@@ -1,3 +1,4 @@
+import {blendEyeComponent,resolveEyeComponent} from "../eye-component.js";
 /*! Bloub © 2026 Jérémy Perret, MIT. See THIRD_PARTY_NOTICES.md. */
 import { EYE_H, EYE_SPLIT, EYE_W, REST_GAZE, type HeadGaze } from './face.js'
 import { lerp } from './math.js'
@@ -42,6 +43,8 @@ export type ExpressionId =
   | 'somnolent'
 
 export interface BotExpression {
+  eyeCatalog?: [EyeCfg,EyeCfg][]
+  character?: string
   id: ExpressionId
   gaze: HeadGaze
   split: number
@@ -175,6 +178,15 @@ const lerpEyeCfg = (a: EyeCfg, b: EyeCfg, t: number): EyeCfg => ({
   w: lerp(a.w, b.w, t),
   h: lerp(a.h, b.h, t),
   tilt: lerp(a.tilt ?? 0, b.tilt ?? 0, t),
+  ...(a.lid || b.lid ? {lid:blendEyeComponent(a.lid??resolveEyeComponent(a),b.lid??resolveEyeComponent(b),t)} : {}),
+  pupilAlpha: lerp(a.pupilAlpha ?? 1,b.pupilAlpha ?? 1,t),
+  pupilX: lerp(a.pupilX ?? 0,b.pupilX ?? 0,t),
+  pupilY: lerp(a.pupilY ?? 0,b.pupilY ?? 0,t),
+  eyeHeart: lerp(a.eyeHeart ?? 0,b.eyeHeart ?? 0,t),
+  heart: lerp(a.heart ?? 0,b.heart ?? 0,t),
+  curveWeight: lerp(a.curveWeight ?? (a.bend ? 1 : 0),b.curveWeight ?? (b.bend ? 1 : 0),t),
+  bend: lerp(a.bend ?? 0, b.bend ?? 0, t),
+  pupil: lerp(a.pupil ?? 1, b.pupil ?? 1, t),
   open: lerp(a.open, b.open, t)
 })
 
@@ -182,6 +194,8 @@ const lerpEyeCfg = (a: EyeCfg, b: EyeCfg, t: number): EyeCfg => ({
 export function blendExpression(a: BotExpression, b: BotExpression, t: number): BotExpression {
   return {
     id: b.id,
+    character: b.character,
+    eyeCatalog: b.eyeCatalog,
     gaze: {
       yaw: lerp(a.gaze.yaw, b.gaze.yaw, t),
       pitch: lerp(a.gaze.pitch, b.gaze.pitch, t),

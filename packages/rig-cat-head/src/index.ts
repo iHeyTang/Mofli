@@ -1,3 +1,4 @@
+import {headMounts} from "@mofli/core";
 import { catSurfaces, renderMarkings, blendMarkings } from "./markings.js";
 export { shapeOptions, expressionOptions, colorOptions } from "./catalog.js";
 import { SHAPES } from "./vendor/skins.js";
@@ -119,6 +120,7 @@ function appearance(p: Prepared, t: number): Skin {
   };
 }
 export const catHeadRig: Rig = {
+  mounts: {"head.crown":{kind:"frame",version:1},"head.lower.front":{kind:"frame",version:1}},
   id: "cat-head",
   version: 1,
   name: "Cat head",
@@ -217,6 +219,8 @@ export const catHeadRig: Rig = {
       0,
       ...renderMarkings(source, effective.markings),
     );
+    frame.mounts = headMounts({center:{x:source.attachmentSurface.sil.cx*source.attachmentSurface.radius,y:source.attachmentSurface.sil.cy*source.attachmentSurface.radius},radius:source.attachmentSurface.radius*Math.min(Math.abs(source.attachmentSurface.sil.sx),Math.abs(source.attachmentSurface.sil.sy)),top:source.attachmentSurface.radius*Math.abs(source.attachmentSurface.sil.sy),bottom:Math.max(...source.attachmentPoints.map(p=>p.y)),visibility:source.attachmentSurface.visibility,gaze:source.attachmentSurface.gaze});
+    frame.slots = {"head.behind":0,"head.overlay":frame.shapes.length};
     frame.anchors = [
       source.attachmentPoints[40]!,
       source.attachmentPoints[56]!,
