@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mofli · 角色方向</title>
+    <link rel="stylesheet" href="./design.css" />
+    <style>
+      .silhouette .features {
+        visibility: hidden;
+      }
+      .portrait svg {
+        color: #20231f;
+      }
+      .study.chosen {
+        background: transparent;
+      }
+      .identity a {
+        text-decoration: underline;
+        font-size: 12px;
+      }
+      .tools {
+        line-height: 2;
+      }
+      .sizes svg {
+        display: block;
+      }
+      header nav {
+        display: flex;
+        gap: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">mofli ✳</a><span>CHARACTER STUDIES · 02</span>
+      <nav>
+        <a href="./design.html">猫头设定</a><a href="/">动画工作台 ↗</a>
+      </nav>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">同一种柔软，三种性格</p>
+          <h1>让 Mofli 有自己的样子。</h1>
+          <p>
+            先比较体形、眼神与重心，再决定动作。黑白原型，不靠配色区分。<br />本页为静态
+            SVG 设定稿，尚未替换骨架或接入动画。
+          </p>
+        </div>
+        <div class="tools">
+          <label><input type="checkbox" id="silhouette" />只看身体剪影</label>
+          <p id="choice" aria-live="polite">选择会保存在本机，供后续比较。</p>
+        </div>
+      </div>
+      <div class="column-labels">
+        <span>角色方向</span><span>01 / 静候</span><span>02 / 好奇</span
+        ><span>03 / 受惊</span>
+      </div>
+      <section id="studies" aria-label="角色方向对比"></section>
+      <footer>
+        选定外形后，再用当前引擎验证追视、点击与回弹。这里的姿态是设计目标，不代表已经通过全部变形约束。
+      </footer>
+    </main>
+    <script type="module" src="./character.js"></script>
+  </body>
+</html>
