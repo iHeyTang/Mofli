@@ -22,7 +22,7 @@ npm pack --workspace @mofli/grove --dry-run
 npm pack --workspace @mofli/studio --dry-run
 ```
 
-仓库尚未配置远程地址。确定公开源码地址后，为三个包补充真实的 `repository`（含 `directory`）、`homepage`、`bugs`，并将 README 的源码文档引用替换为可访问链接。
+三个包的 `repository`（含 `directory`）、`homepage`、`bugs` 已指向 https://github.com/iHeyTang/Mofli。打包验证会检查这些元数据，避免 npm 页面缺失源码入口。
 
 ## 正式发布
 

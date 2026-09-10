@@ -1,6 +1,6 @@
 {
   "name": "mofli-workspace",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Framework-independent interactive creatures with extensible rigs and validated skins",
   "type": "module",
@@ -32,5 +32,13 @@
     "packages/*",
     "apps/studio"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iHeyTang/Mofli.git"
+  },
+  "homepage": "https://github.com/iHeyTang/Mofli#readme",
+  "bugs": {
+    "url": "https://github.com/iHeyTang/Mofli/issues"
+  }
 }

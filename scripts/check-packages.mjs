@@ -30,6 +30,8 @@ function verifyPack(packed, manifest) {
       for (const child of Object.values(value)) checkTarget(child);
     }
   }
+  if (manifest.repository?.url !== "git+https://github.com/iHeyTang/Mofli.git" || !manifest.repository?.directory || manifest.homepage !== "https://github.com/iHeyTang/Mofli#readme" || manifest.bugs?.url !== "https://github.com/iHeyTang/Mofli/issues")
+    throw new Error(`${manifest.name}: missing GitHub package metadata`);
   checkTarget(manifest.exports);
   checkTarget(manifest.bin);
 }

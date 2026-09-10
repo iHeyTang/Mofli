@@ -1,5 +1,7 @@
 # @mofli/studio
 
+[GitHub](https://github.com/iHeyTang/Mofli) · [Issues](https://github.com/iHeyTang/Mofli/issues)
+
 Mofli 宠物工作台与 CLI。需要 Node.js >=22.12。
 
 ## 使用工作台
@@ -27,7 +29,7 @@ npm run check
 npm run export:pet
 ```
 
-`--type skin` 创建皮肤项目，`--type attachment` 创建饰品项目；`--rig bloub|mew` 选择皮肤模板使用的骨架。完整流程见 Mofli 源码仓库的 `docs/creator-workflow.md`。
+`--type skin` 创建皮肤项目，`--type attachment` 创建饰品项目；`--rig bloub|mew` 选择皮肤模板使用的骨架。完整流程见 [创作者工作流](https://github.com/iHeyTang/Mofli/blob/main/docs/creator-workflow.md)。
 
 ## CLI
 
@@ -38,7 +40,7 @@ npm run export:pet
 
 ## 修改 Studio 本身
 
-工作台源码使用 React、HeroUI 和 TanStack。克隆 Mofli 后，按仓库根目录的 `CONTRIBUTING.md` 安装 workspace 依赖并运行本地开发服务器。这与上面开发自己的资源包是两条独立流程。
+工作台源码使用 React、HeroUI 和 TanStack。克隆 Mofli 后，按[源码开发指南](https://github.com/iHeyTang/Mofli/blob/main/CONTRIBUTING.md) 安装 workspace 依赖并运行本地开发服务器。这与上面开发自己的资源包是两条独立流程。
 
 ## License
 

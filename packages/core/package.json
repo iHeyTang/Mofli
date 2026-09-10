@@ -1,6 +1,6 @@
 {
   "name": "@mofli/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "dist",
@@ -40,5 +40,14 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iHeyTang/Mofli.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/iHeyTang/Mofli#readme",
+  "bugs": {
+    "url": "https://github.com/iHeyTang/Mofli/issues"
   }
 }

@@ -1,5 +1,7 @@
 # @mofli/core
 
+[GitHub](https://github.com/iHeyTang/Mofli) · [Issues](https://github.com/iHeyTang/Mofli/issues)
+
 Mofli 的资源协议、校验、时钟、注册、绑定和 SVG 渲染。默认入口不读取 DOM，浏览器能力位于 `@mofli/core/browser`。运行时无外部依赖。
 
 ## 使用 SDK
@@ -10,11 +12,11 @@ Mofli 的资源协议、校验、时钟、注册、绑定和 SVG 渲染。默认
 npm install @mofli/core
 ```
 
-使用公共导出实现自己的骨架、皮肤与饰品，或注册现有资源包。此流程无需下载 Mofli 源码，更多协议说明见 Mofli 源码仓库的 `docs/resource-packs.md`。
+使用公共导出实现自己的骨架、皮肤与饰品，或注册现有资源包。此流程无需下载 Mofli 源码，更多协议说明见 [资源包指南](https://github.com/iHeyTang/Mofli/blob/main/docs/resource-packs.md)。
 
 ## 修改 Core 本身
 
-在克隆后的 Mofli 仓库中修改 `packages/core/src`。构建与验证方式见仓库根目录的 `CONTRIBUTING.md`。
+在克隆后的 Mofli 仓库中修改 `packages/core/src`。构建与验证方式见[源码开发指南](https://github.com/iHeyTang/Mofli/blob/main/CONTRIBUTING.md)。
 
 ## License
 

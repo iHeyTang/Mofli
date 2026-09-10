@@ -1,6 +1,6 @@
 {
   "name": "@mofli/studio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -13,7 +13,7 @@
   "dependencies": {
     "@heroui/react": "^3.2.4",
     "@heroui/styles": "^3.2.4",
-    "@mofli/core": "^0.1.0",
+    "@mofli/core": "^0.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.102.8",
     "@tanstack/react-router": "^1.170.34",
@@ -23,7 +23,7 @@
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",
     "vite": "^7.1.0",
-    "@mofli/grove": "^0.1.0"
+    "@mofli/grove": "^0.1.1"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
@@ -65,5 +65,14 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iHeyTang/Mofli.git",
+    "directory": "apps/studio"
+  },
+  "homepage": "https://github.com/iHeyTang/Mofli#readme",
+  "bugs": {
+    "url": "https://github.com/iHeyTang/Mofli/issues"
   }
 }

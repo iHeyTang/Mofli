@@ -1,6 +1,6 @@
 {
   "name": "@mofli/grove",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "dist",
@@ -66,15 +66,24 @@
   },
   "devDependencies": {
     "typescript": "~5.9.3",
-    "@mofli/studio": "^0.1.0"
+    "@mofli/studio": "^0.1.1"
   },
   "dependencies": {
-    "@mofli/core": "^0.1.0"
+    "@mofli/core": "^0.1.1"
   },
   "license": "MIT",
   "description": "Mofli rigs, skins and accessories for interactive SVG pets",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iHeyTang/Mofli.git",
+    "directory": "packages/grove"
+  },
+  "homepage": "https://github.com/iHeyTang/Mofli#readme",
+  "bugs": {
+    "url": "https://github.com/iHeyTang/Mofli/issues"
   }
 }

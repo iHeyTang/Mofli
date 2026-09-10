@@ -1,5 +1,7 @@
 # @mofli/grove
 
+[GitHub](https://github.com/iHeyTang/Mofli) · [Issues](https://github.com/iHeyTang/Mofli/issues)
+
 A little grove of Mofli companions: two rigs, six skins, and twenty data-driven accessories, built on @mofli/core.
 
 ## Use the collection
@@ -20,7 +22,7 @@ Bloub-derived code retains its MIT attribution. See THIRD_PARTY_NOTICES.md.
 
 ## Contribute to Grove
 
-To change the built-in collection itself, clone Mofli and follow `CONTRIBUTING.md` at the repository root. Its implementation lives in packages/grove/src; accessory definitions are JSON under accessories.
+To change the built-in collection itself, clone Mofli and follow the [source development guide](https://github.com/iHeyTang/Mofli/blob/main/CONTRIBUTING.md). Its implementation lives in packages/grove/src; accessory definitions are JSON under accessories.
 
 From the Grove source directory, run:
 
