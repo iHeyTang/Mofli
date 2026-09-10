@@ -67,3 +67,7 @@ node apps/studio/bin/mofli.mjs init /tmp/my-pack --type pack --no-install
 ## npm 发布
 
 发布配置、验证命令和发布顺序见 [发布指南](docs/publishing.md)。
+
+## 在线演示站
+
+将 Studio 部署到自己的 Vercel 账号，供访客直接体验，见 [Vercel 部署指南](docs/vercel.md)。
