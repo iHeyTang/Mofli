@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('studio exports, imports and restores a complete custom pet',async({page})=>{
- await page.goto('http://127.0.0.1:4173/reference.html');
+ await page.goto('http://127.0.0.1:14517/reference.html');
  await page.selectOption('#skin-select','mofli-stone');
  await page.check('#wear-hat');await page.check('#wear-bow');
  await page.locator('#hat-height').fill('0.52');
@@ -26,7 +26,7 @@ test('studio exports, imports and restores a complete custom pet',async({page})=
 });
 
 test('public browser SDK loads the saved composition and handles keyboard input',async({page})=>{
- await page.goto('http://127.0.0.1:4173/reference.html');
+ await page.goto('http://127.0.0.1:14517/reference.html');
  await page.check('#wear-hat');await page.click('#save-pet');
  const result=await page.evaluate(async(root)=>{
   const {PetRegistry}=await import(root+'core/dist/index.js');

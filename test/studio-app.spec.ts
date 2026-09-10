@@ -5,7 +5,7 @@ test("React Studio keeps the pet in view and edits a full composition", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:4173/");
+  await page.goto("http://127.0.0.1:14517/");
   await expect(page.locator("h1")).toContainText("Mallow");
   await expect(page.locator("#avatar")).toBeInViewport();
   await page.getByRole("button", { name: "Pebble", exact: true }).click();
@@ -65,7 +65,7 @@ test("mobile Studio exposes panels without pushing the stage offscreen", async (
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("http://127.0.0.1:4173/");
+  await page.goto("http://127.0.0.1:14517/");
   await expect(page.locator("#avatar")).toBeInViewport();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
@@ -90,7 +90,7 @@ test('CLI starts standalone Studio from an empty directory without an init step'
 test("each sequence links playback, thumbnails and seeking in both directions", async ({page}) => {
   const errors: string[]=[];
   page.on('pageerror', e=>errors.push(e.message));
-  await page.goto('http://127.0.0.1:4173/');
+  await page.goto('http://127.0.0.1:14517/');
   await page.click('#cycle');
   await expect(page.locator('#cycle')).toHaveText('单项循环');
   await expect(page.locator('#expression-choices button[aria-pressed="true"]')).toHaveText('Neutral',{timeout:5000});
@@ -118,7 +118,7 @@ test("each sequence links playback, thumbnails and seeking in both directions", 
 });
 
 test('accessory library groups seven mounts, replaces variants and exports a seven-part pet',async({page})=>{
- await page.goto('http://127.0.0.1:4173/');
+ await page.goto('http://127.0.0.1:14517/');
  await page.getByRole('button',{name:'饰品',exact:true}).click();
  await expect(page.locator('.attachment-item')).toHaveCount(20);
  for(const id of ['sprout','bunny','flower','blush','scarf','pearls','fireflies'])await page.check('#wear-'+id);
@@ -167,7 +167,7 @@ test('Grove starts Studio as a source resource project', async ({ page }) => {
 });
 
 test('preview background tracks the mouse without an SVG focus border', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4173/');
+  await page.goto('http://127.0.0.1:14517/');
   const stage = page.locator('#stage'), svg = page.locator('#avatar svg');
   await expect(svg).toBeVisible();
   const area = (await stage.boundingBox())!, pet = (await svg.boundingBox())!;
@@ -198,7 +198,7 @@ test('preview background tracks the mouse without an SVG focus border', async ({
 });
 
 test('mount debugging follows real frames and clears when disabled', async ({page}) => {
-  await page.goto('http://127.0.0.1:4173/');
+  await page.goto('http://127.0.0.1:14517/');
   await page.getByRole('button',{name:'挂载调试',exact:true}).click();
   const mounts = page.locator('#avatar [data-mount]');
   await expect(mounts).toHaveCount(10);

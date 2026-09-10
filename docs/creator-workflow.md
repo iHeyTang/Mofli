@@ -48,7 +48,7 @@ npm run dev
 - `package.json`：独立包导出、运行依赖、Studio 开发依赖与命令。
 - `tsconfig.json`：构建 ESM 与类型声明。
 
-运行 `npm run dev` 后打开终端显示的本机地址。端口被占用时会明确报错；使用 `npm run dev -- --port 4175` 更换端口。
+运行 `npm run dev` 后打开终端显示的本机地址，默认端口为 `14517`。端口被占用时会明确报错；使用 `npm run dev -- --port 14518` 更换端口。
 
 创建包含多种资源的集合包使用 `--type pack`，详见 [资源包](resource-packs.md)。
 

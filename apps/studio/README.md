@@ -12,6 +12,8 @@ Mofli 宠物工作台与 CLI。需要 Node.js >=22.12。
 npx @mofli/studio
 ```
 
+默认地址为 `http://127.0.0.1:14517`，可通过 `--port` 自定义端口。
+
 无项目时使用 Grove 内置素材库。存在 `mofli.project.ts` 时自动加载你的资源项目。
 
 ## 开发自己的资源包

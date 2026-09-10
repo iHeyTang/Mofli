@@ -7,7 +7,7 @@ test("reference homepage has 14 real state previews, transport, scrubbing and ex
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   await expect(page.locator("[data-state]")).toHaveCount(14);
   await expect(page.locator("#avatar svg")).toHaveCount(1);
   await page.locator('[data-state="orbit"]').click();
@@ -39,7 +39,7 @@ test("reference homepage has 14 real state previews, transport, scrubbing and ex
 test("Mofli render matches original SVG raster across 14 states and transient frames", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   const cases = await page.evaluate(async (root) => {
     const { bloubStates } = await import(
       "/@fs" + root + "/packages/grove/src/rigs/bloub/index.ts"
@@ -120,7 +120,7 @@ test("Mofli render matches original SVG raster across 14 states and transient fr
 test("SVG resources are instance-local and unresolved resources fail before mutation", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   const result = await page.evaluate(async (root) => {
     const { PetEngine } = await import(
       "/@fs" + root + "/packages/core/src/index.ts"
@@ -160,7 +160,7 @@ test("manual clicks morph body and eyes through the upstream pose controller", a
   page,
 }) => {
   await page.clock.install();
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   // Read exact animation time; native range inputs otherwise quantize to their step.
   await page.locator("#seek").evaluate((e) => e.setAttribute("step", "any"));
   await page.locator("#play").click();
@@ -230,7 +230,7 @@ test("cat rig separates geometry presets from appearance, fourteen poses and wor
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   await expect(page.locator("#rig-select option")).toHaveCount(2);
   await page.selectOption("#rig-select", "cat-head");
   await expect(page.locator("#skin-select option")).toHaveText([
@@ -276,7 +276,7 @@ test("cat rig separates geometry presets from appearance, fourteen poses and wor
 test("cat integrated silhouette remains finite through the full state catalog", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   await page.selectOption("#rig-select", "cat-head");
   await page.locator("#play").click();
   const ids = await page

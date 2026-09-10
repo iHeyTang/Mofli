@@ -4,7 +4,7 @@ test("cat irritated expression can be previewed separately from click shake", as
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   await page.selectOption("#rig-select", "cat-head");
   await expect(page.locator('[data-expression="16"]')).toContainText("> <");
   await page.locator('[data-expression="16"]').click();

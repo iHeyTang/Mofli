@@ -78,7 +78,7 @@ try {
     console.log(version);
   } else if (command === "help" || command === "--help") {
     console.log(
-      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--rig bloub|mew] [--no-install]\nmofli dev [--project directory] [--port 4173]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
+      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--rig bloub|mew] [--no-install]\nmofli dev [--project directory] [--port 14517]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
     );
   } else if (command === "init") {
     const type = option("--type", "skin"),
@@ -107,7 +107,7 @@ try {
     const explicitProject = args.includes("--project");
     const root = resolve(option("--project", process.cwd()));
     if (command === "dev") {
-      const port = Number(option("--port", "4173"));
+      const port = Number(option("--port", "14517"));
       if (args.length || !Number.isInteger(port) || port < 1 || port > 65535)
         throw new Error("Invalid dev arguments");
       const withProject = existsSync(join(root, "mofli.project.ts"));

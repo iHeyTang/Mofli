@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('expanded controls show short slim and long full head configurations',async({page})=>{
- await page.goto('http://127.0.0.1:4173/reference.html');
+ await page.goto('http://127.0.0.1:14517/reference.html');
  await page.selectOption('#rig-select','cat-head');
  const ear=page.getByRole('slider',{name:'耳长',exact:true}), cheek=page.getByRole('slider',{name:'脸部饱满度',exact:true});
  await expect(ear).toHaveAttribute('min','12'); await expect(ear).toHaveAttribute('max','85');

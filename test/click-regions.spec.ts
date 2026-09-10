@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('silhouette hit testing handles whitespace, subregions and display scaling',async({page})=>{
- await page.goto('http://127.0.0.1:4173/');
+ await page.goto('http://127.0.0.1:14517/');
  const result=await page.evaluate(async(root)=>{
   const {createSvgRenderer}=await import(root+'core/dist/browser.js');
   const host=document.createElement('div');host.style.cssText='position:fixed;inset:0;width:400px;height:300px';document.body.append(host);
@@ -12,7 +12,7 @@ test('silhouette hit testing handles whitespace, subregions and display scaling'
  expect(result).toEqual(['outside','outside','crown','face']);
 });
 test('exportable browser runtime routes real clicks into regional reactions',async({page})=>{
- await page.goto('http://127.0.0.1:4173/');
+ await page.goto('http://127.0.0.1:14517/');
  const result=await page.evaluate(async(root)=>{
   const {createPet}=await import(root+'core/dist/browser.js');
   const {bloubRig}=await import(root+'grove/dist/rigs/bloub/index.js');

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test("catalog controls update each rig and preserve choices when switching states", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:4173/reference.html");
+  await page.goto("http://127.0.0.1:14517/reference.html");
   for (const rig of ["bloub-reference", "cat-head"]) {
     await page.selectOption("#rig-select", rig);
     await expect(page.locator("#shape-choices button")).toHaveCount(9);
@@ -37,7 +37,7 @@ test("catalog controls update each rig and preserve choices when switching state
 });
 
  test("skin default preview and reset use the selected character contour", async ({page})=>{
- await page.goto('http://127.0.0.1:4173/reference.html');
+ await page.goto('http://127.0.0.1:14517/reference.html');
  for(const [skin,shape] of [['mofli-dough','8'],['mofli-bean','9'],['mofli-stone','10']]){
  await page.selectOption('#skin-select',skin);
  const button=page.getByRole('button',{name:'皮肤默认',exact:true});

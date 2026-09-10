@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 test('studio exposes all six skins with compatible controls and activities', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('http://127.0.0.1:4173/reference.html');
+  await page.goto('http://127.0.0.1:14517/reference.html');
   await expect(page.locator('#rig-select option')).toHaveCount(2);
   await expect(page.locator('#rig-select')).not.toContainText('实验');
   let count = 0;
