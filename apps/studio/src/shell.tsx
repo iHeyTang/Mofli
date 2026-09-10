@@ -42,7 +42,6 @@ export function Shell() {
       <header className="app-header">
         <Link to="/" className="brand">
           <svg className="brand-symbol" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M3 19C3 8 8 5 16 5s13 3 13 14c0 6-5 8-13 8S3 25 3 19Z"/><ellipse cx="11" cy="15" rx="2" ry="2.6" fill="white"/><ellipse cx="21" cy="15" rx="2" ry="2.6" fill="white"/></svg>mofli
-          <span className="brand-sub">STUDIO</span>
         </Link>
         <nav aria-label="应用导航">
           <Link to="/" activeOptions={{ exact: true }}>
@@ -50,10 +49,6 @@ export function Shell() {
           </Link>
           <Link to="/project">项目与导出</Link>
         </nav>
-        <span className="project-mode">
-          <span className="live-dot" />
-          {projectMode ? "本地创作项目" : "个人工作台"}
-        </span>
         <div className="header-actions">
           <Action
             title="导入宠物"
@@ -104,17 +99,9 @@ export function Shell() {
         />
       </header>
       <Outlet />
-      <footer className="app-footer">
-        <span id="status" role="status">
-          <span className="live-dot" />
-          {m.status}
-        </span>
-        <span>
-          {m.dirty ? "有未保存的调整" : "已保存"}
-          <i />
-          MOFLI ENGINE · V0.1
-        </span>
-      </footer>
+      {m.status && <footer className="app-footer">
+        <span id="status" role="status">{m.status}</span>
+      </footer>}
     </div>
   );
 }

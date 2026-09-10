@@ -18,7 +18,7 @@ test("all 14 isolated states preserve upstream geometry and resources", () => {
       }),
       reference = new BotEngine(100, state.id);
     for (let t = 0; t < state.duration; t += 0.033) {
-      assert.deepEqual(engine.sample(t), bloubFrame(reference.sample(t)));
+      assert.deepEqual(engine.sample(t), bloubFrame(reference.sample(t), bloubSkin.colors.body, bloubSkin.colors.paper));
       assert.ok(!/NaN|Infinity/.test(JSON.stringify(engine.sample(t))));
     }
   }
@@ -34,7 +34,7 @@ test("automatic playback agrees with upstream sequential engine across two compl
       reference.setState(bloubStates[index].id, next);
       next += bloubStates[index].duration;
     }
-    assertFramesClose(engine.sample(t), bloubFrame(reference.sample(t)));
+    assertFramesClose(engine.sample(t), bloubFrame(reference.sample(t), bloubSkin.colors.body, bloubSkin.colors.paper));
   }
 });
 test("reference supports random access, reduced motion, new state local time and export colors", () => {
@@ -46,7 +46,7 @@ test("reference supports random access, reduced motion, new state local time and
   engine.setSkin({ ...bloubSkin, parameters: { state: 11 } }, 100);
   const orbit = new BotEngine(100, "orbit");
   orbit.reset("orbit", 100);
-  assert.deepEqual(engine.sample(101), bloubFrame(orbit.sample(101)));
+  assert.deepEqual(engine.sample(101), bloubFrame(orbit.sample(101), bloubSkin.colors.body, bloubSkin.colors.paper));
   assert.throws(
     () => new PetEngine(bloubRig, { ...bloubSkin, parameters: { state: 1.5 } }),
   );
@@ -93,7 +93,7 @@ test("all 196 manual state pairs use upstream pose morphs, including interrupted
       engine.setSkin(skinFor(to), 1);
       oracle.setState(to.id, 1);
       for (const t of [1, 1.016, 1.05, 1.12, 1.24, 1.5, 2])
-        assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t)));
+        assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t), bloubSkin.colors.body, bloubSkin.colors.paper));
       // Redirect a morph at 70 ms, then redirect again at 100 ms.
       for (const [index, time] of [
         [(to.index + 3) % 14, 1.07],
@@ -103,7 +103,7 @@ test("all 196 manual state pairs use upstream pose morphs, including interrupted
         engine.setSkin(skinFor(state), time);
         oracle.setState(state.id, time);
         for (const t of [time, time + 0.016, time + 0.04])
-          assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t)));
+          assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t), bloubSkin.colors.body, bloubSkin.colors.paper));
       }
       const frozen = engine.sample(1.13);
       engine.sample(8);
@@ -125,7 +125,7 @@ test("automatic/manual handoff retains pose clock and recoloring retains the act
   oracle.setState("notify", at);
   assertFramesClose(
     engine.sample(at + 0.05),
-    bloubFrame(oracle.sample(at + 0.05)),
+    bloubFrame(oracle.sample(at + 0.05), bloubSkin.colors.body, bloubSkin.colors.paper),
   );
   engine.setSkin(
     { ...skin, colors: { body: "#123456", paper: "#ffffff" } },
@@ -147,7 +147,7 @@ test("automatic/manual handoff retains pose clock and recoloring retains the act
       oracle.setState(bloubStates[index].id, next);
       next += bloubStates[index].duration;
     }
-    assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t)));
+    assertFramesClose(engine.sample(t), bloubFrame(oracle.sample(t), bloubSkin.colors.body, bloubSkin.colors.paper));
   }
 });
 

@@ -29,7 +29,7 @@ export class StudioModel {
   playing = true;
   debug = false;
   zoom = 1;
-  status = "准备就绪";
+  status = "";
   dirty = false;
   attachments: PetConfig["attachments"] = [];
   listeners = new Set<() => void>();
@@ -212,7 +212,8 @@ export class StudioModel {
     if (this.sequence === "expression" && !this.entry.rig.poseParameters?.expression) this.sequence = "state";
     if (this.sequence === "shape" && !this.entry.rig.parameters.shape) this.sequence = "state";
     if (this.cycling) this.applyItem(0);
-    this.changed("已切换到 " + skin.name);
+    this.status = "";
+    this.changed();
   }
   setConfig(config: RigConfig) {
     const faceControls = ["eyeWidth", "eyeHeight", "eyeSpacing", "faceYaw", "facePitch", "faceRoll"];

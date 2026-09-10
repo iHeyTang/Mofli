@@ -125,7 +125,7 @@ export const mewRig: Rig = {
   mounts: headMountCapabilities,
   id: "cat-head",
   version: 1,
-  name: "Mew · Cat Head",
+  name: "Mew",
   variants: { eyes: ["capsule", "oval"] },
   surfaces: catSurfaces,
   colors: { body: "#0a0a0c", face: "#f9f9f9" },

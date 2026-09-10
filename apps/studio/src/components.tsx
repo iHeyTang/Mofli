@@ -251,6 +251,11 @@ export function PetStage() {
         model.engine.handle({ type: "tap", hit: renderer.hitTest(e.clientX, e.clientY), at: performance.now()/1000, choice: Math.random() }, model.time);
       model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
       pointer = null;
+      const r = surface.getBoundingClientRect();
+      if (e.pointerType !== "mouse" || e.type !== "pointerup" ||
+          e.clientX < r.left || e.clientX > r.right ||
+          e.clientY < r.top || e.clientY > r.bottom)
+        model.engine.handle({ type: "hover", value: false }, model.time);
     };
     surface.addEventListener("pointerup", release, { signal });
     surface.addEventListener("pointercancel", release, { signal });
@@ -260,12 +265,17 @@ export function PetStage() {
       () => {
         if (!pointer)
           model.engine.handle(
-            { type: "look", value: { x: 0, y: 0 } },
+            { type: "hover", value: false },
             model.time,
           );
       },
       { signal },
     );
+    window.addEventListener("blur", () => {
+      pointer = null;
+      model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
+      model.engine.handle({ type: "hover", value: false }, model.time);
+    }, { signal });
     svg.addEventListener(
       "keydown",
       (e) => {
@@ -290,12 +300,8 @@ export function PetStage() {
       id="stage"
       style={{ backgroundColor: m.skin.colors.paper ?? "#f6f7f3" }}
     >
-      <div className="canvas-label">
-        <span className="live-dot" />
-        实时预览<span>SVG / {m.entry.name}</span>
-      </div>
       <div id="avatar" ref={host} style={{ transform: `scale(${m.zoom})` }} />
-      <div className="canvas-hint">{m.debug ? "X / Y / Z：局部方向 · 虚线：表面采样或角色单位范围" : "移动鼠标与它对视 · 点击不同部位试试"}</div>
+      {m.debug && <div className="canvas-hint">X / Y / Z：局部方向 · 虚线：表面采样或角色单位范围</div>}
     </div>
   );
 }

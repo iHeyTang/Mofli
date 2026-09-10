@@ -88,7 +88,8 @@ test("Mofli render matches original SVG raster across 14 states and transient fr
         const r = createSvgRenderer(host);
         r.svg.style.cssText = "display:block;width:316px;height:316px";
         r.render(
-          new PetEngine(bloubRig, bloubSkin, { pose: { state: c.index } }).sample(c.time),
+          // Compare upstream raster geometry with the upstream palette explicitly.
+          new PetEngine(bloubRig, { ...bloubSkin, colors: { body: "#0a0a0c", paper: "#f9f9f9" } }, { pose: { state: c.index } }).sample(c.time),
         );
         document.getElementById("oracle")!.innerHTML = originalSvg(
           new BotEngine(100, c.id).sample(c.time),

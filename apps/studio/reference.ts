@@ -56,7 +56,7 @@ const catalog: { rig: Rig; name: string; skins: Skin[] }[] = [
     name: "Bloub · 参考骨架",
     skins: [bloubSkin, doughSkin, beanSkin, stoneSkin],
   },
-  { rig: mewRig, name: "Mew · 部件骨架", skins: catSkins },
+  { rig: mewRig, name: "Mew", skins: catSkins },
 ];
 for (const pet of project.pets ?? []) {
   const existing = catalog.find((e) => e.rig.id === pet.rig.id);

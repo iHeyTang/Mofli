@@ -42,7 +42,7 @@ export const catalog = resources.rigs
       rig.id === bloubRig.id
         ? "Bloub"
         : rig.id === mewRig.id
-          ? "Mew · Cat Head"
+          ? "Mew"
           : rig.name,
     skins: resources.skins.filter((s) => s.rig === rig.id),
   }))

@@ -6,10 +6,10 @@ test("React Studio keeps the pet in view and edits a full composition", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("http://127.0.0.1:14517/");
-  await expect(page.locator("h1")).toContainText("Mallow");
+  await expect(page.locator(".workspace")).toHaveAccessibleName("Mallow 宠物预览");
   await expect(page.locator("#avatar")).toBeInViewport();
   await page.getByRole("button", { name: "Pebble", exact: true }).click();
-  await expect(page.locator("h1")).toContainText("Pebble");
+  await expect(page.locator(".workspace")).toHaveAccessibleName("Pebble 宠物预览");
   await page.getByRole("button", { name: "饰品", exact: true }).click();
   await page.check("#wear-hat");
   await page.check("#wear-bow");
@@ -38,7 +38,7 @@ test("React Studio keeps the pet in view and edits a full composition", async ({
   await page.click("#export");
   expect((await svgDownload).suggestedFilename()).toMatch(/\.svg$/);
   await page.getByRole("link", { name: "创作", exact: true }).click();
-  await expect(page.locator("h1")).toContainText("Pebble");
+  await expect(page.locator(".workspace")).toHaveAccessibleName("Pebble 宠物预览");
   saved.skin.id = "my-custom-pet";
   saved.skin.name = "自定义宠物";
   await page
@@ -48,7 +48,7 @@ test("React Studio keeps the pet in view and edits a full composition", async ({
       mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify(saved)),
     });
-  await expect(page.locator("h1")).toContainText("自定义宠物");
+  await expect(page.locator(".workspace")).toHaveAccessibleName("自定义宠物 宠物预览");
   await page
     .locator("#pet-file")
     .setInputFiles({
@@ -57,7 +57,7 @@ test("React Studio keeps the pet in view and edits a full composition", async ({
       buffer: Buffer.from('{"version":99}'),
     });
   await expect(page.locator("#status")).toContainText("导入失败");
-  await expect(page.locator("h1")).toContainText("自定义宠物");
+  await expect(page.locator(".workspace")).toHaveAccessibleName("自定义宠物 宠物预览");
   expect(errors).toEqual([]);
 });
 
@@ -70,13 +70,11 @@ test("mobile Studio exposes panels without pushing the stage offscreen", async (
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);
-  await page.getByRole("button", { name: "素材面板", exact: true }).click();
   await page.getByRole("button", { name: "Pip", exact: true }).click();
-  await page.getByRole("button", { name: "素材面板", exact: true }).click();
-  await expect(page.locator("h1")).toContainText("Pip");
-  await page.getByRole("button", { name: "属性面板", exact: true }).click();
+  await expect(page.locator(".workspace")).toHaveAccessibleName("Pip 宠物预览");
+  await page.getByRole("tab", { name: "属性", exact: true }).click();
   await expect(page.locator("#ink")).toBeVisible();
-  await page.getByRole("button", { name: "属性面板", exact: true }).click();
+  await page.getByRole("tab", { name: "属性", exact: true }).click();
   await page.getByRole("link", { name: "项目与导出" }).click();
   await expect(page.locator("#save-pet")).toBeVisible();
 });
@@ -154,7 +152,7 @@ test('Grove starts Studio as a source resource project', async ({ page }) => {
     expect(logs).toContain(root);
     await page.goto('http://127.0.0.1:4193/');
     await expect(page.locator('#avatar svg')).toHaveCount(1);
-    await expect(page.locator('h1')).toContainText('Mallow');
+    await expect(page.locator(".workspace")).toHaveAccessibleName("Mallow 宠物预览");
     await page.getByRole('button', { name: '饰品', exact: true }).click();
     await expect(page.locator('.attachment-item')).toHaveCount(20);
     await page.getByRole('link', { name: '项目与导出' }).click();
@@ -192,8 +190,26 @@ test('preview background tracks the mouse without an SVG focus border', async ({
   await expect.poll(() => page.evaluate(() => (window as any).previewEvents.some((e: any) => e.type === 'tap'))).toBe(true);
   await expect(svg).toBeFocused();
   await expect(svg).toHaveCSS('outline-style', 'none');
+  await page.mouse.move(5, 5);
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.at(-1))).toEqual({type:'hover', value:false});
+  // Capture keeps delivering moves outside the canvas until the drag ends.
+  await page.mouse.move(right, y);
+  await page.mouse.down();
+  await page.mouse.move(5, 5);
+  await page.mouse.up();
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.at(-1))).toEqual({type:'hover', value:false});
+  await page.mouse.move(right, y);
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.at(-1))).toEqual({type:'hover', value:false});
   await page.screenshot({path:'test-results/preview-pointer-desktop.png'});
   await page.setViewportSize({width:390,height:844});
+  const mobileArea = (await stage.boundingBox())!;
+  const touch = {pointerId:42, pointerType:'touch', button:0, clientX:mobileArea.x+30, clientY:mobileArea.y+30};
+  await page.evaluate(() => { document.getElementById("stage")!.setPointerCapture = () => {}; });
+  await stage.dispatchEvent('pointerdown', touch);
+  await stage.dispatchEvent('pointermove', {...touch, clientX:touch.clientX+10});
+  await stage.dispatchEvent('pointerup', {...touch, clientX:touch.clientX+10});
+  await expect.poll(() => page.evaluate(() => (window as any).previewEvents.at(-1))).toEqual({type:'hover', value:false});
   await page.screenshot({path:'test-results/preview-pointer-mobile.png'});
 });
 
@@ -217,3 +233,61 @@ test('mount debugging follows real frames and clears when disabled', async ({pag
   await page.getByRole('button',{name:'挂载调试',exact:true}).click();
   await expect(mounts).toHaveCount(0);
 });
+
+for (const viewport of [{width:390,height:844},{width:360,height:667},{width:768,height:1024}]) {
+  test(`mobile five tabs keep preview visible at ${viewport.width}px`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await page.goto('http://127.0.0.1:14517/');
+    const tabs=page.getByRole('tablist',{name:'宠物编辑'});
+    await expect(tabs.getByRole('tab')).toHaveCount(5);
+    for (const name of ['角色','饰品','属性','表情','动作']) {
+      const tab=tabs.getByRole('tab',{name,exact:true});await tab.click();
+      await expect(tab).toHaveAttribute('aria-selected','true');
+      const editor=page.locator('.mobile-editor');
+      const stage=await page.locator('.preview-frame').boundingBox();const panel=await editor.boundingBox();
+      expect(panel!.y).toBeGreaterThanOrEqual(stage!.y+stage!.height);
+      await editor.evaluate(el=>{el.scrollTop=el.scrollHeight});
+      await expect(page.locator('#avatar')).toBeInViewport();await expect(tabs).toBeInViewport();
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+    }
+    await tabs.getByRole('tab',{name:'角色',exact:true}).click();
+    await page.getByRole('button',{name:'Pip',exact:true}).click();
+    await tabs.getByRole('tab',{name:'饰品',exact:true}).click();await page.check('#wear-hat');
+    await tabs.getByRole('tab',{name:'表情',exact:true}).click();
+    await page.getByRole('button',{name:'Love',exact:true}).click();
+    await expect(page.getByRole('button',{name:'Love',exact:true})).toHaveAttribute('aria-pressed','true');
+    await tabs.getByRole('tab',{name:'动作',exact:true}).click();await page.locator('[data-state="notify"]').click();
+    await expect(page.locator('[data-state="notify"]')).toHaveAttribute('aria-pressed','true');
+    await tabs.getByRole('tab',{name:'属性',exact:true}).click();
+    await page.locator('[data-shape="1"]').first().click();
+    await expect(page.locator('[data-shape="1"]').first()).toHaveAttribute('aria-pressed','true');
+    await tabs.getByRole('tab',{name:'角色',exact:true}).click();
+    await expect(page.locator(".workspace")).toHaveAccessibleName("Pip 宠物预览");
+    await tabs.getByRole('tab',{name:'饰品',exact:true}).click();await expect(page.locator('#wear-hat')).toBeChecked();
+    await tabs.getByRole('tab',{name:'饰品',exact:true}).focus();await page.keyboard.press('ArrowRight');
+    await expect(tabs.getByRole('tab',{name:'属性',exact:true})).toBeFocused();
+    await page.setViewportSize({width:1360,height:900});
+    await expect(page.locator('.library-panel')).toBeVisible();await expect(page.locator('.inspector-panel')).toBeVisible();
+    await expect(tabs).toHaveCount(0);await expect(page.locator(".workspace")).toHaveAccessibleName("Pip 宠物预览");
+  });
+}
+
+ test("mobile safe areas protect the header and bottom tabs", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('http://127.0.0.1:14517/');
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content',/viewport-fit=cover/);
+  await expect(page.locator('.workspace-heading')).toHaveCount(0);
+  // Desktop browsers report zero device insets; emulate a notched screen's layout inputs.
+  await page.locator('.studio-shell').evaluate(el=>{
+    (el as HTMLElement).style.setProperty('--studio-safe-top','59px');
+    (el as HTMLElement).style.setProperty('--studio-safe-bottom','34px');
+  });
+  const header=await page.locator('.app-header').boundingBox();
+  const tabs=await page.getByRole('tablist',{name:'宠物编辑'}).boundingBox();
+  expect(header!.y).toBeGreaterThanOrEqual(59);
+  expect(tabs!.y+tabs!.height).toBeLessThanOrEqual(844-34);
+  await expect(page.locator('#avatar')).toBeInViewport();
+  await page.getByRole('tab',{name:'饰品',exact:true}).click();
+  await page.locator('.mobile-editor').evaluate(el=>{el.scrollTop=el.scrollHeight});
+  await expect(page.getByRole('tab',{name:'动作',exact:true})).toBeInViewport();
+ });

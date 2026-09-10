@@ -16,7 +16,6 @@ export function ProjectPage() {
   });
   return (
     <main className="project-page">
-      <span className="eyebrow">YOUR PET, EVERYWHERE</span>
       <h1>从工作台，到你的应用。</h1>
       <p className="project-intro">
         保存一份可继续编辑的宠物，或者把它带进自己的项目。
@@ -120,8 +119,6 @@ export function ProjectPage() {
         </div>
       </div>
       <p className="credits">
-        Mofli / Core + Rig + Skin + Attachments
-        <br />
         Bloub reference calculations by Jérémy Perret · MIT attribution
         retained.
       </p>

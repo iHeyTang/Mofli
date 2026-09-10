@@ -1,19 +1,20 @@
 import {useState,useEffect,useRef} from 'react';
 import {Chip,Tabs,Select,Label,ListBox} from '@heroui/react';
-import {RotateCcw,Play,Pause,Shapes,SlidersHorizontal,Sparkles,Box,Check,Plus,Minus,PanelLeft,PanelRight,X} from 'lucide-react';
-import {catalog,parts,expressionOptions,catExpressions} from './catalog.js';
+import {RotateCcw,Play,Pause,Shapes,SlidersHorizontal,Sparkles,Box,Check,Plus,Minus,Smile,X} from 'lucide-react';
+import {catalog,parts,expressionOptions,catExpressions,shapeOptions} from './catalog.js';
 import {useModel,Action,Thumbnail,Range,PetStage,PlaybackSlider} from './components.js';
 const mountNames: Record<string,string> = {"head.crown":"头顶中央","head.sides":"成对侧部","head.forehead":"额头","head.cheeks":"双颊表面","head.lower.front":"下缘中央","head.lower.sides":"下缘两侧","character.orbit":"角色环绕"};
-function Library() {
+function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
   const m = useModel();
-  const [tab, setTab] = useState<"skins" | "parts">("skins");
+  const [selectedTab, setTab] = useState<"skins" | "parts">("skins");
+  const tab = mode ?? selectedTab;
   return (
     <>
       <div className="panel-heading">
-        <span>素材库</span>
+        <span>{mode === "skins" ? "选择角色" : mode === "parts" ? "搭配饰品" : "素材库"}</span>
         <Shapes size={15} />
       </div>
-      <div className="segmented">
+      {!mode && <div className="segmented">
         <button aria-pressed={tab === "skins"} onClick={() => setTab("skins")}>
           <Shapes size={14} />
           角色
@@ -22,7 +23,7 @@ function Library() {
           <Sparkles size={14} />
           饰品
         </button>
-      </div>
+      </div>}
       {tab === "skins" ? (
         <>
           <Select
@@ -147,7 +148,7 @@ function Library() {
     </>
   );
 }
-function Inspector() {
+function Inspector({ mobile = false }: { mobile?: boolean } = {}) {
   const m = useModel();
   const labels: Record<string, string> = {
     earLength: "耳长",
@@ -168,9 +169,6 @@ function Inspector() {
           <strong>{m.skin.name}</strong>
           <small>{m.entry.name} 骨架</small>
         </div>
-        <Chip size="sm" variant="soft">
-          皮肤
-        </Chip>
       </div>
       <section className="inspector-section">
         <h3>外观色彩</h3>
@@ -208,9 +206,21 @@ function Inspector() {
           恢复皮肤默认
         </Action>
       </section>
+      {mobile && m.entry.rig.parameters.shape && <section className="inspector-section">
+        <h3>基础形状</h3>
+        <div className="motion-strip">
+          {[{index: m.entry.skins.find(s => s.id === m.skin.id)?.rigConfig?.shape ?? m.entry.rig.parameters.shape.default, name: "皮肤默认"}, ...shapeOptions.filter(s => s.index < 8)].map((shape, index) =>
+            <button key={index} className="motion-tile" data-shape={shape.index}
+              aria-pressed={m.config.shape === shape.index}
+              onClick={() => {m.selectSequence("shape"); m.selectItem(index);}}>
+              <Thumbnail rig={m.entry.rig} skin={m.skin} config={{...m.config, shape:shape.index}} pose={{state:0,expression:-1}} />
+              <span>{shape.name}</span>
+            </button>)}
+        </div>
+      </section>}
       <section className="inspector-section" id="rig-parameters">
         <h3>
-          形态参数 <span>RIG</span>
+          形态参数
         </h3>
         {Object.entries(m.entry.rig.parameters)
           .filter(([k]) => !["shape", "customFace", "faceYaw", "facePitch", "faceRoll"].includes(k))
@@ -229,7 +239,6 @@ function Inspector() {
         <h3>当前装配</h3>
         <div className="assembly-row">
           <span className="assembly-dot" /> {m.skin.name}
-          <small>皮肤</small>
         </div>
         {m.attachments.length ? (
           m.attachments.map((a) => (
@@ -248,7 +257,7 @@ function Inspector() {
     </>
   );
 }
-function MotionDock() {
+function MotionDock({ compact = false }: { compact?: boolean } = {}) {
   const m = useModel();
   const tab = m.sequence;
   const dock = useRef<HTMLElement>(null);
@@ -256,18 +265,8 @@ function MotionDock() {
     if (m.cycling) dock.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({block:"nearest",inline:"nearest"});
   }, [tab, m.selectedItem, m.cycling]);
   const expressions = m.skin.rig === "cat-head" ? catExpressions : expressionOptions;
-  return (
-    <section className="motion-dock" ref={dock}>
-      <Tabs selectedKey={tab} onSelectionChange={key=>m.selectSequence(key as typeof m.sequence)}>
-      <div className="dock-heading">
-        <Tabs.ListContainer><Tabs.List aria-label="动作素材">
-          {m.entry.rig.poseParameters?.expression&&<Tabs.Tab id="expression">表情 <Chip size="sm">{expressions.length+1}</Chip><Tabs.Indicator/></Tabs.Tab>}
-          <Tabs.Tab id="state">动作 <Chip size="sm">{m.states.length}</Chip><Tabs.Indicator/></Tabs.Tab>
-          {m.entry.rig.parameters.shape&&<Tabs.Tab id="shape">基础形状<Tabs.Indicator/></Tabs.Tab>}
-        </Tabs.List></Tabs.ListContainer>
-      </div>
-      <Tabs.Panel id={tab}>
-      <div
+  const choices = (
+<div
         className="motion-strip"
         id={tab === "state" ? "states" : tab + "-choices"}
       >
@@ -316,44 +315,57 @@ function MotionDock() {
               </button>
             ))}
       </div>
+  );
+  if (compact) return <section className="motion-dock" ref={dock}>{choices}</section>;
+  return (
+    <section className="motion-dock" ref={dock}>
+      <Tabs selectedKey={tab} onSelectionChange={key=>m.selectSequence(key as typeof m.sequence)}>
+      <div className="dock-heading">
+        <Tabs.ListContainer><Tabs.List aria-label="动作素材">
+          {m.entry.rig.poseParameters?.expression&&<Tabs.Tab id="expression">表情 <Chip size="sm">{expressions.length+1}</Chip><Tabs.Indicator/></Tabs.Tab>}
+          <Tabs.Tab id="state">动作 <Chip size="sm">{m.states.length}</Chip><Tabs.Indicator/></Tabs.Tab>
+          {m.entry.rig.parameters.shape&&<Tabs.Tab id="shape">基础形状<Tabs.Indicator/></Tabs.Tab>}
+        </Tabs.List></Tabs.ListContainer>
+      </div>
+      <Tabs.Panel id={tab}>
+      {choices}
       </Tabs.Panel></Tabs>
     </section>
   );
 }
 export function Workshop() {
   const m = useModel();
-  const [mobile, setMobile] = useState("");
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 800px)").matches);
+  const [mobileTab, setMobileTab] = useState("skins");
+  const editor = useRef<HTMLDivElement>(null);
+  const mobileTabs = [
+    {id:"skins", label:"角色", icon:Shapes},
+    {id:"parts", label:"饰品", icon:Sparkles},
+    {id:"properties", label:"属性", icon:SlidersHorizontal},
+    {id:"expression", label:"表情", icon:Smile},
+    {id:"state", label:"动作", icon:Play},
+  ];
+  const chooseTab = (id: string) => {
+    setMobileTab(id);
+    if (id === "state" || (id === "expression" && m.entry.rig.poseParameters?.expression)) {
+      if (m.sequence !== id) m.selectSequence(id);
+    }
+    editor.current?.scrollTo({top:0});
+  };
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 800px)");
+    const update = () => setIsMobile(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    if (isMobile && (mobileTab === "state" || (mobileTab === "expression" && m.entry.rig.poseParameters?.expression)) && m.sequence !== mobileTab)
+      m.selectSequence(mobileTab);
+  }, [isMobile, mobileTab, m, m.sequence, m.skin.rig]);
   return (
-    <main className={"workshop " + (mobile ? "mobile-" + mobile : "")}>
-      <aside className="library-panel">
-        <Library />
-      </aside>
-      <section className="workspace">
-        <div className="workspace-heading">
-          <div>
-            <span className="eyebrow">宠物创作工作台</span>
-            <h1>
-              {m.skin.name}
-              <span> / 我的宠物</span>
-            </h1>
-          </div>
-          <div className="view-actions">
-            <Action
-              title="素材面板"
-              onPress={() => setMobile(mobile === "library" ? "" : "library")}
-            >
-              <PanelLeft size={16} />
-            </Action>
-            <Action
-              title="属性面板"
-              onPress={() =>
-                setMobile(mobile === "inspector" ? "" : "inspector")
-              }
-            >
-              <PanelRight size={16} />
-            </Action>
-          </div>
-        </div>
+    <main className="workshop">
+      {!isMobile && <aside className="library-panel" aria-label="素材库"><Library /></aside>}
+      <section className="workspace" aria-label={`${m.skin.name} 宠物预览`}>
         <div className="preview-frame">
           <PetStage />
           <div className="canvas-tools">
@@ -414,11 +426,30 @@ export function Workshop() {
             </Action>
           )}
         </div>
-        <MotionDock />
+        {!isMobile && <MotionDock />}
       </section>
-      <aside className="inspector-panel">
-        <Inspector />
-      </aside>
+      {!isMobile && <aside className="inspector-panel" aria-label="角色属性"><Inspector /></aside>}
+      {isMobile && <>
+        <div className="mobile-editor" ref={editor} role="tabpanel" id="mobile-editor"
+          aria-labelledby={`mobile-tab-${mobileTab}`} tabIndex={0}>
+          {(mobileTab === "skins" || mobileTab === "parts") && <Library mode={mobileTab} />}
+          {mobileTab === "properties" && <Inspector mobile />}
+          {mobileTab === "expression" && (m.entry.rig.poseParameters?.expression
+            ? <><div className="panel-heading">选择表情</div><MotionDock compact /></>
+            : <p className="mobile-empty">当前角色不支持独立表情，可到「动作」选择姿态。</p>)}
+          {mobileTab === "state" && <><div className="panel-heading">选择动作</div><MotionDock compact /></>}
+        </div>
+        <div className="mobile-tabs" role="tablist" aria-label="宠物编辑">
+          {mobileTabs.map(({id,label,icon:Icon},index) => <button key={id} type="button" role="tab"
+            id={`mobile-tab-${id}`} aria-controls="mobile-editor" aria-selected={mobileTab === id}
+            tabIndex={mobileTab === id ? 0 : -1} onClick={() => chooseTab(id)}
+            onKeyDown={event => {
+              const next = event.key === "ArrowRight" ? (index+1)%5 : event.key === "ArrowLeft" ? (index+4)%5 : event.key === "Home" ? 0 : event.key === "End" ? 4 : -1;
+              if (next >= 0) {event.preventDefault();chooseTab(mobileTabs[next].id);document.getElementById(`mobile-tab-${mobileTabs[next].id}`)?.focus();}
+            }}><Icon size={18} aria-hidden="true" /><span>{label}</span></button>)}
+        </div>
+      </>}
+
     </main>
   );
 }
