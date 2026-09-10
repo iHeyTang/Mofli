@@ -17,6 +17,21 @@
 
 无需配置环境变量。构建命令会先通过 `prebuild:studio` 按依赖顺序构建 Core、Grove，再构建 Studio。内部依赖来自 npm workspace，无需先发布到 npm。
 
+### 已经选择 apps/studio 作为 Root Directory
+
+也可以保留 `apps/studio`。该目录的 `vercel.json` 会回到仓库根目录安装、构建整个依赖链，并使用相对于 Studio 的 `dist` 输出目录：
+
+| 设置 | 值 |
+| --- | --- |
+| Root Directory | `apps/studio` |
+| Install Command | `npm --prefix ../.. ci` |
+| Build Command | `npm --prefix ../.. run build:studio` |
+| Output Directory | `dist` |
+
+在 Vercel 的 Root Directory 设置中开启“Include source files outside of the Root Directory in the Build Step”，以便访问 Core、Grove 和根目录锁文件。关闭之前手动填写的构建命令、安装命令和输出目录 Override，让配置文件生效；如继续手动设置，必须与上表一致。
+
+如果日志显示 `workspace @mofli/studio` 和 `Missing script: "build:studio"`，说明把根目录的构建命令放到了 Studio 目录执行。不要在 Studio 内直接运行 `npm run build:studio`：要么将 Root Directory 改回仓库根目录，要么使用上面的 Studio 配置。
+
 SPA 重写让 `/project` 等前端路由在直接打开或刷新时仍返回应用入口；静态资源由 Vercel 正常提供。
 
 ## 从 Git 仓库部署
