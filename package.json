@@ -18,7 +18,9 @@
     "build:studio": "npm run build --workspace @mofli/studio",
     "prebuild:studio": "npm run build",
     "studio": "npm run start --workspace @mofli/studio --",
-    "prestudio": "npm run build"
+    "prestudio": "npm run build",
+    "build:release": "npm run build && npm run build:studio",
+    "release:check": "npm test && npm run typecheck && npm run build:demo && npm run test:packages"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
@@ -29,5 +31,6 @@
   "workspaces": [
     "packages/*",
     "apps/studio"
-  ]
+  ],
+  "license": "MIT"
 }

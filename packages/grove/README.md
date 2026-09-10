@@ -20,7 +20,7 @@ Bloub-derived code retains its MIT attribution. See THIRD_PARTY_NOTICES.md.
 
 ## Contribute to Grove
 
-To change the built-in collection itself, clone Mofli and follow the [source development guide](../../CONTRIBUTING.md). Its implementation lives in packages/grove/src; accessory definitions are JSON under accessories.
+To change the built-in collection itself, clone Mofli and follow `CONTRIBUTING.md` at the repository root. Its implementation lives in packages/grove/src; accessory definitions are JSON under accessories.
 
 From the Grove source directory, run:
 
@@ -31,3 +31,7 @@ npm run dev
 Studio reads `mofli.project.ts` in this directory and loads `src/index.ts` directly. Edit the rigs, skins or accessory JSON under `src/` to preview changes. Save the composition to this project, then run `npm run check` and `npm run export:pet`.
 
 Studio is a development dependency only. The published resource package contains its runtime exports; it does not require the project configuration to be consumed.
+
+## License
+
+Mofli v0.1 is a prototype. Mofli code is licensed under [MIT](LICENSE). Third-party code retains its original attribution; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

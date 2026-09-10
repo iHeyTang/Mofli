@@ -63,3 +63,7 @@ node apps/studio/bin/mofli.mjs init /tmp/my-pack --type pack --no-install
 该示例仅生成文件；验证本地未分发改动的完整安装流程，使用 `npm run test:packages`，它会打包本地依赖并在临时目录验证。
 
 修改协议前阅读 [架构](docs/architecture.md)。跨包使用公共 exports，Core 不依赖 Grove 或 Studio。保留 [第三方归属声明](THIRD_PARTY_NOTICES.md)。
+
+## npm 发布
+
+发布配置、验证命令和发布顺序见 [发布指南](docs/publishing.md)。

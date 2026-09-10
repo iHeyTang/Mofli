@@ -100,3 +100,7 @@ Mofli 最初受到 [Bloub](https://github.com/jeremy-prt/bloub) 的启发。感�
 Mofli 中的 Bloub 骨架、Mew 骨架的部分实现，以及 Core 中提取的轮廓与面部计算代码，包含对 Bloub 源码的使用和改编。这些部分保留原作者版权 **Copyright (c) 2026 Jérémy Perret**，遵循 **MIT License**；具体来源、版本及完整许可文本见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 Bloub 复现的是 x.ai / Grok 的机器人形象。其 MIT 许可适用于代码，不代表对原角色设计或商标的授权；相关设计与商标归各自权利人所有。Mofli 与 x.ai 无隶属或背书关系。
+
+## License
+
+Mofli v0.1 is a prototype. Mofli code is licensed under [MIT](LICENSE); third-party attributions are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

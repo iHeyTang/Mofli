@@ -102,3 +102,7 @@ Mofli was originally inspired by [Bloub](https://github.com/jeremy-prt/bloub). T
 Mofli's Bloub rig, parts of the Mew rig, and the contour and facial calculations extracted into Core use and adapt Bloub source code. These portions retain **Copyright (c) 2026 Jérémy Perret** and are distributed under the **MIT License**. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the source, revision, and full license text.
 
 Bloub recreates the x.ai / Grok bot avatar. Its MIT license covers the code, not rights to the original character design or trademarks, which belong to their respective owners. Mofli is not affiliated with or endorsed by x.ai.
+
+## License
+
+Mofli v0.1 is a prototype. Mofli code is licensed under [MIT](LICENSE); third-party attributions are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

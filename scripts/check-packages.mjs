@@ -15,6 +15,24 @@ const temp = mkdtempSync(join(tmpdir(), "mofli-packages-"));
 const packages = libraryPackages(root);
 const tarballs = new Map();
 const manifests = new Map(packages.map((p) => [p.manifest.name, p.manifest]));
+function verifyPack(packed, manifest) {
+  const paths = new Set(packed.files.map((file) => file.path));
+  for (const file of ["LICENSE", "THIRD_PARTY_NOTICES.md", "README.md"])
+    if (!paths.has(file)) throw new Error(`${manifest.name}: missing ${file}`);
+  if (manifest.private || manifest.license !== "MIT" || manifest.publishConfig?.access !== "public")
+    throw new Error(`${manifest.name}: package is not configured for public MIT distribution`);
+  function checkTarget(value) {
+    if (typeof value === "string") {
+      const target = value.replace(/^\.\//, "");
+      if (!target.includes("*") && !paths.has(target))
+        throw new Error(`${manifest.name}: missing exported file ${target}`);
+    } else if (value && typeof value === "object") {
+      for (const child of Object.values(value)) checkTarget(child);
+    }
+  }
+  checkTarget(manifest.exports);
+  checkTarget(manifest.bin);
+}
 const run = (cmd, args, cwd) =>
   execFileSync(cmd, args, { cwd, stdio: "pipe" }).toString();
 function install(project, manifest, { libraryBuild = false } = {}) {
@@ -76,6 +94,7 @@ try {
     const packed = JSON.parse(
       run("npm", ["pack", "--json", "--pack-destination", temp], isolated),
     )[0];
+    verifyPack(packed, manifest);
     if (packed.files.some((f) => f.path.includes("node_modules")))
       throw new Error("Bundled node_modules");
     tarballs.set(manifest.name, join(temp, packed.filename));
@@ -141,6 +160,7 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
   const packedStudio = JSON.parse(
     run("npm", ["pack", "--json", "--pack-destination", temp], studio),
   )[0];
+  verifyPack(packedStudio, studioManifest);
   const studioTarball = join(temp, packedStudio.filename);
   tarballs.set(studioManifest.name, studioTarball);
   manifests.set(studioManifest.name, studioManifest);
