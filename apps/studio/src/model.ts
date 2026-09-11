@@ -1,6 +1,7 @@
 import {
   PetEngine,
   composeAttachments,
+  composeSpatialAttachments,
   type PetConfig,
   type RigConfig,
   type RigPose,
@@ -8,6 +9,9 @@ import {
 } from "@mofli/core";
 import {
   catalog,
+  sourceSkinIds,
+  spatialExpressions,
+  spatialShapes,
   registry,
   parts,
   initialSkin,
@@ -21,6 +25,41 @@ import {
 } from "./catalog.js";
 export class StudioModel {
   engine: PetEngine;
+  get is3D() {
+    return this.entry.rig.dimension === "3d";
+  }
+  private dimensionDrafts = new Map<"2d" | "3d", PetConfig>();
+  selectDimension(dimension: "2d" | "3d") {
+    const current = this.is3D ? "3d" : "2d";
+    if (current === dimension) return;
+    const entry = catalog.find((e) => (e.rig.dimension ?? "2d") === dimension);
+    if (!entry) return;
+    this.dimensionDrafts.set(current, structuredClone(this.export()));
+    const draft = this.dimensionDrafts.get(dimension);
+    if (draft) this.import(structuredClone(draft));
+    else this.choose(entry.skins[0]);
+    this.status = "";
+    this.changed();
+  }
+  create(dimension: "2d" | "3d", name: string) {
+    const entry = catalog.find((e) => (e.rig.dimension ?? "2d") === dimension);
+    if (!entry) throw new Error("没有可用的宠物模板");
+    const skin = {
+      ...structuredClone(entry.skins[0]),
+      id: "pet-" + crypto.randomUUID(),
+      name: name.trim() || (dimension === "3d" ? "Mallow 3D" : "Mallow"),
+    };
+    entry.skins.push(skin);
+    this.import({
+      version: 1,
+      skin,
+      rigConfig: skin.rigConfig ?? {},
+      pose: {},
+      attachments: [],
+    });
+    this.status = "";
+    this.changed();
+  }
   time = 0;
   timelineStart = 0;
   sequence: "expression" | "state" | "shape" = "expression";
@@ -61,9 +100,10 @@ export class StudioModel {
         const raw = sessionStorage.getItem("mofli.draft:" + projectKey);
         if (raw) {
           const draft = JSON.parse(raw),
-            base = catalog
-              .flatMap((e) => e.skins)
-              .find((s) => s.id === draft.skinId);
+            base =
+              catalog
+                .flatMap((e) => e.skins)
+                .find((s) => s.id === draft.skinId) ?? draft.customSkin;
           if (base)
             this.import({
               version: 1,
@@ -107,24 +147,72 @@ export class StudioModel {
   get states() {
     return statesFor(this.entry.rig);
   }
+  get shapeOptions() {
+    return this.skin.rig === "spatial-pet" ? spatialShapes : shapeOptions;
+  }
   get items() {
+    if (this.skin.rig === "spatial-pet" && this.sequence !== "state")
+      return this.sequence === "shape" ? spatialShapes : spatialExpressions;
+    if (this.is3D && this.sequence === "expression") {
+      const r = this.entry.rig.poseParameters?.expression;
+      if (!r) return [];
+      return Array.from(
+        { length: Math.min(64, Math.floor(r.max) - Math.ceil(r.min) + 1) },
+        (_, i) => {
+          const index = Math.ceil(r.min) + i;
+          return { index, name: String(index), duration: 3 };
+        },
+      );
+    }
     if (this.sequence === "state") return this.states;
-    const options = this.sequence === "expression"
-      ? [{ index: -1, name: "默认" }, ...(this.skin.rig === "cat-head" ? catExpressions : expressionOptions)]
-      : [{ index: this.entry.skins.find(s => s.id === this.skin.id)?.rigConfig?.shape ?? this.entry.rig.parameters.shape?.default ?? 0, name: "皮肤默认" }, ...shapeOptions.filter(s => s.index < 8)];
-    return options.map(s => ({ ...s, duration: 2.4 }));
+    const options =
+      this.sequence === "expression"
+        ? [
+            { index: -1, name: "默认" },
+            ...(this.skin.rig === "cat-head"
+              ? catExpressions
+              : expressionOptions),
+          ]
+        : [
+            {
+              index:
+                this.entry.skins.find((s) => s.id === this.skin.id)?.rigConfig
+                  ?.shape ??
+                this.entry.rig.parameters.shape?.default ??
+                0,
+              name: "皮肤默认",
+            },
+            ...shapeOptions.filter((s) => s.index < 8),
+          ];
+    return options.map((s) => ({ ...s, duration: 2.4 }));
   }
   get duration() {
-    return this.cycling ? this.items.reduce((sum, item) => sum + item.duration, 0)
-      : this.items[this.selectedItem]?.duration ?? 2.4;
+    return this.cycling
+      ? this.items.reduce((sum, item) => sum + item.duration, 0)
+      : (this.items[this.selectedItem]?.duration ?? 2.4);
   }
   get selectedItem() {
     if (this.cycling) return this.activeItem;
-    const value = this.sequence === "state" ? this.pose.state : this.sequence === "shape" ? this.config.shape : this.pose.expression;
-    return Math.max(0, this.items.findIndex(s => s.index === value));
+    const value =
+      this.sequence === "state"
+        ? this.pose.state
+        : this.sequence === "shape"
+          ? this.config.shape
+          : this.pose.expression;
+    return Math.max(
+      0,
+      this.items.findIndex((s) => s.index === value),
+    );
   }
-  get currentLabel() { return this.items[this.selectedItem]?.name ?? "默认"; }
-  get progress() { return ((this.time - this.timelineStart) % this.duration + this.duration) % this.duration; }
+  get currentLabel() {
+    return this.items[this.selectedItem]?.name ?? "默认";
+  }
+  get progress() {
+    return (
+      (((this.time - this.timelineStart) % this.duration) + this.duration) %
+      this.duration
+    );
+  }
   notifyPlayback() {
     this.revision++;
     for (const fn of this.listeners) fn();
@@ -138,18 +226,56 @@ export class StudioModel {
     const item = this.items[position];
     if (!item) return;
     this.activeItem = position;
-    const idle: RigPose = this.entry.rig.poseParameters?.state ? { state: 0 } : {};
-    const natural: RigPose = this.entry.rig.poseParameters?.expression ? { expression: -1 } : {};
+    if (this.is3D) {
+      if (this.sequence === "shape")
+        this.engine.setRigConfig({ ...this.config, shape: item.index }, at);
+      else if (
+        this.sequence === "expression" ||
+        this.entry.rig.poseParameters?.state
+      )
+        this.engine.setPose(
+          {
+            ...this.pose,
+            [this.sequence === "state" ? "state" : "expression"]: item.index,
+          },
+          at,
+        );
+      return;
+    }
+    const idle: RigPose = this.entry.rig.poseParameters?.state
+      ? { state: 0 }
+      : {};
+    const natural: RigPose = this.entry.rig.poseParameters?.expression
+      ? {
+          expression: this.is3D
+            ? this.entry.rig.poseParameters.expression.default
+            : -1,
+        }
+      : {};
     if (this.sequence === "shape") {
       this.engine.setPose({ ...this.pose, ...idle, ...natural }, at);
       this.engine.setRigConfig({ ...this.config, shape: item.index }, at);
     } else {
-      this.engine.setPose({ ...this.pose, ...(this.sequence === "state" ? { state: item.index, ...natural } : { ...idle, expression: item.index }) }, at);
+      this.engine.setPose(
+        {
+          ...this.pose,
+          ...(this.sequence === "state"
+            ? { state: item.index, ...natural }
+            : { ...idle, expression: item.index }),
+        },
+        at,
+      );
     }
   }
   selectItem(position: number) {
     this.applyItem(position);
-    this.timelineStart = this.time - (this.cycling ? this.items.slice(0, position).reduce((sum, item) => sum + item.duration, 0) : 0);
+    this.timelineStart =
+      this.time -
+      (this.cycling
+        ? this.items
+            .slice(0, position)
+            .reduce((sum, item) => sum + item.duration, 0)
+        : 0);
     this.changed();
   }
   toggleCycle() {
@@ -160,7 +286,7 @@ export class StudioModel {
   syncSequence() {
     if (!this.cycling) return;
     let remaining = this.progress;
-    const position = this.items.findIndex(item => {
+    const position = this.items.findIndex((item) => {
       if (remaining < item.duration - 1e-8) return true;
       remaining -= item.duration;
       return false;
@@ -176,6 +302,8 @@ export class StudioModel {
   import(value: unknown) {
     const next = registry.resolve(value);
     this.engine = next.engine;
+    this.sequence =
+      next.engine.dimension === "3d" ? "expression" : this.sequence;
     this.cycling = false;
     const entry = catalog.find((e) => e.rig.id === next.config.skin.rig)!;
     if (!entry.skins.some((s) => s.id === next.config.skin.id))
@@ -203,25 +331,45 @@ export class StudioModel {
       this.time = 0;
       this.attachments = this.attachments.filter(
         (a) =>
+          (parts.find((p) => p.attachment.id === a.type)?.attachment
+            .dimension ?? "2d") === (rig.dimension ?? "2d") &&
           rig.mounts?.[
             parts.find((p) => p.attachment.id === a.type)!.attachment.mount
           ],
       );
     }
     this.timelineStart = this.time;
-    if (this.sequence === "expression" && !this.entry.rig.poseParameters?.expression) this.sequence = "state";
-    if (this.sequence === "shape" && !this.entry.rig.parameters.shape) this.sequence = "state";
+    if (
+      this.sequence === "expression" &&
+      !this.entry.rig.poseParameters?.expression
+    )
+      this.sequence = "state";
+    if (this.sequence === "shape" && !this.entry.rig.parameters.shape)
+      this.sequence = "state";
     if (this.cycling) this.applyItem(0);
     this.status = "";
     this.changed();
   }
   setConfig(config: RigConfig) {
-    const faceControls = ["eyeWidth", "eyeHeight", "eyeSpacing", "faceYaw", "facePitch", "faceRoll"];
-    if (Object.keys(config).some(key => faceControls.includes(key)) && this.entry.rig.parameters.customFace) {
+    const faceControls = [
+      "eyeWidth",
+      "eyeHeight",
+      "eyeSpacing",
+      "faceYaw",
+      "facePitch",
+      "faceRoll",
+    ];
+    if (
+      Object.keys(config).some((key) => faceControls.includes(key)) &&
+      this.entry.rig.parameters.customFace
+    ) {
       this.cycling = false;
       this.sequence = "expression";
       config = { ...config, customFace: 1 };
-      this.engine.setPose({ ...this.pose, state: 0, expression: -1 }, this.time);
+      this.engine.setPose(
+        { ...this.pose, state: 0, expression: -1 },
+        this.time,
+      );
       this.timelineStart = this.time;
     }
     this.engine.setRigConfig({ ...this.config, ...config }, this.time);
@@ -244,8 +392,14 @@ export class StudioModel {
     this.changed();
   }
   wear(type: string, on: boolean) {
-    const mount = parts.find(p => p.attachment.id === type)?.attachment.mount;
-    const next = this.attachments.filter(a => a.type !== type && (!on || parts.find(p => p.attachment.id === a.type)?.attachment.mount !== mount));
+    const mount = parts.find((p) => p.attachment.id === type)?.attachment.mount;
+    const next = this.attachments.filter(
+      (a) =>
+        a.type !== type &&
+        (!on ||
+          parts.find((p) => p.attachment.id === a.type)?.attachment.mount !==
+            mount),
+    );
     if (on) next.push({ id: type, type, version: 1 });
     registry.export(this.engine, next);
     this.attachments = next;
@@ -260,6 +414,26 @@ export class StudioModel {
     registry.export(this.engine, next);
     this.attachments = next;
     this.changed();
+  }
+  partColor(type: string, key: string, value: string) {
+    const next = this.attachments.map((a) =>
+      a.type === type ? { ...a, colors: { ...a.colors, [key]: value } } : a,
+    );
+    registry.export(this.engine, next);
+    this.attachments = next;
+    this.changed();
+  }
+  scene(reducedMotion = false) {
+    return composeSpatialAttachments(
+      this.engine.sampleScene(this.time, reducedMotion),
+      this.attachments.map((a) => ({
+        id: a.id,
+        parameters: a.parameters,
+        colors: a.colors,
+        attachment: parts.find((p) => p.attachment.id === a.type)!.attachment,
+      })),
+      reducedMotion ? 0 : this.time,
+    );
   }
   frame() {
     this.syncSequence();
@@ -283,7 +457,7 @@ export class StudioModel {
     });
     if (this.cycling) {
       let remaining = this.time;
-      const position = this.items.findIndex(item => {
+      const position = this.items.findIndex((item) => {
         if (remaining < item.duration - 1e-8) return true;
         remaining -= item.duration;
         return false;
@@ -310,6 +484,7 @@ export class StudioModel {
       "mofli.draft:" + projectKey,
       JSON.stringify({
         skinId: base.id,
+        ...(!sourceSkinIds.has(base.id) ? { customSkin: base } : {}),
         colors: Object.fromEntries(
           Object.entries(this.skin.colors).filter(
             ([k, v]) => v !== base.colors[k],

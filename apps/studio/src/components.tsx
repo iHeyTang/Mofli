@@ -1,3 +1,5 @@
+import { requestSpatialThumbnail } from "./spatial-thumbnails.js";
+import { SpatialStage } from "./spatial-stage.js";
 import {
   useEffect,
   useState,
@@ -49,7 +51,62 @@ export function Action({
     </Button>
   );
 }
-export function Thumbnail({
+export function Thumbnail(props: Parameters<typeof SvgThumbnail>[0]) {
+  return props.rig.dimension === "3d" ? (
+    <SpatialThumbnail {...props} />
+  ) : (
+    <SvgThumbnail {...props} />
+  );
+}
+function SpatialThumbnail({
+  rig,
+  skin,
+  config = {},
+  pose = {},
+  time = 1,
+  spatialAccessory,
+  spatialInstance,
+}: Parameters<typeof SvgThumbnail>[0]) {
+  const ref = useRef<HTMLDivElement>(null);
+  const signature = JSON.stringify([
+    skin,
+    config,
+    pose,
+    time,
+    spatialAccessory,
+    spatialInstance,
+  ]);
+  useEffect(() => {
+    const host = ref.current!;
+    host.replaceChildren();
+    const filtered = Object.fromEntries(
+      Object.entries(pose).filter(([key]) => key in (rig.poseParameters ?? {})),
+    );
+    return requestSpatialThumbnail(
+      rig,
+      skin,
+      config,
+      filtered,
+      time,
+      (url) => {
+        if (!url) {
+          host.textContent = "预览不可用";
+          return;
+        }
+        const img = new Image();
+        img.src = url;
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        img.style.cssText = "width:100%;height:100%;object-fit:contain";
+        host.replaceChildren(img);
+      },
+      spatialAccessory,
+      spatialInstance,
+    );
+  }, [rig, signature]);
+  return <div className="pet-thumbnail" ref={ref} />;
+}
+function SvgThumbnail({
   rig,
   skin,
   config = {},
@@ -65,37 +122,59 @@ export function Thumbnail({
   time?: number;
   attachment?: Attachment;
   accessoryOnly?: boolean;
+  spatialAccessory?: string;
+  spatialInstance?: import("@mofli/core").AttachmentInstance;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const signature = JSON.stringify([skin, config, pose, time, attachment?.id, accessoryOnly]);
+  const signature = JSON.stringify([
+    skin,
+    config,
+    pose,
+    time,
+    attachment?.id,
+    accessoryOnly,
+  ]);
   useEffect(() => {
     const renderer = createSvgRenderer(ref.current!);
     const filtered = Object.fromEntries(
       Object.entries(pose).filter(([k]) => k in (rig.poseParameters ?? {})),
     );
-    const frame = new PetEngine(rig, skin, { rigConfig: config, pose: filtered }).sample(
-        time,
-        true,
-      );
+    const frame = new PetEngine(rig, skin, {
+      rigConfig: config,
+      pose: filtered,
+    }).sample(time, true);
     // Catalog thumbnails pack paired pieces together; the actual pet keeps rig spacing.
-    if(accessoryOnly && attachment){
-      const members=frame.mounts?.[attachment.mount]?.members;
-      if(members){
-        const values=Object.values(members),center=values.reduce((sum,m)=>sum+(m.volume?.origin.x??0),0)/values.length;
-        for(const member of values)if(member.volume){
-          const x=center+(member.volume.origin.x-center)*.35;
-          member.volume.origin.x=x;
-          const [a,b,c,d,,y]=member.matrix;member.matrix=[a,b,c,d,x,y];
-        }
+    if (accessoryOnly && attachment) {
+      const members = frame.mounts?.[attachment.mount]?.members;
+      if (members) {
+        const values = Object.values(members),
+          center =
+            values.reduce((sum, m) => sum + (m.volume?.origin.x ?? 0), 0) /
+            values.length;
+        for (const member of values)
+          if (member.volume) {
+            const x = center + (member.volume.origin.x - center) * 0.35;
+            member.volume.origin.x = x;
+            const [a, b, c, d, , y] = member.matrix;
+            member.matrix = [a, b, c, d, x, y];
+          }
       }
     }
-    const mounted=attachment ? composeAttachments(frame,[{id:"preview",attachment}]) : frame;
-    if(accessoryOnly) mounted.shapes=mounted.shapes.filter(s=>s.id.startsWith("attachment-preview-"));
+    const mounted = attachment
+      ? composeAttachments(frame, [{ id: "preview", attachment }])
+      : frame;
+    if (accessoryOnly)
+      mounted.shapes = mounted.shapes.filter((s) =>
+        s.id.startsWith("attachment-preview-"),
+      );
     renderer.render(mounted);
-    if(accessoryOnly){
-      const box=renderer.svg.getBBox();
-      const pad=Math.max(box.width,box.height)*.16+3;
-      renderer.svg.setAttribute("viewBox",`${box.x-pad} ${box.y-pad} ${box.width+pad*2} ${box.height+pad*2}`);
+    if (accessoryOnly) {
+      const box = renderer.svg.getBBox();
+      const pad = Math.max(box.width, box.height) * 0.16 + 3;
+      renderer.svg.setAttribute(
+        "viewBox",
+        `${box.x - pad} ${box.y - pad} ${box.width + pad * 2} ${box.height + pad * 2}`,
+      );
     }
     renderer.svg.setAttribute("aria-hidden", "true");
     return () => renderer.destroy();
@@ -143,7 +222,7 @@ export function PlaybackSlider() {
   const m = useModel();
   const [, refresh] = useState(0);
   useEffect(() => {
-    const id = window.setInterval(() => refresh(n => n + 1), 100);
+    const id = window.setInterval(() => refresh((n) => n + 1), 100);
     return () => clearInterval(id);
   }, []);
   return (
@@ -166,6 +245,10 @@ export function PlaybackSlider() {
 }
 
 export function PetStage() {
+  const m = useModel();
+  return m.is3D ? <SpatialStage /> : <SvgPetStage />;
+}
+function SvgPetStage() {
   const stage = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const m = useModel();
@@ -193,7 +276,7 @@ export function PetStage() {
       draw();
       const code = document.getElementById("timecode");
       if (code)
-        code.textContent = `${(model.progress).toFixed(2)} / ${model.duration.toFixed(2)} s`;
+        code.textContent = `${model.progress.toFixed(2)} / ${model.duration.toFixed(2)} s`;
       raf = requestAnimationFrame(tick);
     };
     surface.addEventListener(
@@ -248,13 +331,26 @@ export function PetStage() {
     const release = (e: PointerEvent) => {
       if (!pointer || e.pointerId !== pointer.id) return;
       if (e.type === "pointerup" && !pointer.moved)
-        model.engine.handle({ type: "tap", hit: renderer.hitTest(e.clientX, e.clientY), at: performance.now()/1000, choice: Math.random() }, model.time);
+        model.engine.handle(
+          {
+            type: "tap",
+            hit: renderer.hitTest(e.clientX, e.clientY),
+            at: performance.now() / 1000,
+            choice: Math.random(),
+          },
+          model.time,
+        );
       model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
       pointer = null;
       const r = surface.getBoundingClientRect();
-      if (e.pointerType !== "mouse" || e.type !== "pointerup" ||
-          e.clientX < r.left || e.clientX > r.right ||
-          e.clientY < r.top || e.clientY > r.bottom)
+      if (
+        e.pointerType !== "mouse" ||
+        e.type !== "pointerup" ||
+        e.clientX < r.left ||
+        e.clientX > r.right ||
+        e.clientY < r.top ||
+        e.clientY > r.bottom
+      )
         model.engine.handle({ type: "hover", value: false }, model.time);
     };
     surface.addEventListener("pointerup", release, { signal });
@@ -264,24 +360,35 @@ export function PetStage() {
       "pointerleave",
       () => {
         if (!pointer)
-          model.engine.handle(
-            { type: "hover", value: false },
-            model.time,
-          );
+          model.engine.handle({ type: "hover", value: false }, model.time);
       },
       { signal },
     );
-    window.addEventListener("blur", () => {
-      pointer = null;
-      model.engine.handle({ type: "drag", value: { x: 0, y: 0 } }, model.time);
-      model.engine.handle({ type: "hover", value: false }, model.time);
-    }, { signal });
+    window.addEventListener(
+      "blur",
+      () => {
+        pointer = null;
+        model.engine.handle(
+          { type: "drag", value: { x: 0, y: 0 } },
+          model.time,
+        );
+        model.engine.handle({ type: "hover", value: false }, model.time);
+      },
+      { signal },
+    );
     svg.addEventListener(
       "keydown",
       (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          model.engine.handle({ type: "tap", at: performance.now()/1000, choice: Math.random() }, model.time);
+          model.engine.handle(
+            {
+              type: "tap",
+              at: performance.now() / 1000,
+              choice: Math.random(),
+            },
+            model.time,
+          );
         }
       },
       { signal },
@@ -301,7 +408,11 @@ export function PetStage() {
       style={{ backgroundColor: m.skin.colors.paper ?? "#f6f7f3" }}
     >
       <div id="avatar" ref={host} style={{ transform: `scale(${m.zoom})` }} />
-      {m.debug && <div className="canvas-hint">X / Y / Z：局部方向 · 虚线：表面采样或角色单位范围</div>}
+      {m.debug && (
+        <div className="canvas-hint">
+          X / Y / Z：局部方向 · 虚线：表面采样或角色单位范围
+        </div>
+      )}
     </div>
   );
 }

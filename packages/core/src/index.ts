@@ -1,3 +1,4 @@
+import type { Scene3D } from "./scene3d.js";
 import { ClickTracker, type ClickReaction, type ClickHit, type HitArea } from './clicks.js';
 export type { ClickReaction, ClickHit, HitArea } from './clicks.js';
 export {defineResourcePack,collectResourcePacks,type ResourcePack} from './resource-pack.js';
@@ -102,6 +103,11 @@ export interface Frame {
   bounds: { x: number; y: number; width: number; height: number };
 }
 export interface Rig {
+  /** Omitted on existing rigs: original 2D SVG. */
+  dimension?: "2d" | "3d";
+  /** Optional migration of saved configurations before validation. */
+  migrateConfig?(value: import("./pet-config.js").PetConfig): import("./pet-config.js").PetConfig;
+  sampleScene?(input: Parameters<Rig["sample"]>[0]): Scene3D;
   validateDesign?(value:unknown):unknown;
   mounts?: Record<string,{kind:"frame";version:1}>;
   id: string;
@@ -334,6 +340,7 @@ export class PetEngine {
   }
   private begin(time: number) {
     this.assertTime(time);
+    if (this.rig.dimension === "3d") { this.lastEventTime = time; return; }
     this.transition = { from: this.sample(time), at: time };
     this.lastEventTime = time;
   }
@@ -374,6 +381,8 @@ export class PetEngine {
     skin: unknown,
     options: EngineOptions = {},
   ) {
+    if (rig.dimension && !["2d", "3d"].includes(rig.dimension)) throw new Error("Unknown pet dimension");
+    if (rig.dimension === "3d" && !rig.sampleScene) throw new Error("3D rigs require sampleScene");
     this.duration = options.transitionDuration ?? 0.22;
     if (
       !Number.isFinite(this.duration) ||
@@ -518,7 +527,7 @@ export class PetEngine {
     }
     this.lastEventTime = time;
   }
-  sample(time: number, reducedMotion = false): Frame {
+  private sampleInput(time: number, reducedMotion = false): Parameters<Rig["sample"]>[0] {
     if (!Number.isFinite(time) || time < 0)
       throw new Error("Time must be finite and non-negative");
     const motion: Record<string, number> = Object.fromEntries(
@@ -529,7 +538,7 @@ export class PetEngine {
         motion,
         sampleBehavior(this.action.clip, time - this.action.at),
       );
-    const frame = this.rig.sample({
+    return {
       time,
       skinTime: Math.max(0, time - this.skinAt),
       state: {
@@ -544,7 +553,15 @@ export class PetEngine {
       reducedMotion,
       motion,
       prepared: this.prepared,
-    });
+    };
+  }
+  get dimension(): "2d" | "3d" { return this.rig.dimension ?? "2d"; }
+  sampleScene(time: number, reducedMotion = false): Scene3D {
+    if (this.rig.dimension !== "3d" || !this.rig.sampleScene) throw new Error("Pet does not define a 3D scene");
+    return this.rig.sampleScene(this.sampleInput(time, reducedMotion));
+  }
+  sample(time: number, reducedMotion = false): Frame {
+    const frame = this.rig.sample(this.sampleInput(time, reducedMotion));
     if (!reducedMotion && this.transition && this.duration > 0) {
       const u = clamp((time - this.transition.at) / this.duration, 0, 1);
       return blendFrames(this.transition.from, frame, u * u * (3 - 2 * u));
@@ -582,3 +599,5 @@ export function defineSkin(rig: Rig, input: SkinInput): Skin {
   return skin;
 }
 export { PoseController } from "./pose.js";
+
+export {defineSpatialAttachment, composeSpatialAttachments} from "./spatial-attachments.js";

@@ -1,4 +1,4 @@
-import { renderMountDebug } from './mount-debug.js';
+import { renderMountDebug } from "./mount-debug.js";
 import type { Frame, Shape, SvgResource } from "./index.js";
 const NS = "http://www.w3.org/2000/svg";
 const allowed = new Set([
@@ -74,7 +74,11 @@ export function createSvgRenderer(
     )
       throw new Error("Invalid paint slot");
     for (const id of Object.values(shape.paint ?? {}))
-      if (resources.get(id)?.kind !== "linearGradient")
+      if (
+        !["linearGradient", "radialGradient"].includes(
+          resources.get(id)?.kind ?? "",
+        )
+      )
         throw new Error("Unknown gradient");
   }
   function paint(node: SVGElement, shape: Shape) {
@@ -111,17 +115,44 @@ export function createSvgRenderer(
           names.add(shape.id);
           validateShape(shape, resources, true);
         }
-      } else if (resource.kind === "linearGradient") {
+      } else if (
+        resource.kind === "linearGradient" ||
+        resource.kind === "radialGradient"
+      ) {
         if (
-          ![resource.x1, resource.x2, resource.y1, resource.y2].every(
-            Number.isFinite,
-          ) ||
+          !(
+            resource.kind === "linearGradient"
+              ? [resource.x1, resource.x2, resource.y1, resource.y2]
+              : [
+                  resource.cx,
+                  resource.cy,
+                  resource.r,
+                  resource.fx,
+                  resource.fy,
+                  ...resource.transform,
+                ]
+          ).every(Number.isFinite) ||
+          (resource.kind === "radialGradient" &&
+            (resource.r <= 0 ||
+              resource.transform.length !== 6 ||
+              Math.abs(
+                resource.transform[0] * resource.transform[3] -
+                  resource.transform[1] * resource.transform[2],
+              ) < 1e-12 ||
+              Math.hypot(
+                resource.fx - resource.cx,
+                resource.fy - resource.cy,
+              ) >= resource.r)) ||
           resource.stops.length < 2 ||
           resource.stops.some(
             (s) =>
               !Number.isFinite(s.offset) ||
               s.offset < 0 ||
               s.offset > 1 ||
+              (s.opacity !== undefined &&
+                (!Number.isFinite(s.opacity) ||
+                  s.opacity < 0 ||
+                  s.opacity > 1)) ||
               !/^#[\da-f]{6}$/i.test(s.color),
           )
         )
@@ -152,12 +183,23 @@ export function createSvgRenderer(
         }
       } else {
         node.setAttribute("gradientUnits", "userSpaceOnUse");
-        for (const key of ["x1", "y1", "x2", "y2"] as const)
-          node.setAttribute(key, String(resource[key]));
+        if (resource.kind === "linearGradient") {
+          for (const key of ["x1", "y1", "x2", "y2"] as const)
+            node.setAttribute(key, String(resource[key]));
+        } else {
+          for (const key of ["cx", "cy", "r", "fx", "fy"] as const)
+            node.setAttribute(key, String(resource[key]));
+          node.setAttribute(
+            "gradientTransform",
+            `matrix(${resource.transform.join(" ")})`,
+          );
+        }
         for (const stop of resource.stops) {
           const child = document.createElementNS(NS, "stop");
           child.setAttribute("offset", String(stop.offset));
           child.setAttribute("stop-color", stop.color);
+          if (stop.opacity !== undefined)
+            child.setAttribute("stop-opacity", String(stop.opacity));
           node.append(child);
         }
       }
@@ -187,23 +229,50 @@ export function createSvgRenderer(
   return {
     svg,
     render,
-    hitTest(clientX: number, clientY: number): import('./clicks.js').ClickHit {
+    hitTest(clientX: number, clientY: number): import("./clicks.js").ClickHit {
       const area = currentFrame?.hitArea;
-      const shape = area ? nodes.get(area.shape) as SVGGeometryElement | undefined : undefined;
+      const shape = area
+        ? (nodes.get(area.shape) as SVGGeometryElement | undefined)
+        : undefined;
       const bounds = svg.getBoundingClientRect();
-      const outside = { region: 'outside', point: {
-        x: Math.max(-1,Math.min(1,2*(clientX-bounds.left)/Math.max(1,bounds.width)-1)),
-        y: Math.max(-1,Math.min(1,2*(clientY-bounds.top)/Math.max(1,bounds.height)-1)),
-      }};
-      if (!shape || Number(shape.getAttribute('opacity') ?? 1) < .1) return outside;
+      const outside = {
+        region: "outside",
+        point: {
+          x: Math.max(
+            -1,
+            Math.min(
+              1,
+              (2 * (clientX - bounds.left)) / Math.max(1, bounds.width) - 1,
+            ),
+          ),
+          y: Math.max(
+            -1,
+            Math.min(
+              1,
+              (2 * (clientY - bounds.top)) / Math.max(1, bounds.height) - 1,
+            ),
+          ),
+        },
+      };
+      if (!shape || Number(shape.getAttribute("opacity") ?? 1) < 0.1)
+        return outside;
       const matrix = shape.getScreenCTM();
       if (!matrix) return outside;
-      const local = new DOMPoint(clientX,clientY).matrixTransform(matrix.inverse());
+      const local = new DOMPoint(clientX, clientY).matrixTransform(
+        matrix.inverse(),
+      );
       if (!shape.isPointInFill(local)) return outside;
       const box = shape.getBBox();
-      const x = (local.x-box.x)/Math.max(.001,box.width), y = (local.y-box.y)/Math.max(.001,box.height);
-      const region = area!.regions.find(r => x>=r.x && y>=r.y && x<=r.x+r.width && y<=r.y+r.height);
-      return { region: region?.id ?? 'body', point: {x:x*2-1,y:y*2-1} };
+      const x = (local.x - box.x) / Math.max(0.001, box.width),
+        y = (local.y - box.y) / Math.max(0.001, box.height);
+      const region = area!.regions.find(
+        (r) =>
+          x >= r.x && y >= r.y && x <= r.x + r.width && y <= r.y + r.height,
+      );
+      return {
+        region: region?.id ?? "body",
+        point: { x: x * 2 - 1, y: y * 2 - 1 },
+      };
     },
     setDebug(value: boolean) {
       debug = value;

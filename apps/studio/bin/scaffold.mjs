@@ -2,13 +2,18 @@ import { mkdirSync, existsSync, writeFileSync } from "node:fs";
 import { resolve, basename } from "node:path";
 export function scaffold(
   target,
-  { type = "skin", rig = "bloub", version = "0.1.0" } = {},
+  { type = "skin", rig, dimension = "2d", version = "0.1.0" } = {},
 ) {
+  if (!["2d", "3d"].includes(dimension))
+    throw new Error("--dimension must be 2d or 3d");
+  rig ??= dimension === "3d" ? "spatial" : "bloub";
+  if (dimension === "3d" && rig !== "spatial")
+    throw new Error("3D projects require --rig spatial");
   if (!["skin", "attachment", "pack"].includes(type))
     throw new Error("--type must be skin, attachment or pack");
   if (rig === "cat-head") rig = "mew";
-  if (!["bloub", "mew"].includes(rig))
-    throw new Error("--rig must be bloub or mew");
+  if (!["bloub", "mew", "spatial"].includes(rig))
+    throw new Error("--rig must be bloub, mew or spatial");
   const dir = resolve(target),
     id = basename(dir);
   if (!/^[a-z][a-z0-9-]{0,49}$/.test(id))
@@ -16,23 +21,49 @@ export function scaffold(
   if (existsSync(dir))
     throw new Error("Destination already exists; choose a new directory");
   const rigPackage = "@mofli/grove/rigs/" + rig;
-  const rigExport = rig === "bloub" ? "bloubRig" : "mewRig",
-    factory = rig === "bloub" ? "defineBloubSkin" : "defineMewSkin";
+  const rigExport =
+      rig === "spatial"
+        ? "spatialRig"
+        : rig === "bloub"
+          ? "bloubRig"
+          : "mewRig",
+    factory =
+      rig === "spatial"
+        ? "defineSpatialSkin"
+        : rig === "bloub"
+          ? "defineBloubSkin"
+          : "defineMewSkin";
   const source =
-    type === "pack"
-      ? `import {defineResourcePack,defineAttachment} from '@mofli/core';
+    type === "pack" && rig === "spatial"
+      ? `import {defineResourcePack} from '@mofli/core';
+import {spatialRig,defineSpatialSkin} from '@mofli/grove/rigs/spatial';
+export const pack=defineResourcePack({id:'${id}',version:1,rigs:[spatialRig],skins:[defineSpatialSkin({id:'${id}-blob',name:'${id}',colors:{body:'#b1decd'}})]});
+export default pack;
+`
+      : type === "pack"
+        ? `import {defineResourcePack,defineAttachment} from '@mofli/core';
 import {bloubRig,defineBloubSkin} from '@mofli/grove/rigs/bloub';
 import {mewRig,defineMewSkin} from '@mofli/grove/rigs/mew';
 const gem=defineAttachment({id:'${id}-gem',mount:'head.forehead',slot:'head.overlay',scene:{version:1,nodes:[{id:'gem',geometry:{kind:'ellipse',cx:0,cy:0,rx:.15,ry:.18},attrs:{fill:'#dfcdab'}}]}});
 export const pack=defineResourcePack({id:'${id}',version:1,rigs:[bloubRig,mewRig],skins:[defineBloubSkin({id:'${id}-blob',name:'Soft blob',colors:{body:'#536852'}}),defineMewSkin({id:'${id}-cat',name:'Soft cat',colors:{body:'#536852'}})],attachments:[{name:'Soft gem',attachment:gem}]});
 export default pack;
 `
-      : type === "skin"
-        ? `import {${rigExport},${factory}} from '${rigPackage}';
-export const skin=${factory}({id:'${id}',name:'${id}',colors:{body:'#536852'}});
+        : type === "skin"
+          ? `import {${rigExport},${factory}} from '${rigPackage}';
+export const skin=${factory}({id:'${id}',name:'${id}',colors:{body:'${rig === "spatial" ? "#b1decd" : "#536852"}'}});
 export const pet={rig:${rigExport},skin};
 `
-        : `import {defineAttachment} from '@mofli/core';
+          : rig === "spatial"
+            ? `import {defineSpatialAttachment} from '@mofli/core';
+import {ellipsoid3D} from '@mofli/core/scene3d';
+const geometry=ellipsoid3D([.18,.15,.18]);
+export const attachment=defineSpatialAttachment({
+ id:'${id}',mount:'head.crown',colors:{body:'#dfcdab'},labels:{body:'球体',size:'尺寸'},
+ parameters:{size:{min:.6,max:1.4,default:1}},
+ sampleScene(_context,p,colors){return [{id:'pearl',geometry,material:{color:colors.body!,gloss:.3},transform:{position:[0,.22,0],scale:[p.size!,p.size!,p.size!]}}];},
+});
+`
+            : `import {defineAttachment} from '@mofli/core';
 // Local coordinates use head radii. Core projects the path through the rig mount.
 export const attachment=defineAttachment({
  id:'${id}',mount:'head.lower.front',slot:'head.overlay',
@@ -53,7 +84,7 @@ export default {packs:[pack],defaultSkin:'${id}-blob'};
 export default {pets:[pet],defaultSkin:pet.skin.id};
 `
         : `import {attachment} from './src/index.js';
-export default {attachments:[{name:'${id}',attachment}],defaultAttachments:[attachment.id]};
+export default {attachments:[{name:'${id}',attachment}],defaultAttachments:[attachment.id]${rig === "spatial" ? ",defaultSkin:'sprout-spatial'" : ""}};
 `;
   const manifest = {
     name: id,

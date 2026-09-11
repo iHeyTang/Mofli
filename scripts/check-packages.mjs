@@ -131,6 +131,10 @@ const registry=new PetRegistry().registerPacks(grovePack);
 for(const skin of grovePack.skins)assert.ok(registry.create({version:1,skin,rigConfig:{},pose:{},attachments:[]}).sample(.75).shapes.length);
 const custom=defineBloubSkin({id:'consumer-custom',name:'Custom',colors:{body:'#567856'}});
 assert.ok(new PetEngine(bloubRig,custom).sample(0).shapes.length);
+
+const {createSpatialPetScene,spatialRig,spatialSkin}=await import('@mofli/grove/rigs/spatial');
+assert.ok(createSpatialPetScene({yaw:1}).nodes.length);
+assert.ok(new PetEngine(spatialRig,spatialSkin).sampleScene(1).nodes.length);
 assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
 `);
   run(process.execPath,['smoke.mjs'],consumer);
@@ -147,7 +151,7 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
   );
   run("npm", ["run", "typecheck"], studio);
   run("npm", ["run", "build"], studio);
-  for (const page of ["index.html"])
+  for (const page of ["index.html", "spatial.html"])
     readFileSync(join(studio, "dist", page));
   console.log(
     "@mofli/studio: isolated install, typecheck and production build OK",
@@ -185,11 +189,11 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
   const cli = join(consumer, "node_modules/@mofli/studio/bin/mofli.mjs");
   const help=run("npm",["exec","--offline","--","mofli","--help"],consumer);
   if(!help.includes("mofli init"))throw new Error("Packed npm CLI launcher failed");
-  for (const type of ["skin", "attachment", "pack"]) {
-    const dir = join(temp, "creator-" + type);
+  for (const [type, dimension] of [["skin","2d"],["attachment","2d"],["pack","2d"],["skin","3d"],["pack","3d"]]) {
+    const dir = join(temp, "creator-" + type + "-" + dimension);
     run(
       process.execPath,
-      [cli, "init", dir, "--type", type, "--no-install"],
+      [cli, "init", dir, "--type", type, "--dimension", dimension, "--no-install"],
       consumer,
     );
     install(dir, JSON.parse(readFileSync(join(dir, "package.json"), "utf8")));
@@ -211,7 +215,7 @@ assert.throws(()=>import.meta.resolve('@mofli/core/rigs'));
         readFileSync(join(dir, "pet-runtime", file));
     }
     console.log(
-      `Packed CLI: ${type} scaffold, install, build and validation OK`,
+      `Packed CLI: ${dimension} ${type} scaffold, install, build and validation OK`,
     );
   }
 } catch (error) {

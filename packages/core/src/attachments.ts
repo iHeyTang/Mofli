@@ -4,8 +4,8 @@ export interface VolumeMount {originDepth?:number;origin:Point;scale:number;righ
 export interface AttachmentContext {project(point:readonly [number,number,number],member?:string):Point & {depth:number}; surface(point:readonly [number,number],member?:string):Point & {depth:number}; time:number}
 export interface MountFrame {members?:MountFrames;surface?:readonly [number,number];volume?:VolumeMount;kind:'frame';version:1;matrix:Affine2D;visibility:number}
 export type MountFrames=Record<string,MountFrame>;
-export interface Attachment {parameters?:Record<string,{min:number;max:number;default:number}>;id:string;mount:string;slot:string;volume?:boolean;sample(context:AttachmentContext,parameters:Readonly<Record<string,number>>):(Shape & {slot?:string})[]}
-export interface AttachmentInstance {id:string;attachment:Attachment;parameters?:Record<string,number>}
+export interface Attachment {previewNodes?:readonly string[];dimension?:"2d"|"3d";colors?:Record<string,string>;labels?:Record<string,string>;sampleScene?(context:{time:number},parameters:Readonly<Record<string,number>>,colors:Readonly<Record<string,string>>):import("./scene3d.js").Node3D[];parameters?:Record<string,{min:number;max:number;default:number}>;id:string;mount:string;slot:string;volume?:boolean;sample(context:AttachmentContext,parameters:Readonly<Record<string,number>>):(Shape & {slot?:string})[]}
+export interface AttachmentInstance {colors?:Record<string,string>;id:string;attachment:Attachment;parameters?:Record<string,number>}
 /** Shared projection for attachments and mount diagnostics. */
 export function createMountContext(m:MountFrame,time=0):AttachmentContext {
   const target=(member?:string)=>{
@@ -32,6 +32,7 @@ export function composeAttachments(frame:Frame,instances:readonly AttachmentInst
  const ids=new Set<string>(),occupied=new Set<string>(),insertions=new Map<number,Shape[]>();
  for(const {id,attachment:a,parameters={}} of instances){
   if(!/^[\w-]+$/.test(id)||ids.has(id))throw new Error('Invalid or duplicate attachment instance');ids.add(id);
+  if(a.dimension==="3d")throw new Error(`Incompatible attachment: ${a.id}`);
   const m=frame.mounts?.[a.mount],slot=frame.slots?.[a.slot];
   if(!m||m.kind!=='frame'||m.version!==1||slot===undefined)throw new Error(`Incompatible attachment: ${a.id}`);
   if(occupied.has(a.mount))throw new Error(`Mount occupied: ${a.mount}`);occupied.add(a.mount);

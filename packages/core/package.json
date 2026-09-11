@@ -24,6 +24,14 @@
     "./spherical-face": {
       "types": "./dist/spherical-face.d.ts",
       "import": "./dist/spherical-face.js"
+    },
+    "./scene3d": {
+      "types": "./dist/scene3d.d.ts",
+      "import": "./dist/scene3d.js"
+    },
+    "./spatial-browser": {
+      "types": "./dist/spatial-browser.d.ts",
+      "import": "./dist/spatial-browser.js"
     }
   },
   "scripts": {

@@ -33,6 +33,18 @@ npm run export:pet
 
 `--type skin` 创建皮肤项目，`--type attachment` 创建饰品项目；`--rig bloub|mew` 选择皮肤模板使用的骨架。完整流程见 [创作者工作流](https://github.com/iHeyTang/Mofli/blob/main/docs/creator-workflow.md)。
 
+## 创建 3D 宠物
+
+Studio 先选择 2D / 3D，再选择角色与饰品。2D 使用 SVG，3D 固定使用 WebGL；新建宠物沿用当前类型。
+
+创建源码项目：
+
+```sh
+npx @mofli/studio init my-3d-pet --dimension 3d
+```
+
+支持 3D skin 或 pack 模板；`--rig spatial` 可选择 Spatial 骨架。导出的 `mountPet(container)` 固定使用 WebGL。
+
 ## CLI
 
 - `npx @mofli/studio dev`：启动工作台。
@@ -47,3 +59,5 @@ npm run export:pet
 ## License
 
 Mofli v0.1 is a prototype. Mofli code is licensed under [MIT](LICENSE). Third-party code retains its original attribution; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+3D 目录缩略图使用一个临时共享渲染器生成静态预览，每次绘制后分批处理，并按骨架对象及完整外观参数缓存（每个骨架最多 128 项）。切换宠物不会同步生成整组 SVG 缩略图；未完成的旧角色任务会取消。无 WebGL 时显示预览不可用。该缓存只用于 Studio 卡片，不改变宠物定义和主画布。

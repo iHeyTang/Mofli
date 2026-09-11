@@ -1,5 +1,10 @@
 import { collectResourcePacks } from "@mofli/core";
-import {grovePack} from '@mofli/grove';
+import {
+  spatialParts,
+  spatialRig,
+  spatialSkins,
+} from "@mofli/grove/rigs/spatial";
+import { grovePack } from "@mofli/grove";
 export function resourcesFor(project = {}) {
   const packs = project.packs ?? [];
   const rigIds = new Set(packs.flatMap((p) => (p.rigs ?? []).map((r) => r.id))),
@@ -10,7 +15,22 @@ export function resourcesFor(project = {}) {
   // Installed defaults are fallbacks. An explicit project pack owns its IDs,
   // including implementations loaded through Vite's separate server module graph.
   const base = collectResourcePacks([
-    {...grovePack,id:'mofli.defaults',rigs:grovePack.rigs.filter(r=>!rigIds.has(r.id)),skins:grovePack.skins.filter(s=>!skinIds.has(s.id)),attachments:grovePack.attachments.filter(p=>!partIds.has(p.attachment.id))},
+    {
+      ...grovePack,
+      id: "mofli.defaults",
+      rigs: grovePack.rigs.filter((r) => !rigIds.has(r.id)),
+      skins: grovePack.skins.filter((s) => !skinIds.has(s.id)),
+      attachments: grovePack.attachments.filter(
+        (p) => !partIds.has(p.attachment.id),
+      ),
+    },
+    {
+      id: "mofli.spatial",
+      version: 1,
+      rigs: rigIds.has(spatialRig.id) ? [] : [spatialRig],
+      attachments: spatialParts.filter((p) => !partIds.has(p.attachment.id)),
+      skins: spatialSkins.filter((s) => !skinIds.has(s.id)),
+    },
     ...packs,
   ]);
   // Existing creator projects can still override a default skin through pets.

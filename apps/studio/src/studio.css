@@ -217,3 +217,26 @@ h1,h2,h3,p {margin:0}
 #stage { touch-action: none; cursor: pointer; }
 #avatar svg:focus { outline: none; }
 #stage:has(#avatar svg:focus-visible) .canvas-hint { color: var(--studio-sage); text-decoration: underline; text-underline-offset: 4px; }
+
+.create-pet-button {display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 16px;margin:0 0 20px;border:1px solid var(--line, #e2e6dc);border-radius:12px;color:var(--fern, #466c56);}
+.create-pet-dialog {margin:auto;width:min(420px,calc(100% - 32px));padding:24px;border:1px solid #e2e6dc;border-radius:20px;background:#f9f9f6;color:#28332d;}
+.create-pet-dialog::backdrop {background:rgb(32 35 31 / 25%);}
+.create-pet-dialog .panel-heading {margin-bottom:20px;}
+.pet-type-options {display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pet-type-options button {display:grid;gap:6px;text-align:left;padding:16px;border:1px solid #e2e6dc;border-radius:12px;}
+.pet-type-options button[aria-pressed="true"] {background:#e9efe4;border-color:#a8bea6;color:#466c56;}
+.pet-type-options span {font-size:13px;}
+.pet-name-field {display:grid;gap:8px;margin:24px 0;}
+.pet-name-field input {width:100%;padding:10px 12px;border:1px solid #e2e6dc;border-radius:10px;background:#fff;}
+.create-pet-submit {width:100%;padding:12px;border-radius:12px;background:#466c56;color:white;}
+
+
+
+.spatial-toggle {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0;}
+.spatial-toggle input {width:16px;height:16px;flex:0 0 auto;accent-color:var(--studio-sage);}
+.spatial-canvas #avatar {width:min(88%,520px);height:88%;}
+
+.dimension-switch {display:flex;gap:8px;margin-bottom:18px;}
+.dimension-switch button {flex:1;padding:10px 12px;border:1px solid var(--studio-line);border-radius:10px;background:transparent;color:var(--studio-muted);font-weight:600;cursor:pointer;}
+.dimension-switch button[aria-pressed="true"] {background:var(--studio-ink);border-color:var(--studio-ink);color:var(--studio-paper);}
+.dimension-switch button:disabled {opacity:.35;cursor:default;}

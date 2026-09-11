@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
 import {resourcesFor} from '../resources.js';
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -38,6 +40,8 @@ function config(root, withProject = true) {
   return {
     configFile: false,
     root: studio,
+    // Different creator projects must not overwrite each other's optimized modules.
+    cacheDir: join(tmpdir(), "mofli-vite", createHash("sha256").update(studio + "\0" + root).digest("hex").slice(0, 24)),
     plugins: [
       react(),
       tailwindcss(),
@@ -78,15 +82,16 @@ try {
     console.log(version);
   } else if (command === "help" || command === "--help") {
     console.log(
-      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--rig bloub|mew] [--no-install]\nmofli dev [--project directory] [--port 14517]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
+      `Mofli ${version}\n\nmofli init <directory> [--type skin|attachment|pack] [--dimension 2d|3d] [--rig bloub|mew|spatial] [--no-install]\nmofli dev [--project directory] [--port 14517]\nmofli check [pet.json] [--project directory]\nmofli export <pet.json> [--out pet-runtime] [--project directory]\n\nEdit src/index.ts; Studio reloads your project. Export JSON in Studio, then export a runtime module here.`,
     );
   } else if (command === "init") {
     const type = option("--type", "skin"),
-      rig = option("--rig", "bloub"),
+      rig = option("--rig", undefined),
+      dimension = option("--dimension", "2d"),
       skip = flag("--no-install");
     if (args.length !== 1)
       throw new Error("Usage: mofli init <directory> --type skin|attachment|pack");
-    const dir = scaffold(args[0], { type, rig, version });
+    const dir = scaffold(args[0], { type, rig, dimension, version });
     console.log("Created " + dir);
     if (!skip) {
       const r = spawnSync(
@@ -143,22 +148,17 @@ try {
             JSON.parse(readFileSync(resolve(root, args[0]), "utf8")),
           ).config;
         {
-          for (const skin of resourcesFor(project).skins)
-            registry
-              .create({
-                version: 1,
-                skin,
-                rigConfig: {},
-                pose: {},
-                attachments: [],
-              })
-              .sample(1, true);
+          for (const skin of resourcesFor(project).skins) {
+            const pet = registry.create({version:1,skin,rigConfig:{},pose:{},attachments:[]});
+            if(pet.engine.dimension === "3d") pet.sampleScene(1,true);
+            else pet.sample(1,true);
+          }
           const { bloubSkin } = await import("@mofli/grove/skins/bloub");
           for (const { attachment } of resourcesFor(project).attachments) {
             const resources=resourcesFor(project);
-            const compatibleRig=resources.rigs.find(r=>r.mounts?.[attachment.mount]);
+            const compatibleRig=resources.rigs.find(r=>(r.dimension??"2d")===(attachment.dimension??"2d")&&r.mounts?.[attachment.mount]);
             const compatible=resources.skins.find(s=>s.rig===compatibleRig?.id);
-            registry
+            const mounted=registry
               .create({
                 version: 1,
                 skin: compatible ?? bloubSkin,
@@ -167,8 +167,8 @@ try {
                 attachments: [
                   { id: attachment.id, type: attachment.id, version: 1 },
                 ],
-              })
-              .sample(1, true);
+              });
+            if(mounted.engine.dimension==="3d")mounted.sampleScene(1,true);else mounted.sample(1,true);
           }
         }
         if (command === "check")
@@ -241,6 +241,7 @@ export function mountPet(container,options={}){return createPet({...options,cont
             join(out, "pet.d.ts"),
             `export declare const config: {version:1;skin:unknown;rigConfig:Record<string,number>;pose:Record<string,number>;attachments:unknown[]};
 export declare function mountPet(container:HTMLElement,options?:{debug?:boolean;reducedMotion?:boolean}):{
+ getRenderer():'svg'|'webgl'|'unavailable';
  destroy():void;setPaused(value:boolean):void;setDebug(value:boolean):void;setSkin(value:unknown):void;
  setPose(value:Record<string,number>):void;setRigConfig(value:Record<string,number>):void;
  setMood(value:'calm'|'curious'|'happy'):void;
@@ -259,7 +260,7 @@ export declare function mountPet(container:HTMLElement,options?:{debug?:boolean;
 
           writeFileSync(
             join(out, "README.md"),
-            'Import { mountPet } from "./pet.mjs"; then call mountPet(container). Set container width/height. Call returned destroy() on unmount. No Studio or framework runtime is required.\n',
+            'Import { mountPet } from "./pet.mjs"; then call mountPet(container). Set container width/height. Call returned destroy() on unmount. No Studio or framework runtime is required. 2D pets use SVG; 3D pets require WebGL. An unavailable WebGL context displays a message, without SVG fallback.\n',
           );
           writeFileSync(
             join(out, "index.html"),

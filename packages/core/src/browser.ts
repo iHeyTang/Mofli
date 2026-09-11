@@ -1,5 +1,6 @@
-import {PetRegistry,type PetConfig} from './pet-config.js';
-import {composeAttachments} from './attachments.js';
+import { mountSpatialPet } from "./spatial-pet.js";
+import { PetRegistry, type PetConfig } from "./pet-config.js";
+import { composeAttachments } from "./attachments.js";
 import { createSvgRenderer } from "./svg.js";
 export { createSvgRenderer } from "./svg.js";
 import {
@@ -12,20 +13,30 @@ import {
   type Behavior,
   type EngineOptions,
 } from "./index.js";
-export function createPet(options: {
-  container: HTMLElement;
-  debug?: boolean;
-  reducedMotion?: boolean;
-  rigConfig?: EngineOptions["rigConfig"];
-  pose?: EngineOptions["pose"];
-  transitionDuration?: EngineOptions["transitionDuration"];
-} & ({rig:Rig;skin:unknown;registry?:never;config?:never}|{registry:PetRegistry;config:unknown;rig?:never;skin?:never})) {
-  const resolved=options.registry?.resolve(options.config);
-  const engine = resolved?.engine ?? new PetEngine(options.rig!, options.skin, {
-    transitionDuration: options.transitionDuration,
-    rigConfig: options.rigConfig,
-    pose: options.pose,
-  });
+export function createPet(
+  options: {
+    container: HTMLElement;
+    debug?: boolean;
+    reducedMotion?: boolean;
+    rigConfig?: EngineOptions["rigConfig"];
+    pose?: EngineOptions["pose"];
+    transitionDuration?: EngineOptions["transitionDuration"];
+  } & (
+    | { rig: Rig; skin: unknown; registry?: never; config?: never }
+    | { registry: PetRegistry; config: unknown; rig?: never; skin?: never }
+  ),
+) {
+  const resolved = options.registry?.resolve(options.config);
+  const engine =
+    resolved?.engine ??
+    new PetEngine(options.rig!, options.skin, {
+      transitionDuration: options.transitionDuration,
+      rigConfig: options.rigConfig,
+      pose: options.pose,
+    });
+  if (engine.dimension === "3d") {
+    return mountSpatialPet(engine, {...options,instances:resolved?.instances,attachments:resolved?.config.attachments});
+  }
   const renderer = createSvgRenderer(options.container, {
     debug: options.debug,
   });
@@ -52,7 +63,11 @@ export function createPet(options: {
   const draw = () => {
     if (!dead)
       renderer.render(
-        composeAttachments(engine.sample(time, options.reducedMotion ?? media.matches),resolved?.instances??[],(options.reducedMotion ?? media.matches)?0:time),
+        composeAttachments(
+          engine.sample(time, options.reducedMotion ?? media.matches),
+          resolved?.instances ?? [],
+          (options.reducedMotion ?? media.matches) ? 0 : time,
+        ),
       );
   };
   const tick = (ms: number) => {
@@ -125,7 +140,16 @@ export function createPet(options: {
       dragCurrent = dragTarget;
       engine.handle({ type: "drag", value: dragCurrent }, time);
     }
-    if (e.type === "pointerup" && !moved) engine.handle({ type: "tap", hit: renderer.hitTest(e.clientX,e.clientY), at: performance.now()/1000, choice: Math.random() }, time);
+    if (e.type === "pointerup" && !moved)
+      engine.handle(
+        {
+          type: "tap",
+          hit: renderer.hitTest(e.clientX, e.clientY),
+          at: performance.now() / 1000,
+          choice: Math.random(),
+        },
+        time,
+      );
     draw();
   };
   svg.addEventListener("pointerup", release, { signal });
@@ -146,7 +170,10 @@ export function createPet(options: {
     (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        engine.handle({ type: "tap", at: performance.now()/1000, choice: Math.random() }, time);
+        engine.handle(
+          { type: "tap", at: performance.now() / 1000, choice: Math.random() },
+          time,
+        );
         draw();
       }
     },
@@ -155,6 +182,7 @@ export function createPet(options: {
   draw();
   raf = requestAnimationFrame(tick);
   return {
+    getRenderer: () => "svg" as const,
     play(behavior: Behavior) {
       const accepted = engine.play(behavior, time);
       draw();
@@ -192,7 +220,13 @@ export function createPet(options: {
     getPose: () => engine.getPose(),
     getCharacter: () => engine.getCharacter(),
     exportSkin: () => engine.exportSkin(),
-    exportConfig: ():PetConfig => ({version:1,skin:engine.getSkin(),rigConfig:engine.getRigConfig(),pose:engine.getPose(),attachments:structuredClone(resolved?.config.attachments??[])}),
+    exportConfig: (): PetConfig => ({
+      version: 1,
+      skin: engine.getSkin(),
+      rigConfig: engine.getRigConfig(),
+      pose: engine.getPose(),
+      attachments: structuredClone(resolved?.config.attachments ?? []),
+    }),
     getSkin: () => engine.getSkin(),
     setDebug(value: boolean) {
       renderer.setDebug(value);

@@ -1,36 +1,109 @@
-import {useState,useEffect,useRef} from 'react';
-import {Chip,Tabs,Select,Label,ListBox} from '@heroui/react';
-import {RotateCcw,Play,Pause,Shapes,SlidersHorizontal,Sparkles,Box,Check,Plus,Minus,Smile,X} from 'lucide-react';
-import {catalog,parts,expressionOptions,catExpressions,shapeOptions} from './catalog.js';
-import {useModel,Action,Thumbnail,Range,PetStage,PlaybackSlider} from './components.js';
-const mountNames: Record<string,string> = {"head.crown":"头顶中央","head.sides":"成对侧部","head.forehead":"额头","head.cheeks":"双颊表面","head.lower.front":"下缘中央","head.lower.sides":"下缘两侧","character.orbit":"角色环绕"};
+import { AccessoryCard } from "./accessory-card.js";
+import { CreatePet } from "./create-pet.js";
+import { useState, useEffect, useRef } from "react";
+import { Chip, Tabs, Select, Label, ListBox } from "@heroui/react";
+import {
+  RotateCcw,
+  Play,
+  Pause,
+  Shapes,
+  SlidersHorizontal,
+  Sparkles,
+  Box,
+  Check,
+  Plus,
+  Minus,
+  Smile,
+  X,
+} from "lucide-react";
+import {
+  catalog,
+  parts,
+  expressionOptions,
+  catExpressions,
+  shapeOptions,
+} from "./catalog.js";
+import {
+  useModel,
+  Action,
+  Thumbnail,
+  Range,
+  PetStage,
+  PlaybackSlider,
+} from "./components.js";
+const mountNames: Record<string, string> = {
+  "head.crown": "头顶中央",
+  "head.sides": "成对侧部",
+  "head.forehead": "额头",
+  "head.cheeks": "双颊表面",
+  "head.lower.front": "下缘中央",
+  "head.lower.sides": "下缘两侧",
+  "character.orbit": "角色环绕",
+};
 function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
   const m = useModel();
   const [selectedTab, setTab] = useState<"skins" | "parts">("skins");
   const tab = mode ?? selectedTab;
+  const dimension = m.is3D ? "3d" : "2d";
+  const availableParts = parts.filter(
+    (p) => (p.attachment.dimension ?? "2d") === dimension,
+  );
+  const available = catalog.filter(
+    (entry) => (entry.rig.dimension ?? "2d") === dimension,
+  );
+
   return (
     <>
       <div className="panel-heading">
-        <span>{mode === "skins" ? "选择角色" : mode === "parts" ? "搭配饰品" : "素材库"}</span>
+        <span>
+          {mode === "skins"
+            ? "选择角色"
+            : mode === "parts"
+              ? "搭配饰品"
+              : "素材库"}
+        </span>
         <Shapes size={15} />
       </div>
-      {!mode && <div className="segmented">
-        <button aria-pressed={tab === "skins"} onClick={() => setTab("skins")}>
-          <Shapes size={14} />
-          角色
-        </button>
-        <button aria-pressed={tab === "parts"} onClick={() => setTab("parts")}>
-          <Sparkles size={14} />
-          饰品
-        </button>
-      </div>}
+      <div className="dimension-switch" role="group" aria-label="宠物维度">
+        {(["2d", "3d"] as const).map((value) => (
+          <button
+            key={value}
+            aria-pressed={dimension === value}
+            disabled={
+              !catalog.some((entry) => (entry.rig.dimension ?? "2d") === value)
+            }
+            onClick={() => m.selectDimension(value)}
+          >
+            {value.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      {!mode && (
+        <div className="segmented">
+          <button
+            aria-pressed={tab === "skins"}
+            onClick={() => setTab("skins")}
+          >
+            <Shapes size={14} />
+            角色
+          </button>
+          <button
+            aria-pressed={tab === "parts"}
+            onClick={() => setTab("parts")}
+          >
+            <Sparkles size={14} />
+            饰品
+          </button>
+        </div>
+      )}
       {tab === "skins" ? (
         <>
+          <CreatePet />
           <Select
             className="rig-select-field"
             value={m.skin.rig}
             onChange={(key) => {
-              const entry = catalog.find(c => c.rig.id === key);
+              const entry = available.find((c) => c.rig.id === key);
               if (entry) m.choose(entry.skins[0]);
             }}
           >
@@ -41,8 +114,12 @@ function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
             </Select.Trigger>
             <Select.Popover className="studio-select-popover">
               <ListBox aria-label="骨架">
-                {catalog.map(entry => (
-                  <ListBox.Item id={entry.rig.id} key={entry.rig.id} textValue={entry.name}>
+                {available.map((entry) => (
+                  <ListBox.Item
+                    id={entry.rig.id}
+                    key={entry.rig.id}
+                    textValue={entry.name}
+                  >
                     {entry.name}
                     <ListBox.ItemIndicator />
                   </ListBox.Item>
@@ -105,34 +182,162 @@ function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
       ) : (
         <>
           <div className="section-caption">
-            可挂载饰品<span>{parts.length.toString().padStart(2, "0")}</span>
+            可挂载饰品
+            <span>{availableParts.length.toString().padStart(2, "0")}</span>
           </div>
-          <div className="attachment-list">
-            {Array.from(new Set([...Object.keys(mountNames), ...parts.map(p=>p.attachment.mount)])).map(mount=>{
-              const options=parts.filter(p=>p.attachment.mount===mount);
-              if(!options.length)return null;
-              const selected=options.find(p=>m.attachments.some(a=>a.type===p.attachment.id));
-              const worn=m.attachments.find(a=>a.type===selected?.attachment.id);
-              return <section className="attachment-group" aria-label={mountNames[mount]??mount} key={mount}>
-                <div className="attachment-group-heading"><h3>{mountNames[mount]??mount}</h3>
-                  {selected ? <Action title={`移除${mountNames[mount]??mount}饰品`} onPress={()=>m.wear(selected.attachment.id,false)}><X size={12}/></Action> : <span>{options.length} 款</span>}
-                </div>
-                <div className="attachment-options">
-                  {options.map(({name,attachment:a})=>{
-                    const checked=!!m.attachments.find(p=>p.type===a.id),enabled=!!m.entry.rig.mounts?.[a.mount];
-                    return <label className="attachment-item" key={a.id} title={enabled?name:"当前骨架不支持"}>
-                      <input className="accessory-toggle" id={"wear-"+a.id} type="checkbox" checked={checked} disabled={!enabled} onChange={e=>{try{m.wear(a.id,e.target.checked)}catch(err){m.changed(String(err))}}}/>
-                      {enabled ? <Thumbnail rig={m.entry.rig} skin={m.skin} pose={{state:0}} attachment={a} accessoryOnly/> : <Sparkles size={23}/>}
-                      <strong>{name}</strong>{checked&&<Check className="attachment-check" size={12}/>}
-                    </label>;
-                  })}
-                </div>
-                {selected&&worn&&Object.entries(selected.attachment.parameters??{}).map(([key,r])=><Range key={key}
-                  id={selected.attachment.id==="hat"?"hat-height":selected.attachment.id+"-"+key}
-                  label={key==="hoverHeight"?"悬浮高度":key==="size"?"尺寸":key}
-                  min={r.min} max={r.max} value={worn.parameters?.[key]??r.default}
-                  onChange={v=>m.partParam(selected.attachment.id,key,v)}/>)}
-              </section>;
+          <div
+            className={
+              m.is3D ? "attachment-list spatial-parts" : "attachment-list"
+            }
+          >
+            {Array.from(
+              new Set([
+                ...Object.keys(mountNames),
+                ...availableParts.map((p) => p.attachment.mount),
+              ]),
+            ).map((mount) => {
+              const options = availableParts.filter(
+                (p) => p.attachment.mount === mount,
+              );
+              if (!options.length) return null;
+              const selected = options.find((p) =>
+                m.attachments.some((a) => a.type === p.attachment.id),
+              );
+              const worn = m.attachments.find(
+                (a) => a.type === selected?.attachment.id,
+              );
+              return (
+                <section
+                  className="attachment-group"
+                  aria-label={mountNames[mount] ?? mount}
+                  key={mount}
+                >
+                  <div className="attachment-group-heading">
+                    <h3>{mountNames[mount] ?? mount}</h3>
+                    {selected ? (
+                      <Action
+                        title={`移除${mountNames[mount] ?? mount}饰品`}
+                        onPress={() => m.wear(selected.attachment.id, false)}
+                      >
+                        <X size={12} />
+                      </Action>
+                    ) : (
+                      <span>{options.length} 款</span>
+                    )}
+                  </div>
+                  <div className="attachment-options">
+                    {options.map(({ name, attachment: a }) => {
+                      const checked = !!m.attachments.find(
+                          (p) => p.type === a.id,
+                        ),
+                        enabled = !!m.entry.rig.mounts?.[a.mount];
+                      return (
+                        <AccessoryCard
+                          id={
+                            a.dimension === "3d"
+                              ? "wear-3d-" + a.id.replace("spatial-", "")
+                              : "wear-" + a.id
+                          }
+                          name={name}
+                          key={a.id}
+                          checked={checked}
+                          enabled={enabled}
+                          onChange={(value) => {
+                            try {
+                              m.wear(a.id, value);
+                            } catch (err) {
+                              m.changed(String(err));
+                            }
+                          }}
+                        >
+                          {enabled ? (
+                            <Thumbnail
+                              rig={m.entry.rig}
+                              skin={m.skin}
+                              pose={{ state: 0 }}
+                              attachment={a}
+                              accessoryOnly
+                              spatialInstance={
+                                m.is3D
+                                  ? {
+                                      id: a.id,
+                                      attachment: a,
+                                      parameters:
+                                        worn?.type === a.id
+                                          ? worn.parameters
+                                          : undefined,
+                                      colors:
+                                        worn?.type === a.id
+                                          ? worn.colors
+                                          : undefined,
+                                    }
+                                  : undefined
+                              }
+                            />
+                          ) : (
+                            <Sparkles size={23} />
+                          )}
+                        </AccessoryCard>
+                      );
+                    })}
+                  </div>
+                  {selected && worn && selected.attachment.colors && (
+                    <div className="color-list accessory-colors">
+                      {Object.entries(selected.attachment.colors).map(
+                        ([key, fallback]) => (
+                          <label key={key}>
+                            <span>
+                              {selected.attachment.labels?.[key] ?? key}
+                            </span>
+                            <span className="color-value">
+                              <input
+                                type="color"
+                                aria-label={`${selected.name}${selected.attachment.labels?.[key] ?? key}`}
+                                value={worn.colors?.[key] ?? fallback}
+                                onChange={(e) =>
+                                  m.partColor(
+                                    selected.attachment.id,
+                                    key,
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            </span>
+                          </label>
+                        ),
+                      )}
+                    </div>
+                  )}
+                  {selected &&
+                    worn &&
+                    Object.entries(selected.attachment.parameters ?? {}).map(
+                      ([key, r]) => (
+                        <Range
+                          key={key}
+                          id={
+                            selected.attachment.id === "hat"
+                              ? "hat-height"
+                              : selected.attachment.id + "-" + key
+                          }
+                          label={
+                            selected.attachment.labels?.[key] ??
+                            (key === "hoverHeight"
+                              ? "悬浮高度"
+                              : key === "size"
+                                ? "尺寸"
+                                : key)
+                          }
+                          min={r.min}
+                          max={r.max}
+                          value={worn.parameters?.[key] ?? r.default}
+                          onChange={(v) =>
+                            m.partParam(selected.attachment.id, key, v)
+                          }
+                        />
+                      ),
+                    )}
+                </section>
+              );
             })}
           </div>
           <div className="library-note">
@@ -151,6 +356,14 @@ function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
 function Inspector({ mobile = false }: { mobile?: boolean } = {}) {
   const m = useModel();
   const labels: Record<string, string> = {
+    hat: "礼帽",
+    orbit: "环绕小球",
+    ears: "小芽",
+    perspective: "透视投影",
+    light: "环境光",
+    elasticity: "Q 弹程度",
+    jelly: "果冻透光",
+    reference: "透射参照",
     earLength: "耳长",
     cheek: "脸部饱满度",
     eyeWidth: "眼宽",
@@ -182,6 +395,7 @@ function Inspector({ mobile = false }: { mobile?: boolean } = {}) {
                     paper: "画布",
                     face: "五官",
                     accent: "点缀",
+                    accessory: "饰品",
                   } as Record<string, string>
                 )[key] ?? key}
               </span>
@@ -206,34 +420,105 @@ function Inspector({ mobile = false }: { mobile?: boolean } = {}) {
           恢复皮肤默认
         </Action>
       </section>
-      {mobile && m.entry.rig.parameters.shape && <section className="inspector-section">
-        <h3>基础形状</h3>
-        <div className="motion-strip">
-          {[{index: m.entry.skins.find(s => s.id === m.skin.id)?.rigConfig?.shape ?? m.entry.rig.parameters.shape.default, name: "皮肤默认"}, ...shapeOptions.filter(s => s.index < 8)].map((shape, index) =>
-            <button key={index} className="motion-tile" data-shape={shape.index}
-              aria-pressed={m.config.shape === shape.index}
-              onClick={() => {m.selectSequence("shape"); m.selectItem(index);}}>
-              <Thumbnail rig={m.entry.rig} skin={m.skin} config={{...m.config, shape:shape.index}} pose={{state:0,expression:-1}} />
-              <span>{shape.name}</span>
-            </button>)}
-        </div>
-      </section>}
+      {mobile && m.entry.rig.parameters.shape && (
+        <section className="inspector-section">
+          <h3>基础形状</h3>
+          <div className="motion-strip">
+            {[
+              {
+                index:
+                  m.entry.skins.find((s) => s.id === m.skin.id)?.rigConfig
+                    ?.shape ?? m.entry.rig.parameters.shape.default,
+                name: "皮肤默认",
+              },
+              ...m.shapeOptions.filter((s) => s.index < 8),
+            ].map((shape, index) => (
+              <button
+                key={index}
+                className="motion-tile"
+                data-shape={shape.index}
+                aria-pressed={m.config.shape === shape.index}
+                onClick={() => {
+                  m.selectSequence("shape");
+                  m.selectItem(index);
+                }}
+              >
+                <Thumbnail
+                  rig={m.entry.rig}
+                  skin={m.skin}
+                  config={{ ...m.config, shape: shape.index }}
+                  pose={{ state: 0, expression: m.is3D ? 0 : -1 }}
+                />
+                <span>{shape.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+      {m.is3D && (
+        <section className="inspector-section">
+          <h3>空间姿态</h3>
+          {["yaw", "pitch", "roll"].map((key) => {
+            const r = m.entry.rig.poseParameters?.[key];
+            return r ? (
+              <Range
+                key={key}
+                label={
+                  (
+                    {
+                      yaw: "左右转动",
+                      pitch: "上下俯仰",
+                      roll: "侧倾",
+                    } as Record<string, string>
+                  )[key]
+                }
+                value={m.pose[key]}
+                min={r.min}
+                max={r.max}
+                onChange={(v) => m.setPose({ [key]: v })}
+              />
+            ) : null;
+          })}
+        </section>
+      )}
       <section className="inspector-section" id="rig-parameters">
-        <h3>
-          形态参数
-        </h3>
+        <h3>形态参数</h3>
         {Object.entries(m.entry.rig.parameters)
-          .filter(([k]) => !["shape", "customFace", "faceYaw", "facePitch", "faceRoll"].includes(k))
-          .map(([k, r]) => (
-            <Range
-              key={k}
-              label={labels[k] ?? k}
-              value={m.config[k]}
-              min={r.min}
-              max={r.max}
-              onChange={(v) => m.setConfig({ [k]: v })}
-            />
-          ))}
+          .filter(
+            ([k]) =>
+              ![
+                "shape",
+                ...(m.is3D ? ["hat", "ears", "orbit"] : []),
+                "customFace",
+                "faceYaw",
+                "facePitch",
+                "faceRoll",
+              ].includes(k),
+          )
+          .map(([k, r]) =>
+            m.is3D &&
+            ["hat", "orbit", "ears", "perspective", "reference"].includes(k) ? (
+              <label className="spatial-toggle" key={k}>
+                {labels[k] ?? k}
+                <input
+                  type="checkbox"
+                  checked={m.config[k] >= 0.5}
+                  onChange={(e) =>
+                    m.setConfig({ [k]: e.target.checked ? 1 : 0 })
+                  }
+                />
+              </label>
+            ) : (
+              <Range
+                key={k}
+                label={labels[k] ?? k}
+                value={m.config[k]}
+                min={r.min}
+                max={r.max}
+                onChange={(v) => m.setConfig({ [k]: v })}
+              />
+            ),
+          )}
       </section>
       <section className="inspector-section">
         <h3>当前装配</h3>
@@ -262,95 +547,141 @@ function MotionDock({ compact = false }: { compact?: boolean } = {}) {
   const tab = m.sequence;
   const dock = useRef<HTMLElement>(null);
   useEffect(() => {
-    if (m.cycling) dock.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({block:"nearest",inline:"nearest"});
+    if (m.cycling)
+      dock.current
+        ?.querySelector('[aria-pressed="true"]')
+        ?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [tab, m.selectedItem, m.cycling]);
-  const expressions = m.skin.rig === "cat-head" ? catExpressions : expressionOptions;
+  const expressions = m.is3D
+    ? Array.from({
+        length: Math.max(
+          0,
+          Math.min(
+            63,
+            Math.floor(m.entry.rig.poseParameters?.expression?.max ?? 0) -
+              Math.ceil(m.entry.rig.poseParameters?.expression?.min ?? 0),
+          ),
+        ),
+      })
+    : m.skin.rig === "cat-head"
+      ? catExpressions
+      : expressionOptions;
   const choices = (
-<div
-        className="motion-strip"
-        id={tab === "state" ? "states" : tab + "-choices"}
-      >
-        {tab === "state"
-          ? m.states.map((s, i) => (
-              <button
-                key={s.id}
-                data-state={s.id}
-                className="motion-tile"
-                aria-pressed={m.selectedItem === i}
-                onClick={() => m.selectItem(i)}
-              >
-                <Thumbnail
-                  rig={m.entry.rig}
-                  skin={m.skin}
-                  config={m.config}
-                  pose={{ ...m.pose, state: s.index }}
-                  time={s.posterTime}
-                />
-                <span>{s.name}</span>
-              </button>
-            ))
-          : m.items.map((s, i) => (
-              <button
-                key={i}
-                data-shape={tab === "shape" ? s.index : undefined}
-                data-expression={tab === "expression" ? s.index : undefined}
-                aria-label={s.name}
-                className="motion-tile"
-                aria-pressed={m.selectedItem === i}
-                onClick={() => m.selectItem(i)}
-              >
-                <Thumbnail
-                  rig={m.entry.rig}
-                  skin={m.skin}
-                  config={{
-                    ...m.config,
-                    ...(tab === "shape" ? { shape: s.index } : {}),
-                  }}
-                  pose={{
-                    state: 0,
-                    expression: tab === "expression" ? s.index : -1,
-                  }}
-                />
-                <span>{s.name}</span>
-              </button>
-            ))}
-      </div>
+    <div
+      className="motion-strip"
+      id={tab === "state" ? "states" : tab + "-choices"}
+    >
+      {tab === "state"
+        ? m.states.map((s, i) => (
+            <button
+              key={s.id}
+              data-state={s.id}
+              className="motion-tile"
+              aria-pressed={m.selectedItem === i}
+              onClick={() => m.selectItem(i)}
+            >
+              <Thumbnail
+                rig={m.entry.rig}
+                skin={m.skin}
+                config={m.config}
+                pose={{ ...m.pose, state: s.index }}
+                time={s.posterTime}
+              />
+              <span>{s.name}</span>
+            </button>
+          ))
+        : m.items.map((s, i) => (
+            <button
+              key={i}
+              data-shape={tab === "shape" ? s.index : undefined}
+              data-expression={tab === "expression" ? s.index : undefined}
+              aria-label={s.name}
+              className="motion-tile"
+              aria-pressed={m.selectedItem === i}
+              onClick={() => m.selectItem(i)}
+            >
+              <Thumbnail
+                rig={m.entry.rig}
+                skin={m.skin}
+                config={{
+                  ...m.config,
+                  ...(tab === "shape" ? { shape: s.index } : {}),
+                }}
+                pose={{
+                  state: 0,
+                  expression:
+                    tab === "expression"
+                      ? s.index
+                      : (m.entry.rig.poseParameters?.expression?.default ?? -1),
+                }}
+              />
+              <span>{s.name}</span>
+            </button>
+          ))}
+    </div>
   );
-  if (compact) return <section className="motion-dock" ref={dock}>{choices}</section>;
+  if (compact)
+    return (
+      <section className="motion-dock" ref={dock}>
+        {choices}
+      </section>
+    );
   return (
     <section className="motion-dock" ref={dock}>
-      <Tabs selectedKey={tab} onSelectionChange={key=>m.selectSequence(key as typeof m.sequence)}>
-      <div className="dock-heading">
-        <Tabs.ListContainer><Tabs.List aria-label="动作素材">
-          {m.entry.rig.poseParameters?.expression&&<Tabs.Tab id="expression">表情 <Chip size="sm">{expressions.length+1}</Chip><Tabs.Indicator/></Tabs.Tab>}
-          <Tabs.Tab id="state">动作 <Chip size="sm">{m.states.length}</Chip><Tabs.Indicator/></Tabs.Tab>
-          {m.entry.rig.parameters.shape&&<Tabs.Tab id="shape">基础形状<Tabs.Indicator/></Tabs.Tab>}
-        </Tabs.List></Tabs.ListContainer>
-      </div>
-      <Tabs.Panel id={tab}>
-      {choices}
-      </Tabs.Panel></Tabs>
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={(key) => m.selectSequence(key as typeof m.sequence)}
+      >
+        <div className="dock-heading">
+          <Tabs.ListContainer>
+            <Tabs.List aria-label="动作素材">
+              {m.entry.rig.poseParameters?.expression && (
+                <Tabs.Tab id="expression">
+                  表情 <Chip size="sm">{expressions.length + 1}</Chip>
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              )}
+              <Tabs.Tab id="state">
+                动作 <Chip size="sm">{m.states.length}</Chip>
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              {m.entry.rig.parameters.shape && (
+                <Tabs.Tab id="shape">
+                  基础形状
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              )}
+            </Tabs.List>
+          </Tabs.ListContainer>
+        </div>
+        <Tabs.Panel id={tab}>{choices}</Tabs.Panel>
+      </Tabs>
     </section>
   );
 }
 export function Workshop() {
   const m = useModel();
-  const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 800px)").matches);
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia("(max-width: 800px)").matches,
+  );
   const [mobileTab, setMobileTab] = useState("skins");
   const editor = useRef<HTMLDivElement>(null);
   const mobileTabs = [
-    {id:"skins", label:"角色", icon:Shapes},
-    {id:"parts", label:"饰品", icon:Sparkles},
-    {id:"properties", label:"属性", icon:SlidersHorizontal},
-    {id:"expression", label:"表情", icon:Smile},
-    {id:"state", label:"动作", icon:Play},
+    { id: "skins", label: "角色", icon: Shapes },
+    { id: "parts", label: "饰品", icon: Sparkles },
+    { id: "properties", label: "属性", icon: SlidersHorizontal },
+    { id: "expression", label: "表情", icon: Smile },
+    { id: "state", label: "动作", icon: Play },
   ];
   const chooseTab = (id: string) => {
     setMobileTab(id);
-    if (id === "state" || (id === "expression" && m.entry.rig.poseParameters?.expression)) {
+    if (
+      id === "state" ||
+      (id === "expression" && m.entry.rig.poseParameters?.expression)
+    ) {
       if (m.sequence !== id) m.selectSequence(id);
     }
-    editor.current?.scrollTo({top:0});
+    editor.current?.scrollTo({ top: 0 });
   };
   useEffect(() => {
     const query = window.matchMedia("(max-width: 800px)");
@@ -359,12 +690,22 @@ export function Workshop() {
     return () => query.removeEventListener("change", update);
   }, []);
   useEffect(() => {
-    if (isMobile && (mobileTab === "state" || (mobileTab === "expression" && m.entry.rig.poseParameters?.expression)) && m.sequence !== mobileTab)
+    if (
+      isMobile &&
+      (mobileTab === "state" ||
+        (mobileTab === "expression" &&
+          m.entry.rig.poseParameters?.expression)) &&
+      m.sequence !== mobileTab
+    )
       m.selectSequence(mobileTab);
   }, [isMobile, mobileTab, m, m.sequence, m.skin.rig]);
   return (
     <main className="workshop">
-      {!isMobile && <aside className="library-panel" aria-label="素材库"><Library /></aside>}
+      {!isMobile && (
+        <aside className="library-panel" aria-label="素材库">
+          <Library />
+        </aside>
+      )}
       <section className="workspace" aria-label={`${m.skin.name} 宠物预览`}>
         <div className="preview-frame">
           <PetStage />
@@ -388,17 +729,19 @@ export function Workshop() {
             >
               <Plus size={14} />
             </Action>
-            <i />
-            <Action
-              title="挂载调试"
-              onPress={() => {
-                m.debug = !m.debug;
-                m.changed();
-              }}
-            >
-              <Box size={15} />
-              {m.debug ? "关闭调试" : "挂载调试"}
-            </Action>
+            {!m.is3D && <i />}
+            {!m.is3D && (
+              <Action
+                title="挂载调试"
+                onPress={() => {
+                  m.debug = !m.debug;
+                  m.changed();
+                }}
+              >
+                <Box size={15} />
+                {m.debug ? "关闭调试" : "挂载调试"}
+              </Action>
+            )}
           </div>
         </div>
         <div className="transport">
@@ -428,28 +771,81 @@ export function Workshop() {
         </div>
         {!isMobile && <MotionDock />}
       </section>
-      {!isMobile && <aside className="inspector-panel" aria-label="角色属性"><Inspector /></aside>}
-      {isMobile && <>
-        <div className="mobile-editor" ref={editor} role="tabpanel" id="mobile-editor"
-          aria-labelledby={`mobile-tab-${mobileTab}`} tabIndex={0}>
-          {(mobileTab === "skins" || mobileTab === "parts") && <Library mode={mobileTab} />}
-          {mobileTab === "properties" && <Inspector mobile />}
-          {mobileTab === "expression" && (m.entry.rig.poseParameters?.expression
-            ? <><div className="panel-heading">选择表情</div><MotionDock compact /></>
-            : <p className="mobile-empty">当前角色不支持独立表情，可到「动作」选择姿态。</p>)}
-          {mobileTab === "state" && <><div className="panel-heading">选择动作</div><MotionDock compact /></>}
-        </div>
-        <div className="mobile-tabs" role="tablist" aria-label="宠物编辑">
-          {mobileTabs.map(({id,label,icon:Icon},index) => <button key={id} type="button" role="tab"
-            id={`mobile-tab-${id}`} aria-controls="mobile-editor" aria-selected={mobileTab === id}
-            tabIndex={mobileTab === id ? 0 : -1} onClick={() => chooseTab(id)}
-            onKeyDown={event => {
-              const next = event.key === "ArrowRight" ? (index+1)%5 : event.key === "ArrowLeft" ? (index+4)%5 : event.key === "Home" ? 0 : event.key === "End" ? 4 : -1;
-              if (next >= 0) {event.preventDefault();chooseTab(mobileTabs[next].id);document.getElementById(`mobile-tab-${mobileTabs[next].id}`)?.focus();}
-            }}><Icon size={18} aria-hidden="true" /><span>{label}</span></button>)}
-        </div>
-      </>}
-
+      {!isMobile && (
+        <aside className="inspector-panel" aria-label="角色属性">
+          <Inspector />
+        </aside>
+      )}
+      {isMobile && (
+        <>
+          <div
+            className="mobile-editor"
+            ref={editor}
+            role="tabpanel"
+            id="mobile-editor"
+            aria-labelledby={`mobile-tab-${mobileTab}`}
+            tabIndex={0}
+          >
+            {(mobileTab === "skins" || mobileTab === "parts") && (
+              <Library mode={mobileTab} />
+            )}
+            {mobileTab === "properties" && <Inspector mobile />}
+            {mobileTab === "expression" &&
+              (m.entry.rig.poseParameters?.expression ? (
+                <>
+                  <div className="panel-heading">选择表情</div>
+                  <MotionDock compact />
+                </>
+              ) : (
+                <p className="mobile-empty">
+                  当前角色不支持独立表情，可到「动作」选择姿态。
+                </p>
+              ))}
+            {mobileTab === "state" && (
+              <>
+                <div className="panel-heading">选择动作</div>
+                <MotionDock compact />
+              </>
+            )}
+          </div>
+          <div className="mobile-tabs" role="tablist" aria-label="宠物编辑">
+            {mobileTabs.map(({ id, label, icon: Icon }, index) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`mobile-tab-${id}`}
+                aria-controls="mobile-editor"
+                aria-selected={mobileTab === id}
+                tabIndex={mobileTab === id ? 0 : -1}
+                onClick={() => chooseTab(id)}
+                onKeyDown={(event) => {
+                  const next =
+                    event.key === "ArrowRight"
+                      ? (index + 1) % 5
+                      : event.key === "ArrowLeft"
+                        ? (index + 4) % 5
+                        : event.key === "Home"
+                          ? 0
+                          : event.key === "End"
+                            ? 4
+                            : -1;
+                  if (next >= 0) {
+                    event.preventDefault();
+                    chooseTab(mobileTabs[next].id);
+                    document
+                      .getElementById(`mobile-tab-${mobileTabs[next].id}`)
+                      ?.focus();
+                  }
+                }}
+              >
+                <Icon size={18} aria-hidden="true" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 }

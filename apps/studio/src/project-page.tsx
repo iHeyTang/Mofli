@@ -1,9 +1,9 @@
-import {useMutation} from '@tanstack/react-query';
-import {ArrowDownToLine,FileJson,Code2} from 'lucide-react';
-import {projectMode,projectKey} from './catalog.js';
-import {useModel,Action} from './components.js';
-import {download} from './files.js';
-import {createSvgRenderer} from '@mofli/core/browser';
+import { useMutation } from "@tanstack/react-query";
+import { ArrowDownToLine, FileJson, Code2 } from "lucide-react";
+import { projectMode, projectKey } from "./catalog.js";
+import { useModel, Action } from "./components.js";
+import { download } from "./files.js";
+import { createSvgRenderer } from "@mofli/core/browser";
 export function ProjectPage() {
   const m = useModel();
   const restore = useMutation({
@@ -93,29 +93,31 @@ export function ProjectPage() {
           >
             导出皮肤 JSON
           </Action>
-          <Action
-            id="export"
-            onPress={() => {
-              const host = document.createElement("div");
-              const renderer = createSvgRenderer(host);
-              try {
-                renderer.render(m.frame());
-                renderer.svg.setAttribute(
-                  "xmlns",
-                  "http://www.w3.org/2000/svg",
-                );
-                download(
-                  new XMLSerializer().serializeToString(renderer.svg),
-                  m.skin.id + ".svg",
-                  "image/svg+xml",
-                );
-              } finally {
-                renderer.destroy();
-              }
-            }}
-          >
-            导出当前 SVG
-          </Action>
+          {!m.is3D && (
+            <Action
+              id="export"
+              onPress={() => {
+                const host = document.createElement("div");
+                const renderer = createSvgRenderer(host);
+                try {
+                  renderer.render(m.frame());
+                  renderer.svg.setAttribute(
+                    "xmlns",
+                    "http://www.w3.org/2000/svg",
+                  );
+                  download(
+                    new XMLSerializer().serializeToString(renderer.svg),
+                    m.skin.id + ".svg",
+                    "image/svg+xml",
+                  );
+                } finally {
+                  renderer.destroy();
+                }
+              }}
+            >
+              导出当前 SVG
+            </Action>
+          )}
         </div>
       </div>
       <p className="credits">

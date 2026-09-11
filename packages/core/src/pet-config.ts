@@ -1,3 +1,4 @@
+import { composeSpatialAttachments } from "./spatial-attachments.js";
 import { collectResourcePacks, type ResourcePack } from "./resource-pack.js";
 import {
   PetEngine,
@@ -22,6 +23,7 @@ export interface PetConfig {
     type: string;
     version: 1;
     parameters?: Record<string, number>;
+    colors?: Record<string, string>;
   }[];
 }
 /** Explicit trusted implementation registry; configuration never imports code. */
@@ -70,7 +72,7 @@ export class PetRegistry {
     engine: PetEngine;
     instances: AttachmentInstance[];
   } {
-    const v = value as PetConfig;
+    let v = value as PetConfig;
     if (
       !v ||
       typeof v !== "object" ||
@@ -83,6 +85,7 @@ export class PetRegistry {
       throw new Error("Invalid pet configuration");
     const rig = this.rigs.get(v.skin?.rig);
     if (!rig) throw new Error(`Rig not installed: ${v.skin?.rig}`);
+    if (rig.migrateConfig) v = rig.migrateConfig(structuredClone(v));
     const skin = validateSkin(v.skin, rig);
     for (const field of [v.rigConfig, v.pose])
       if (
@@ -102,14 +105,18 @@ export class PetRegistry {
         typeof ref !== "object" ||
         ref.version !== 1 ||
         Object.keys(ref).some(
-          (k) => !["id", "type", "version", "parameters"].includes(k),
+          (k) => !["id", "type", "version", "parameters", "colors"].includes(k),
         )
       )
         throw new Error("Invalid attachment reference");
       const attachment = this.parts.get(ref.type);
       if (!attachment) throw new Error(`Attachment not installed: ${ref.type}`);
+      if (attachment.dimension !== "3d" && ref.colors !== undefined)
+        throw new Error("2D attachment color overrides are not supported");
       return {
         id: ref.id,
+        colors:
+          ref.colors === undefined ? undefined : structuredClone(ref.colors),
         attachment,
         parameters:
           ref.parameters === undefined
@@ -121,7 +128,9 @@ export class PetRegistry {
       rigConfig: v.rigConfig,
       pose: v.pose,
     });
-    composeAttachments(engine.sample(0, true), instances); // atomic validation, including compatibility and conflicts
+    if (engine.dimension === "3d") {
+      composeSpatialAttachments(engine.sampleScene(0, true), instances);
+    } else composeAttachments(engine.sample(0, true), instances); // atomic validation, including compatibility and conflicts
     const config: PetConfig = {
       version: 1,
       skin: engine.getSkin(),
@@ -138,6 +147,12 @@ export class PetRegistry {
       sample: (time: number, reducedMotion = false) =>
         composeAttachments(
           engine.sample(time, reducedMotion),
+          instances,
+          reducedMotion ? 0 : time,
+        ),
+      sampleScene: (time: number, reducedMotion = false) =>
+        composeSpatialAttachments(
+          engine.sampleScene(time, reducedMotion),
           instances,
           reducedMotion ? 0 : time,
         ),

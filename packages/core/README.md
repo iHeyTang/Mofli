@@ -14,6 +14,10 @@ npm install @mofli/core
 
 使用公共导出实现自己的骨架、皮肤与饰品，或注册现有资源包。此流程无需下载 Mofli 源码，更多协议说明见 [资源包指南](https://github.com/iHeyTang/Mofli/blob/main/docs/resource-packs.md)。
 
+## 3D 宠物
+
+`@mofli/core/scene3d` 提供无 DOM 场景与 `defineSpatialRig`；`@mofli/core/spatial-browser` 固定使用 WebGL。2D 使用 SVG，3D 通过 `sampleScene` 使用 WebGL，不再提供 3D SVG 投影、渲染器切换或 SVG 回退。
+
 ## 修改 Core 本身
 
 在克隆后的 Mofli 仓库中修改 `packages/core/src`。构建与验证方式见[源码开发指南](https://github.com/iHeyTang/Mofli/blob/main/CONTRIBUTING.md)。
