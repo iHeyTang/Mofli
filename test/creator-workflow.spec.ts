@@ -106,7 +106,7 @@ test("creator source reloads in Studio and exported runtime mounts without Studi
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(`http://127.0.0.1:${port}/`);
     await expect(page.locator("svg")).toHaveCount(1);
-    await expect(page.locator('path[fill="#98ad8e"]').first()).toBeAttached();
+    await expect(page.locator('path[fill="#c6b8ff"]').first()).toBeAttached();
     const authoredPath = page.locator('path[fill="#c38a64"]');
     await expect(authoredPath).toBeAttached();
     expect(
@@ -114,8 +114,8 @@ test("creator source reloads in Studio and exported runtime mounts without Studi
         (el) => (el as SVGGraphicsElement).getBBox().width,
       ),
     ).toBeGreaterThan(1);
-    await expect(page.locator('path[fill="#d69c96"]').first()).toBeAttached();
-    const glow = page.locator('path[fill="#c5a46d"]').first();
+    await expect(page.locator('path[fill="#ff91b7"]').first()).toBeAttached();
+    const glow = page.locator('path[fill="#ffe574"]').first();
     const before = await glow.getAttribute("d");
     await expect.poll(() => glow.getAttribute("d")).not.toBe(before);
     await page.locator("svg").press("Enter");

@@ -1,6 +1,6 @@
 {
   "name": "@mofli/grove",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "files": [
     "dist",
@@ -70,10 +70,10 @@
   },
   "devDependencies": {
     "typescript": "~5.9.3",
-    "@mofli/studio": "^0.1.1"
+    "@mofli/studio": "^0.2.0"
   },
   "dependencies": {
-    "@mofli/core": "^0.1.1"
+    "@mofli/core": "^0.2.0"
   },
   "license": "MIT",
   "description": "Mofli rigs, skins and accessories for interactive SVG pets",

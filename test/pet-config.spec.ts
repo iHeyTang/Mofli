@@ -38,7 +38,7 @@ test('public browser SDK loads the saved composition and handles keyboard input'
   const pet=createPet({container,registry,config:JSON.parse(localStorage.getItem('mofli.pet.v1')!),reducedMotion:true});
   const svg=container.querySelector('svg')!;
   svg.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-  const hasHat=!!svg.querySelector('path[fill="#98ad8e"]');
+  const hasHat=!!svg.querySelector('path[fill="#c6b8ff"]');
   const config=pet.exportConfig();pet.destroy();
   return {hasHat,attachments:config.attachments,removed:!container.querySelector('svg')};
  }, '/@fs'+process.cwd()+'/packages/');

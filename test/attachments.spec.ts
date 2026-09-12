@@ -4,8 +4,8 @@ test('studio wears and removes independent attachments on both rigs',async({page
  for(const rig of ['bloub-reference','cat-head']){
   await page.selectOption('#rig-select',rig);
   await page.check('#wear-hat');await page.check('#wear-bow');
-  await expect(page.locator('#avatar path[fill="#98ad8e"]').first()).toBeAttached();
+  await expect(page.locator('#avatar path[fill="#c6b8ff"]').first()).toBeAttached();
   await page.uncheck('#wear-hat');await page.uncheck('#wear-bow');
-  await expect(page.locator('#avatar path[fill="#98ad8e"]')).toHaveCount(0);
+  await expect(page.locator('#avatar path[fill="#c6b8ff"]')).toHaveCount(0);
  }
 });
