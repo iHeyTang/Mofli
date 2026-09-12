@@ -329,6 +329,7 @@ function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
                           }
                           min={r.min}
                           max={r.max}
+                          showPercent={m.is3D && key === "transmission"}
                           value={worn.parameters?.[key] ?? r.default}
                           onChange={(v) =>
                             m.partParam(selected.attachment.id, key, v)
@@ -546,6 +547,36 @@ function MotionDock({ compact = false }: { compact?: boolean } = {}) {
   const m = useModel();
   const tab = m.sequence;
   const dock = useRef<HTMLElement>(null);
+  const [height, setHeight] = useState(() => {
+    try {
+      const saved = Number(localStorage.getItem("mofli-motion-dock-height"));
+      return saved >= 140 && saved <= 520 ? saved : 240;
+    } catch {
+      return 240;
+    }
+  });
+  const [maximum, setMaximum] = useState(520);
+  const drag = useRef<{ y: number; height: number } | null>(null);
+  const resize = (value: number) =>
+    setHeight(Math.max(140, Math.min(maximum, value)));
+  useEffect(() => {
+    if (compact || !dock.current?.parentElement) return;
+    const workspace = dock.current.parentElement;
+    const observer = new ResizeObserver(() => {
+      const limit = Math.max(140, Math.min(520, workspace.clientHeight - 280));
+      setMaximum(limit);
+      setHeight((value) => Math.min(value, limit));
+    });
+    observer.observe(workspace);
+    return () => observer.disconnect();
+  }, [compact]);
+  useEffect(() => {
+    if (!compact)
+      try {
+        localStorage.setItem("mofli-motion-dock-height", String(height));
+      } catch {}
+  }, [height, compact]);
+
   useEffect(() => {
     if (m.cycling)
       dock.current
@@ -627,7 +658,57 @@ function MotionDock({ compact = false }: { compact?: boolean } = {}) {
       </section>
     );
   return (
-    <section className="motion-dock" ref={dock}>
+    <section
+      className="motion-dock motion-dock-resizable"
+      ref={dock}
+      style={{ height }}
+    >
+      <div
+        className="dock-resize-handle"
+        role="separator"
+        tabIndex={0}
+        aria-label="调整动作面板高度"
+        aria-orientation="horizontal"
+        aria-valuemin={140}
+        aria-valuemax={maximum}
+        aria-valuenow={height}
+        aria-valuetext={`${height} 像素`}
+        title="上下拖拽调整高度，也可使用方向键"
+        onPointerDown={(event) => {
+          if (event.button !== 0) return;
+          drag.current = { y: event.clientY, height };
+          event.currentTarget.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        }}
+        onPointerMove={(event) => {
+          if (drag.current)
+            resize(drag.current.height + drag.current.y - event.clientY);
+        }}
+        onPointerUp={(event) => {
+          drag.current = null;
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }}
+        onLostPointerCapture={() => {
+          drag.current = null;
+        }}
+        onPointerCancel={() => {
+          drag.current = null;
+        }}
+        onKeyDown={(event) => {
+          if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key))
+            return;
+          event.preventDefault();
+          resize(
+            event.key === "Home"
+              ? 140
+              : event.key === "End"
+                ? maximum
+                : height + (event.key === "ArrowUp" ? 24 : -24),
+          );
+        }}
+      >
+        <span />
+      </div>
       <Tabs
         selectedKey={tab}
         onSelectionChange={(key) => m.selectSequence(key as typeof m.sequence)}

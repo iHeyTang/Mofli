@@ -21,7 +21,7 @@
           "d": "M -0.012 -0.02 C -0.022 -0.06 0.024 -0.06 0.018 -0.015 C 0.006 0.07 -0.013 0.125 0.003 0.17 C 0.02 0.2 -0.012 0.22 -0.025 0.17 C -0.04 0.1 -0.006 0.03 -0.012 -0.02 Z"
         },
         "attrs": {
-          "fill": "#789174"
+          "fill": "#73dac7"
         },
         "member": "left",
         "motion": {
@@ -39,7 +39,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#ffda63"
         },
         "member": "left",
         "motion": {
@@ -57,7 +57,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#fff4b0"
         },
         "member": "left",
         "motion": {
@@ -75,7 +75,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#52654f"
+          "fill": "#328f97"
         },
         "member": "left",
         "motion": {
@@ -93,7 +93,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#ffda63"
         },
         "member": "left",
         "motion": {
@@ -107,7 +107,7 @@
           "d": "M -0.012 -0.02 C -0.022 -0.06 0.024 -0.06 0.018 -0.015 C 0.006 0.07 -0.013 0.125 0.003 0.17 C 0.02 0.2 -0.012 0.22 -0.025 0.17 C -0.04 0.1 -0.006 0.03 -0.012 -0.02 Z"
         },
         "attrs": {
-          "fill": "#789174"
+          "fill": "#73dac7"
         },
         "member": "right",
         "motion": {
@@ -125,7 +125,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#ffda63"
         },
         "member": "right",
         "motion": {
@@ -143,7 +143,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#fff4b0"
         },
         "member": "right",
         "motion": {
@@ -161,7 +161,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#52654f"
+          "fill": "#328f97"
         },
         "member": "right",
         "motion": {
@@ -179,7 +179,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#ffda63"
         },
         "member": "right",
         "motion": {

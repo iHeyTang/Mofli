@@ -579,3 +579,9 @@ footer {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Large action libraries scroll independently while the creature stays visible. */
+@media (min-width: 701px) {
+  #states { max-height: 68vh; overflow-y: auto; overscroll-behavior: contain; }
+  .viewer { margin: 0 auto; align-self: start; position: sticky; top: 0; }
+}

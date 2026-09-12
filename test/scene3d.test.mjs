@@ -120,11 +120,13 @@ test("3D companions retain their original 2D artwork silhouettes and do not add 
       );
     const scene = createSpatialPetScene({ shape, reducedMotion: true });
     assert.ok(
-      !scene.nodes[0].children.some((n) => /mouth|cheek|glint/.test(n.id)),
+      !scene.nodes[0].children.some(
+        (n) => n.geometry && /mouth|cheek|glint/.test(n.id),
+      ),
     );
     assert.equal(
       scene.nodes[0].children[0].material.color,
-      ["#b1decd", "#f0c5ac", "#c4c9ed"][shape],
+      ["#bff2dc", "#ffddc9", "#d8dcff"][shape],
     );
   }
 });
@@ -546,13 +548,6 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
         parameters: { size: 1.2 },
       },
       {
-        id: "my-sprout",
-        type: "spatial-ears",
-        version: 1,
-        colors: { leaf: "#55cc88" },
-        parameters: { length: 1.3 },
-      },
-      {
         id: "my-orb",
         type: "spatial-orbit",
         version: 1,
@@ -569,10 +564,6 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
   assert.equal(
     nodes.find((n) => n.id === "attachment-my-hat-hat-brim").material.color,
     "#ffaaaa",
-  );
-  assert.equal(
-    nodes.find((n) => n.id === "attachment-my-sprout-ear-left").material.color,
-    "#55cc88",
   );
   assert.equal(
     nodes.find((n) => n.id === "attachment-my-orb-orbit").material.color,
@@ -632,11 +623,8 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
     attachments: [],
   };
   const migrated = registry.resolve(old).config;
-  assert.equal(migrated.attachments.length, 3);
-  assert.equal(
-    migrated.attachments.find((a) => a.type === "spatial-hat").colors.fabric,
-    "#123456",
-  );
+  assert.equal(migrated.attachments.length, 2);
+  assert.ok(!migrated.attachments.some((a) => a.type === "spatial-hat"));
   assert.equal(
     migrated.attachments.find((a) => a.type === "spatial-ears").colors.leaf,
     "#123456",
@@ -698,12 +686,16 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
       skin: spatialSkin,
       rigConfig: {},
       pose: {},
-      attachments: spatialParts.map(({ attachment }) => ({
-        id: attachment.id,
-        type: attachment.id,
-        version: 1,
-        ...(attachment === a ? { parameters: { density: 1, size: 2 } } : {}),
-      })),
+      attachments: spatialParts
+        .filter(({ attachment }) =>
+          ["spatial-hat", "spatial-orbit"].includes(attachment.id),
+        )
+        .map(({ attachment }) => ({
+          id: attachment.id,
+          type: attachment.id,
+          version: 1,
+          ...(attachment === a ? { parameters: { density: 1, size: 2 } } : {}),
+        })),
     })
     .sampleScene(2);
   const triangles = (nodes) =>
@@ -715,4 +707,131 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
       0,
     );
   assert.ok(triangles(scene.nodes) < 20000);
+});
+
+test("all ten spatial decorations render with unique nodes and round-trip", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  assert.equal(spatialParts.length, 10);
+  const registry = new PetRegistry().registerPacks({
+    id: "decorations",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: spatialParts,
+  });
+  for (const { attachment } of spatialParts) {
+    const engine = registry.create({
+      version: 1,
+      skin: spatialSkin,
+      rigConfig: {},
+      pose: {},
+      attachments: [{ id: attachment.id, type: attachment.id, version: 1 }],
+    });
+    const scene = engine.sampleScene(0.4);
+    const ids = new Set();
+    const walk = (nodes) =>
+      nodes.forEach((n) => {
+        assert.ok(!ids.has(n.id), `${attachment.id}: duplicate ${n.id}`);
+        ids.add(n.id);
+        if (n.geometry)
+          assert.ok(n.geometry.vertices.every((v) => v.every(Number.isFinite)));
+        walk(n.children ?? []);
+      });
+    walk(scene.nodes);
+    assert.deepEqual(
+      registry.create(engine.exportConfig()).sampleScene(0.4),
+      scene,
+    );
+  }
+});
+
+test("sprout attaches to the central crown surface on each shape", () => {
+  for (const shape of [0, 1, 2]) {
+    const scene = createSpatialPetScene({ shape, time: 0 });
+    const nodes = scene.nodes[0].children;
+    const anchor = nodes.find((n) => n.id === "mount-head-crown");
+    assert.ok(anchor);
+    assert.equal(anchor.transform.position[0], 0);
+    assert.equal(anchor.transform.position[2], 0);
+    assert.ok(anchor.transform.position[1] > 0.3);
+  }
+});
+
+test("complete spatial outfits fit the renderer triangle budget", async () => {
+  const { spatialParts, spatialSkins } =
+    await import("@mofli/grove/rigs/spatial");
+  const registry = new PetRegistry().registerPacks({
+    id: "outfits",
+    version: 1,
+    rigs: [spatialRig],
+    skins: spatialSkins,
+    attachments: spatialParts,
+  });
+  const count = (nodes) =>
+    nodes.reduce(
+      (sum, node) =>
+        sum +
+        (node.geometry?.triangles.length ?? 0) +
+        count(node.children ?? []),
+      0,
+    );
+  for (const skin of spatialSkins)
+    for (const ears of ["cat-ears", "rabbit-ears"])
+      for (const top of ["ears", "flower", "hat", "crown"])
+        for (const cheeks of ["cat-whiskers", "blush"]) {
+          const attachments = [ears, top, cheeks, "bow-tie", "orbit"].map(
+            (id) => ({ id, type: `spatial-${id}`, version: 1 }),
+          );
+          const scene = registry
+            .create({
+              version: 1,
+              skin,
+              pose: {},
+              rigConfig: {},
+              attachments,
+            })
+            .sampleScene(0.3);
+          assert.ok(
+            count(scene.nodes) <= 20000,
+            `${skin.name}: ${ears}/${top}/${cheeks}: ${count(scene.nodes)}`,
+          );
+        }
+});
+
+test("crown migration keeps last worn category without changing user colors", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  const registry = new PetRegistry().registerPacks({ id: "crown-migration", version: 1, rigs: [spatialRig], skins: [spatialSkin], attachments: spatialParts });
+  const hat = { id: "hat", type: "spatial-hat", version: 1, colors: { fabric: "#abcdef" } };
+  const sprout = { id: "sprout", type: "spatial-ears", version: 1, colors: { leaf: "#123456" } };
+  for (const attachments of [[hat, sprout], [sprout, hat]]) {
+    const input = { version: 1, skin: spatialSkin, rigConfig: {}, pose: {}, attachments };
+    const result = registry.resolve(input).config;
+    assert.deepEqual(result.attachments, [attachments[1]]);
+    assert.equal(input.attachments.length, 2);
+    assert.deepEqual(registry.resolve(result).config, result);
+  }
+  assert.equal(spatialParts.filter(p => p.attachment.mount === "head.crown").length, 4);
+  assert.ok(!Object.hasOwn(spatialRig.mounts, "head.crown.sprout"));
+});
+
+test("every spatial accessory supplies a translucent gel material", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(Boolean);
+  for (const { attachment } of spatialParts) {
+    const parameters = Object.fromEntries(Object.entries(attachment.parameters ?? {}).map(([key,rule]) => [key,rule.default]));
+    const nodes = attachment.sampleScene({ time: 0 }, parameters, attachment.colors);
+    assert.ok(materials(nodes).some(m => m.transmission >= .5), `${attachment.id} must not fall back to opaque plastic`);
+  }
+});
+
+test("accessory transmission control reaches opaque and gel endpoints", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(m => m?.transmission !== undefined);
+  for (const {attachment:a} of spatialParts) {
+    const p = Object.fromEntries(Object.entries(a.parameters).map(([k,v]) => [k,v.default]));
+    const opaque = materials(a.sampleScene({time:0}, {...p,transmission:0}, a.colors));
+    const gel = materials(a.sampleScene({time:0}, {...p,transmission:1}, a.colors));
+    assert.ok(opaque.length && opaque.every(m => m.transmission === 0));
+    assert.ok(gel.every(m => m.transmission > .5 && m.transmission <= 1));
+  }
 });

@@ -23,7 +23,7 @@ import {
   type Vector3,
 } from "@mofli/core/scene3d";
 
-import { spatialMotion, spatialBlink } from "./choreography.js";
+import { spatialActions, spatialMotion, spatialBlink } from "./choreography.js";
 export {
   spatialExpressions,
   spatialActions,
@@ -100,6 +100,39 @@ export interface SpatialPetOptions {
   accessory?: string;
   extraNodes?: readonly Node3D[];
 }
+const spatialMounts = [
+  "head.crown",
+  "head.sides",
+  "head.cheeks",
+  "head.lower.front",
+  "character.orbit",
+];
+/** Intersection with the actual blended mesh, not its unrelated global apex. */
+function surfaceAt(mesh: Geometry3D, axis: 1 | 2, u: number, v: number) {
+  const axes = axis === 1 ? [0, 2] : [0, 1];
+  let result = -Infinity;
+  for (const triangle of mesh.triangles) {
+    const [a, b, c] = triangle.map((i) => mesh.vertices[i]!);
+    const x = axes[0]!,
+      y = axes[1]!;
+    const denominator =
+      (b![y]! - c![y]!) * (a![x]! - c![x]!) +
+      (c![x]! - b![x]!) * (a![y]! - c![y]!);
+    if (Math.abs(denominator) < 1e-10) continue;
+    const q =
+      ((b![y]! - c![y]!) * (u - c![x]!) + (c![x]! - b![x]!) * (v - c![y]!)) /
+      denominator;
+    const w =
+      ((c![y]! - a![y]!) * (u - c![x]!) + (a![x]! - c![x]!) * (v - c![y]!)) /
+      denominator;
+    if (q >= -1e-7 && w >= -1e-7 && q + w <= 1 + 1e-7)
+      result = Math.max(
+        result,
+        q * a![axis]! + w * b![axis]! + (1 - q - w) * c![axis]!,
+      );
+  }
+  return Number.isFinite(result) ? result : 0;
+}
 /** A whole 3D scene, including accessories, shares one occlusion pass. */
 export function createSpatialPetScene(
   options: SpatialPetOptions = {},
@@ -117,7 +150,7 @@ export function createSpatialPetScene(
   } = options;
   const body =
       options.body ??
-      ["#b1decd", "#f0c5ac", "#c4c9ed"][
+      ["#bff2dc", "#ffddc9", "#d8dcff"][
         Math.min(2, Math.max(0, Math.round(options.shape ?? 0)))
       ]!,
     face = options.face ?? (options.shape === 2 ? "#fffdf8" : "#34483f"),
@@ -306,8 +339,36 @@ export function createSpatialPetScene(
       0.1,
     );
   }
-  const top = Math.max(...head.vertices.map((v) => v[1]));
-  for (const [key, enabled] of Object.entries({ hat, ears, orbit })) {
+  const top = surfaceAt(head, 1, 0, 0);
+  const width = Math.max(...head.vertices.map((v) => Math.abs(v[0])));
+  const depth = Math.max(...head.vertices.map((v) => Math.abs(v[2])));
+  const lowerY = Math.min(...head.vertices.map((v) => v[1])) * 0.62;
+  const mountTransform = (mount: string): Node3D["transform"] => {
+    if (mount === "character.orbit") return { position: [0, 0, 0] };
+    if (mount === "head.cheeks")
+      return {
+        position: [
+          0,
+          -0.28,
+          surfaceAt(head, 2, width * 0.6, -0.28) - depth * 0.82,
+        ],
+        scale: [width, 1, depth],
+      };
+    if (mount === "head.lower.front")
+      return { position: [0, lowerY, surfaceAt(head, 2, 0, lowerY) + 0.04] };
+    if (mount === "head.sides") {
+      const left = surfaceAt(head, 1, -width * 0.5, 0);
+      const right = surfaceAt(head, 1, width * 0.5, 0);
+      const slope = Math.atan2(right - left, width);
+      return {
+        position: [0, (left + right) * 0.5 + 0.1, 0],
+        rotation: [0, 0, slope],
+        scale: [Math.hypot(width, right - left), 1, 1],
+      };
+    }
+    return { position: [0, top - 0.01, 0] };
+  };
+  for (const [key, enabled] of Object.entries({ hat: hat && !ears, ears, orbit })) {
     if (!enabled) continue;
     const a = spatialParts.find(
       (p) => p.attachment.id === `spatial-${key}`,
@@ -329,18 +390,15 @@ export function createSpatialPetScene(
       children: a.sampleScene!({ time }, params, colors),
     });
   }
-  for (const mount of ["head.crown", "head.sides", "character.orbit"])
+  for (const mount of spatialMounts)
     children.push({
       id: `mount-${mount.replaceAll(".", "-")}`,
-      transform: { position: [0, mount === "character.orbit" ? 0 : top, 0] },
+      transform: mountTransform(mount),
     });
   children.push(...(options.extraNodes ?? []));
   return {
     mounts: Object.fromEntries(
-      ["head.crown", "head.sides", "character.orbit"].map((k) => [
-        k,
-        `mount-${k.replaceAll(".", "-")}`,
-      ]),
+      spatialMounts.map((k) => [k, `mount-${k.replaceAll(".", "-")}`]),
     ),
     camera: {
       projection: perspective ? "perspective" : "orthographic",
@@ -348,7 +406,7 @@ export function createSpatialPetScene(
       size: 3.45,
       fov: Math.PI / 5.1,
     },
-    light: { direction: [-0.6, 0.8, 1], ambient: options.light ?? 0.64 },
+    light: { direction: [-0.6, 0.8, 1], ambient: options.light ?? 0.78 },
     nodes: [
       {
         id: "pet",
@@ -395,7 +453,7 @@ export const spatialSkin: Skin = {
   name: "Mallow 3D",
   rig: "spatial-pet",
   colors: {
-    body: "#b1decd",
+    body: "#bff2dc",
     face: "#34483f",
     paper: "#f9f9f6",
   },
@@ -403,7 +461,7 @@ export const spatialSkin: Skin = {
 export const spatialRig = defineSpatialRig({
   migrateConfig: migrateSpatialConfig,
   mounts: Object.fromEntries(
-    ["head.crown", "head.sides", "character.orbit"].map((k) => [
+    spatialMounts.map((k) => [
       k,
       { kind: "frame" as const, version: 1 as const },
     ]),
@@ -414,7 +472,7 @@ export const spatialRig = defineSpatialRig({
   colors: spatialSkin.colors,
   parameters: {
     perspective: { min: 0, max: 1, default: 0 },
-    light: { min: 0.3, max: 1, default: 0.64 },
+    light: { min: 0.3, max: 1, default: 0.78 },
     shape: { min: 0, max: 5, default: 0 },
     elasticity: { min: 0.3, max: 1.4, default: 1 },
     jelly: { min: 0, max: 1, default: 0.88 },
@@ -425,7 +483,7 @@ export const spatialRig = defineSpatialRig({
     pitch: { min: -1.4, max: 1.4, default: 0 },
     roll: { min: -Math.PI, max: Math.PI, default: 0 },
     expression: { min: 0, max: 18, default: 0 },
-    state: { min: 0, max: 7, default: 0 },
+    state: { min: 0, max: spatialActions.length - 1, default: 0 },
   },
   prepare: prepareTransition,
   updateSkin: ({ skin, previousSkin, time, prepared }) => ({
@@ -483,13 +541,13 @@ export const spatialSkins: Skin[] = [
   defineSpatialSkin({
     id: "pip-spatial",
     name: "Pip 3D",
-    colors: { body: "#f0c5ac", face: "#61493d" },
+    colors: { body: "#ffddc9", face: "#61493d" },
     rigConfig: { shape: 1 },
   }),
   defineSpatialSkin({
     id: "pebble-spatial",
     name: "Pebble 3D",
-    colors: { body: "#c4c9ed", face: "#fffdf8" },
+    colors: { body: "#d8dcff", face: "#fffdf8" },
     rigConfig: { shape: 2 },
   }),
 ];

@@ -174,10 +174,10 @@ const states = () => {
   );
 };
 const stateCopy = (id: string) => {
-  if (isBloub()) return copy[id]!;
+  if (isBloub() && copy[id]) return copy[id]!;
   const state = states().find((s) => s.id === id)!;
   return [
-    "name" in state ? state.name : state.id,
+    state.name,
     "description" in state ? state.description : "骨架姿态预览",
   ];
 };

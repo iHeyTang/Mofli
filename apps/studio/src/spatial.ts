@@ -25,7 +25,7 @@ root.innerHTML = `<header><a class="brand" href="/" aria-label="返回 Mofli 工
 <section><h2>表情</h2><div class="expressions">${spatialExpressions.map((e) => `<button data-expression="${e.index}" aria-pressed="${e.index === 0}">${e.name}</button>`).join("")}</div></section>
 <section><h2>动作</h2><div class="expressions">${spatialActions.map((e) => `<button data-action="${e.index}" aria-pressed="${e.index === 0}">${e.name}</button>`).join("")}</div></section>
 <section><h2>基础形状</h2><div class="expressions">${spatialShapes.map((e) => `<button data-shape="${e.index}" aria-pressed="${e.index === 0}">${e.name}</button>`).join("")}</div></section>
-<section><h2>外观</h2><label class="color">身体<input id="body" type="color" value="#b1decd"></label><label class="color">五官<input id="face" type="color" value="#34483f"></label>
+<section><h2>外观</h2><label class="color">身体<input id="body" type="color" value="#bff2dc"></label><label class="color">五官<input id="face" type="color" value="#34483f"></label>
 <label class="slider">果冻透光<input id="jelly" type="range" min="0" max="100" value="88" step="1"></label><label class="toggle">透射参照<input id="reference" type="checkbox"></label><label class="slider">立体明暗<input id="light" type="range" min="0" max="70" value="36" step="1"></label></section>
 <section><h2>饰品</h2>${spatialParts
   .map(
@@ -62,11 +62,11 @@ const defaults: SpatialPetOptions = {
   orbit: false,
   ears: false,
   perspective: false,
-  light: 0.64,
+  light: 0.78,
   jelly: 0.88,
   reference: false,
   face: "#34483f",
-  body: "#b1decd",
+  body: "#bff2dc",
   accessory: "#466c56",
 };
 const instances: AttachmentInstance[] = spatialParts.map(({ attachment }) => ({

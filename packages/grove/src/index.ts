@@ -15,3 +15,5 @@ export const grovePack=defineResourcePack({id:'mofli.grove',version:1,rigs:[blou
 export default grovePack;
 
 export { mewRig as catHeadRig, defineMewSkin as defineCatSkin } from "./rigs/mew/index.js";
+
+export { companionActions, companionMotion, type CompanionActionId } from "./rigs/companion-actions.js";

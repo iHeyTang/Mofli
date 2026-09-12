@@ -10,7 +10,7 @@ test("cat irritated expression can be previewed separately from click shake", as
   await page.locator('[data-expression="16"]').click();
   await page.locator("#seek").fill("1");
   await page.locator("#play").click();
-  await expect(page.locator("#states button")).toHaveCount(14);
+  await expect(page.locator("#states button")).toHaveCount(66);
   expect(errors).toEqual([]);
   await page.screenshot({
     path: "test-results/irritated-desktop.png",

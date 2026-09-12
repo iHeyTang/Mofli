@@ -189,6 +189,7 @@ export function Range({
   max,
   onChange,
   step = 0.01,
+  showPercent = false,
 }: {
   id?: string;
   label: string;
@@ -197,6 +198,7 @@ export function Range({
   max: number;
   onChange: (v: number) => void;
   step?: number;
+  showPercent?: boolean;
 }) {
   return (
     <Slider
@@ -207,10 +209,11 @@ export function Range({
       minValue={min}
       maxValue={max}
       step={step}
-      onChange={(v) => onChange(Number(v))}
+      formatOptions={showPercent ? { style: "percent" } : undefined}
+      onChange={(v) => onChange(Math.max(min, Math.min(max, Number(v))))}
     >
       <Label>{label}</Label>
-      <Slider.Output>{Number(value).toFixed(2)}</Slider.Output>
+      <Slider.Output>{showPercent ? `${Math.round(value * 100)}%` : Number(value).toFixed(2)}</Slider.Output>
       <Slider.Track>
         <Slider.Fill />
         <Slider.Thumb />

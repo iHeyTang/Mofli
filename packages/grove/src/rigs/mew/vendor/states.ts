@@ -1,3 +1,4 @@
+import { companionActions, companionMotion, type CompanionActionId } from "../../companion-actions.js";
 /*! Bloub © 2026 Jérémy Perret, MIT. See THIRD_PARTY_NOTICES.md. */
 import {
   COMET_DOT,
@@ -152,6 +153,7 @@ function spinningTriangle(rot: number): Silhouette {
 /* ------------------------------------------------------------------ etats */
 
 export type StateId =
+  | CompanionActionId
   | 'idle'
   | 'thinking'
   | 'wink'
@@ -170,6 +172,8 @@ export type StateId =
   | 'swirl'
 
 export interface StateDef {
+  /** Original Mofli scores keep their head motion when applying a selected expression. */
+  expressionFace?: boolean;
   id: StateId
   /** duree de maintien quand la sequence complete est jouee */
   duration: number
@@ -576,6 +580,22 @@ export const STATES: StateDef[] = [
   }
 ]
 
+// Original Mofli actions preserve the selected creature's contour and ear bindings.
+STATES.push(...companionActions.map((action, index): StateDef => ({
+  id: action.id, duration: action.duration, morph: .4, blinkIn: false,
+  baseBody: true, baseFace: false, expressionFace: true,
+  pose: (time) => {
+    const m = companionMotion(index, time);
+    const pose = base();
+    pose.sil.sx = 1 / Math.sqrt(m.stretch);
+    pose.sil.sy = m.stretch;
+    pose.offX = m.x;
+    pose.offY = -m.y;
+    pose.gaze = { yaw: m.yaw * 180 / Math.PI, pitch: m.pitch * 180 / Math.PI, roll: m.roll * 180 / Math.PI };
+    return pose;
+  },
+})));
+
 export const STATE_BY_ID = new Map(STATES.map((s) => [s.id, s]))
 
 /** Ordre de lecture de la sequence complete, calque sur la video de reference. */
@@ -584,7 +604,8 @@ export const STATE_BY_ID = new Map(STATES.map((s) => [s.id, s]))
  * montrent les vignettes et la planche. Rendu deterministe, donc comparable
  * d'une execution a l'autre. Le type force a couvrir tout nouvel etat.
  */
-export const POSES: Record<StateId, number> = {
+export const POSES = {
+  ...Object.fromEntries(companionActions.map(a => [a.id, a.duration * .28])),
   idle: 1,
   thinking: 1.1,
   wink: 0.8,
@@ -600,7 +621,7 @@ export const POSES: Record<StateId, number> = {
   swirl: 0.5,
   burst: 0.45,
   comet: 1.15
-}
+} as Record<StateId, number>
 
 export const SEQUENCE: StateId[] = [
   'idle',
@@ -618,3 +639,5 @@ export const SEQUENCE: StateId[] = [
   'burst',
   'comet'
 ]
+
+SEQUENCE.push(...companionActions.map(a => a.id));

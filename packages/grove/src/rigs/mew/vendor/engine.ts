@@ -303,8 +303,8 @@ export class BotEngine {
       pose = {...pose, sil: {...pose.sil, radii: pose.sil.radii.map((r,i)=>r + Math.max(0,shape[i]! - softBody[i]!)*earMix[def.id]!)}};
     }
     pose.headTurn = shape ? (def.baseBody ? 1 : (earMix[def.id] ?? 0)) : 0;
-    if (def.baseFace && expr) {
-      pose = { ...pose, gaze: expr.gaze, split: expr.split, eyes: expr.eyes }
+    if ((def.baseFace || def.expressionFace) && expr) {
+      pose = { ...pose, gaze: def.baseFace ? expr.gaze : pose.gaze, split: expr.split, eyes: expr.eyes }
     }
     return pose
   }
@@ -490,13 +490,15 @@ export class BotEngine {
     const look = interaction && interaction.attention > 0 ? { yaw: interaction.look.x*38, pitch: -interaction.look.y*26, mix: interaction.attention, wander: 1-interaction.attention, spin: 0 } : this.lookAtTime(now)
     const life = liveliness(now, { wander: alive ? look.wander : 0, blink: alive })
 
+    // Companion head gestures remain readable while following the pointer.
+    const gazeMix = def.expressionFace ? look.mix * .55 : look.mix;
     const gaze = {
       // Les deux visees REMPLACENT celles de la pose au lieu de s'y ajouter (voir
       // `Look`), et le tour se retranche en chemin. La derive s'ajoute APRES le
       // melange, sinon la cible l'annulerait en meme temps que la pose — or elle
       // doit survivre a une tete tournee sans pointeur.
-      yaw: lerp(pose.gaze.yaw, look.yaw, look.mix) + life.dYaw - look.spin,
-      pitch: lerp(pose.gaze.pitch, look.pitch, look.mix) + life.dPitch,
+      yaw: lerp(pose.gaze.yaw, look.yaw, gazeMix) + life.dYaw - look.spin,
+      pitch: lerp(pose.gaze.pitch, look.pitch, gazeMix) + life.dPitch,
       // le roulis, lui, ne suit rien : la tete du bot est penchee de -13deg dans
       // la video, et la faire rouler avec le curseur casse cette signature
       roll: pose.gaze.roll + life.dRoll

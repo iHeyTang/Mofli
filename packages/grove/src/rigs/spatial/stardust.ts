@@ -1,4 +1,4 @@
-import { defineSpatialAttachment } from "@mofli/core";
+import { jellyMaterial, defineJellyAttachment } from "./jelly-material.js";
 import {
   ellipsoid3D,
   type Geometry3D,
@@ -45,7 +45,7 @@ function path(angle: number, radius: number, lane: number): Vector3 {
   ];
 }
 /** Kept under the original resource ID so existing saved accessories upgrade in place. */
-export const orbit = defineSpatialAttachment({
+export const orbit = defineJellyAttachment({
   id: "spatial-orbit",
   mount: "character.orbit",
   previewNodes: [
@@ -54,7 +54,7 @@ export const orbit = defineSpatialAttachment({
     "glow-0-1",
     ...Array.from({ length: 5 }, (_, i) => `tail-0-${i}`),
   ],
-  colors: { body: "#e9ba74", dust: "#b2a0d7" },
+  colors: { body: "#ffe074", dust: "#bca4ff" },
   parameters: {
     size: { min: 0.6, max: 2, default: 1 },
     radius: { min: 1.1, max: 1.8, default: 1.32 },
@@ -89,7 +89,7 @@ export const orbit = defineSpatialAttachment({
       nodes.push({
         id: `star-${i}`,
         geometry: sparkle,
-        material: { color, gloss: 0.14 },
+        material: jellyMaterial(color),
         transform: {
           position: path(angle, radius, lane),
           rotation: [

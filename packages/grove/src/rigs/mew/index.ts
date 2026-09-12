@@ -1,3 +1,4 @@
+import { companionActions } from "../companion-actions.js";
 import { headHitArea, headReaction } from '../head-interaction.js';
 import {headMountCapabilities} from '@mofli/core';
 import {headMounts} from "@mofli/core";
@@ -52,8 +53,8 @@ const descriptions = [
 export const catStates = SEQUENCE.map((id, index) => ({
   id,
   index,
-  name: names[index]!,
-  description: descriptions[index]!,
+  name: names[index] ?? companionActions[index - 14]!.name,
+  description: descriptions[index] ?? companionActions[index - 14]!.name,
   duration: STATE_BY_ID.get(id)!.duration,
   posterTime: POSES[id],
 }));
@@ -130,7 +131,7 @@ export const mewRig: Rig = {
   surfaces: catSurfaces,
   colors: { body: "#0a0a0c", face: "#f9f9f9" },
   poseParameters: {
-    state: { min: 0, max: 13, default: 0 },
+    state: { min: 0, max: SEQUENCE.length - 1, default: 0 },
     expression: { min: -1, max: 16, default: -1 },
   },
   parameters: {

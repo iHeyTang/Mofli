@@ -1,3 +1,4 @@
+import { companionActions, companionMotion } from "../companion-actions.js";
 export const spatialExpressions = [
   "默认",
   "平静",
@@ -43,6 +44,7 @@ export const spatialActions = [
   duration: Number(duration),
   posterTime: Number(duration) * 0.28,
 }));
+spatialActions.push(...companionActions.map((a, i) => ({ ...a, index: i + 8, posterTime: a.duration * .28 })));
 /** Periodic, deterministic, volume-preserving motion. Ground contact stays at y=-.78. */
 export function spatialMotion(action: number, time: number, energy = 1) {
   const duration = spatialActions[action]?.duration ?? 4,
@@ -87,6 +89,7 @@ export function spatialMotion(action: number, time: number, energy = 1) {
     pitch = Math.cos(t) * 0.09;
     stretch = 1 + Math.sin(t + 0.5) * 0.025;
   }
+  if (action >= 8) ({ x, y, stretch, yaw, pitch, roll, flex } = companionMotion(action - 8, time));
   stretch = 1 + (stretch - 1) * energy;
   return {
     y: y * energy,

@@ -25,7 +25,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#d69c96"
+          "fill": "#ff91b7"
         },
         "member": "left",
         "surface": true
@@ -41,7 +41,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#e5b0a5"
+          "fill": "#ffb1cc"
         },
         "member": "left",
         "surface": true
@@ -57,7 +57,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#f3c7b7"
+          "fill": "#ffd4e3"
         },
         "member": "left",
         "surface": true
@@ -73,7 +73,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#d69c96"
+          "fill": "#ff91b7"
         },
         "member": "right",
         "surface": true
@@ -89,7 +89,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#e5b0a5"
+          "fill": "#ffb1cc"
         },
         "member": "right",
         "surface": true
@@ -105,7 +105,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#f3c7b7"
+          "fill": "#ffd4e3"
         },
         "member": "right",
         "surface": true

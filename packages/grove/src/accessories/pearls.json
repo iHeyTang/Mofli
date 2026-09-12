@@ -25,7 +25,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "left",
         "motion": {
@@ -43,7 +43,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#e9eeff"
         },
         "member": "left",
         "motion": {
@@ -61,7 +61,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "left",
         "motion": {
@@ -79,7 +79,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "left",
         "motion": {
@@ -97,7 +97,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#e9eeff"
         },
         "member": "left",
         "motion": {
@@ -115,7 +115,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "left",
         "motion": {
@@ -133,7 +133,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "left",
         "motion": {
@@ -151,7 +151,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#d2c0ff"
         },
         "member": "left",
         "motion": {
@@ -169,7 +169,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "left",
         "motion": {
@@ -187,7 +187,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "right",
         "motion": {
@@ -205,7 +205,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#e9eeff"
         },
         "member": "right",
         "motion": {
@@ -223,7 +223,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "right",
         "motion": {
@@ -241,7 +241,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "right",
         "motion": {
@@ -259,7 +259,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#eee6d5"
+          "fill": "#e9eeff"
         },
         "member": "right",
         "motion": {
@@ -277,7 +277,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "right",
         "motion": {
@@ -295,7 +295,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c8bca4"
+          "fill": "#b3c2ec"
         },
         "member": "right",
         "motion": {
@@ -313,7 +313,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#c5a46d"
+          "fill": "#d2c0ff"
         },
         "member": "right",
         "motion": {
@@ -331,7 +331,7 @@
           "z": 0
         },
         "attrs": {
-          "fill": "#fff8e8"
+          "fill": "#ffffff"
         },
         "member": "right",
         "motion": {

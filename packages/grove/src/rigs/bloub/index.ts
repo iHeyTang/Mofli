@@ -1,3 +1,4 @@
+import { companionActions } from "../companion-actions.js";
 import { headHitArea } from '../head-interaction.js';
 import {headMountCapabilities} from '@mofli/core';
 import {validateBloubDesign,type BloubDesign} from "./design.js";
@@ -23,11 +24,12 @@ import { mixHex } from "./vendor/skins.js";
 import { NOTIF_BLUE } from "./vendor/decor.js";
 export const bloubStates = SEQUENCE.map((id, index) => ({
   id,
+  name: companionActions.find(a => a.id === id)?.name ?? id,
   index,
   duration: STATE_BY_ID.get(id)!.duration,
   posterTime: POSES[id],
 }));
-export const bloubDuration = bloubStates.reduce((n, s) => n + s.duration, 0);
+export const bloubDuration = bloubStates.slice(0, 14).reduce((n, s) => n + s.duration, 0);
 const circle = (
   id: string,
   x: number,
@@ -341,7 +343,7 @@ export const bloubRig: Rig = {
   colors: { body: "#0a0a0c", paper: "#f9f9f9" },
   variants: { eyes: ["solid", "socket"], temperament: ["mellow", "spry", "steady"] },
   poseParameters: {
-    state: { min: -1, max: 13, default: -1 },
+    state: { min: -1, max: SEQUENCE.length - 1, default: -1 },
     expression: { min: -1, max: 17, default: -1 },
   },
   parameters: {

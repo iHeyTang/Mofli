@@ -62,13 +62,13 @@
               ]
             ],
             "colors": [
-              "#afbea3",
-              "#afbea3",
-              "#afbea3",
-              "#98ad8e",
-              "#98ad8e",
-              "#98ad8e",
-              "#e5d7bd"
+              "#c6b8ff",
+              "#c6b8ff",
+              "#c6b8ff",
+              "#ab98ee",
+              "#ab98ee",
+              "#ab98ee",
+              "#fff1b8"
             ]
           },
           {
@@ -83,18 +83,18 @@
             "tubeHeight": 0.045,
             "depthRatio": 0.78,
             "colors": [
-              "#819a78",
-              "#819a78",
-              "#819a78",
-              "#819a78",
-              "#819a78",
-              "#819a78",
-              "#a9bb9c",
-              "#a9bb9c",
-              "#a9bb9c",
-              "#a9bb9c",
-              "#a9bb9c",
-              "#a9bb9c"
+              "#927bdd",
+              "#927bdd",
+              "#927bdd",
+              "#927bdd",
+              "#927bdd",
+              "#927bdd",
+              "#dbd0ff",
+              "#dbd0ff",
+              "#dbd0ff",
+              "#dbd0ff",
+              "#dbd0ff",
+              "#dbd0ff"
             ]
           },
           {
@@ -106,7 +106,7 @@
             ],
             "radius": 0.42,
             "depthRatio": 0.78,
-            "fill": "#8da482"
+            "fill": "#b8a5f5"
           }
         ]
       }

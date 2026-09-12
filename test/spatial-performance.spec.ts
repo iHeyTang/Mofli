@@ -195,8 +195,8 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   const library = page.getByRole("complementary", { name: "素材库" });
   await library.getByRole("button", { name: "饰品", exact: true }).click();
   const cards = page.locator(".spatial-parts .attachment-item");
-  await expect(cards).toHaveCount(3);
-  await expect(cards.locator("img")).toHaveCount(3);
+  await expect(cards).toHaveCount(10);
+  await expect(cards.locator("img")).toHaveCount(10);
   await expect
     .poll(() =>
       cards
@@ -217,7 +217,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
         (imgs) =>
           new Set(imgs.map((img) => (img as HTMLImageElement).src)).size,
       ),
-  ).toBe(3);
+  ).toBe(10);
   await page.locator("#wear-3d-hat").check();
   await expect(
     cards
@@ -231,7 +231,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   await page.screenshot({ path: "test-results/accessory-cards-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
-  await expect(cards).toHaveCount(3);
+  await expect(cards).toHaveCount(10);
   await page.locator("#wear-3d-ears").check();
   await expect(page.locator("#wear-3d-ears")).toBeChecked();
   await page.screenshot({ path: "test-results/accessory-cards-mobile.png" });
@@ -283,11 +283,11 @@ test("3D accessory edits belong to each part and survive skin switches and saved
     .getByRole("button", { name: "饰品", exact: true })
     .click();
   await page.locator("#wear-3d-hat").check();
-  await page.locator("#wear-3d-ears").check();
+  await page.locator("#wear-3d-cat-ears").check();
   await page.locator("#wear-3d-orbit").check();
   await page.getByLabel("礼帽帽身", { exact: true }).fill("#f0aabb");
   await page.getByLabel("礼帽帽带", { exact: true }).fill("#eeeecc");
-  await page.getByLabel("小芽叶片", { exact: true }).fill("#88ccaa");
+  await page.getByLabel("猫耳外耳", { exact: true }).fill("#88ccaa");
   await page.getByLabel("星尘环绕星光", { exact: true }).fill("#aabbff");
   await page.locator("#spatial-hat-size input").press("End");
   await page.locator("#save-local").click();
@@ -358,10 +358,10 @@ test("stardust renders animated particles and exposes its controls on desktop an
     page.getByText("星尘环绕", { exact: true }).first(),
   ).toBeVisible();
   await expect(page.getByLabel("星尘环绕星光", { exact: true })).toHaveValue(
-    "#e9ba74",
+    "#ffe074",
   );
   await expect(page.getByLabel("星尘环绕微尘", { exact: true })).toHaveValue(
-    "#b2a0d7",
+    "#bca4ff",
   );
   await page.locator("#spatial-orbit-density input").press("End");
   await page.locator("#spatial-orbit-glow input").press("End");
@@ -380,7 +380,12 @@ test("stardust renders animated particles and exposes its controls on desktop an
     });
   const before = await sample();
   await expect.poll(sample).not.toEqual(before);
-  await expect(page.locator(".attachment-item").filter({has:page.locator("#wear-3d-orbit")}).locator(".pet-thumbnail img")).toBeVisible();
+  await expect(
+    page
+      .locator(".attachment-item")
+      .filter({ has: page.locator("#wear-3d-orbit") })
+      .locator(".pet-thumbnail img"),
+  ).toBeVisible();
   await page.screenshot({ path: "test-results/stardust-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();

@@ -240,3 +240,14 @@ h1,h2,h3,p {margin:0}
 .dimension-switch button {flex:1;padding:10px 12px;border:1px solid var(--studio-line);border-radius:10px;background:transparent;color:var(--studio-muted);font-weight:600;cursor:pointer;}
 .dimension-switch button[aria-pressed="true"] {background:var(--studio-ink);border-color:var(--studio-ink);color:var(--studio-paper);}
 .dimension-switch button:disabled {opacity:.35;cursor:default;}
+
+/* Keep the preview steady while browsing short and long motion collections. */
+.motion-dock-resizable {position:relative;box-sizing:border-box;min-height:140px;display:flex;flex-direction:column}
+.motion-dock-resizable>.tabs {flex:1;min-height:0;display:flex;flex-direction:column}
+.motion-dock-resizable .dock-heading {flex-shrink:0}
+.motion-dock-resizable .tabs__panel {flex:1;min-height:0;overflow:hidden}
+.motion-dock-resizable .motion-strip {height:100%;max-height:none;box-sizing:border-box;align-content:start;overflow:auto;scrollbar-gutter:stable}
+.dock-resize-handle {position:absolute;inset:-7px 0 auto;height:14px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none;user-select:none;z-index:2;border-radius:4px}
+.dock-resize-handle span {width:36px;height:3px;border-radius:2px;background:var(--studio-line)}
+.dock-resize-handle:hover span,.dock-resize-handle:focus-visible span {background:var(--studio-sage)}
+.dock-resize-handle:focus-visible {outline:2px solid var(--studio-sage);outline-offset:2px}

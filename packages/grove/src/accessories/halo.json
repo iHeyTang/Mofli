@@ -32,18 +32,18 @@
             "depthRatio": 0.7,
             "yWave": 0.15,
             "colors": [
-              "#d4c8ac",
-              "#d4c8ac",
-              "#d4c8ac",
-              "#d4c8ac",
-              "#e7ddc6",
-              "#e7ddc6",
-              "#e7ddc6",
-              "#e7ddc6",
-              "#f3edde",
-              "#f3edde",
-              "#f3edde",
-              "#f3edde"
+              "#ffd967",
+              "#ffd967",
+              "#ffd967",
+              "#ffd967",
+              "#ffeca0",
+              "#ffeca0",
+              "#ffeca0",
+              "#ffeca0",
+              "#fff8d4",
+              "#fff8d4",
+              "#fff8d4",
+              "#fff8d4"
             ]
           }
         ]

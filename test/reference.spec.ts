@@ -2,13 +2,13 @@ import { test, expect } from "@playwright/test";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { PNG } = require("pngjs");
-test("reference homepage has 14 real state previews, transport, scrubbing and export", async ({
+test("reference homepage has 66 real state previews, transport, scrubbing and export", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("http://127.0.0.1:14517/reference.html");
-  await expect(page.locator("[data-state]")).toHaveCount(14);
+  await expect(page.locator("[data-state]")).toHaveCount(66);
   await expect(page.locator("#avatar svg")).toHaveCount(1);
   await page.locator('[data-state="orbit"]').click();
   await page.locator("#seek").fill("1.2");
@@ -226,7 +226,7 @@ test("manual clicks morph body and eyes through the upstream pose controller", a
   });
 });
 
-test("cat rig separates geometry presets from appearance, fourteen poses and working playback controls", async ({
+test("cat rig separates geometry presets from appearance, sixty-six poses and working playback controls", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -237,7 +237,7 @@ test("cat rig separates geometry presets from appearance, fourteen poses and wor
   await expect(page.locator("#skin-select option")).toHaveText([
     "Ink",  "Patches",
   ]);
-  await expect(page.locator("[data-state]")).toHaveCount(14);
+  await expect(page.locator("[data-state]")).toHaveCount(66);
   await expect(page.locator("#cycle")).toBeHidden();
   await page.locator('[data-state="sleep"]').click();
   await page.locator("#seek").fill("1");
@@ -269,7 +269,7 @@ test("cat rig separates geometry presets from appearance, fourteen poses and wor
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);
   await page.selectOption("#rig-select", "bloub-reference");
-  await expect(page.locator("[data-state]")).toHaveCount(14);
+  await expect(page.locator("[data-state]")).toHaveCount(66);
   await expect(page.locator("#cycle")).toBeVisible();
   expect(errors).toEqual([]);
 });

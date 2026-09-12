@@ -30,7 +30,7 @@ function visible(frame) {
   return JSON.stringify(f);
 }
 test("98 Bloub frames retain their pre-extraction fingerprint", () => {
-  const frames = bloubStates.map((s) =>
+  const frames = bloubStates.slice(0, 14).map((s) =>
     [0, 0.03, 0.1, 0.3, 0.75, 1.3, 2].map((t) =>
       new BotEngine(100, s.id).sample(t),
     ),
