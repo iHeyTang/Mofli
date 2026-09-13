@@ -20,9 +20,14 @@
     "studio": "npm run start --workspace @mofli/studio --",
     "prestudio": "npm run build",
     "build:release": "npm run build && npm run build:studio",
-    "release:check": "npm test && npm run typecheck && npm run build:demo && npm run test:packages"
+    "release:check": "npm run release:versions && npm test && npm run typecheck && npm run build:demo && npm run test:packages",
+    "changeset": "changeset",
+    "version:packages": "node scripts/version.mjs",
+    "release:versions": "node scripts/release.mjs --check",
+    "release:publish": "node scripts/release.mjs"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.1",
     "@playwright/test": "^1.55.0",
     "pngjs": "^7.0.0",
     "prettier": "^3.9.6",
