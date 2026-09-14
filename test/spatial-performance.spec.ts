@@ -185,7 +185,7 @@ test("dimension scopes rigs and accessories and restores each draft", async ({
   ).toBe(false);
 });
 
-test("thirteen 3D accessories reuse selectable preview cards on desktop and mobile", async ({
+test("3D accessories reuse selectable preview cards on desktop and mobile", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -195,8 +195,8 @@ test("thirteen 3D accessories reuse selectable preview cards on desktop and mobi
   const library = page.getByRole("complementary", { name: "素材库" });
   await library.getByRole("button", { name: "饰品", exact: true }).click();
   const cards = page.locator(".spatial-parts .attachment-item");
-  await expect(cards).toHaveCount(13);
-  await expect(cards.locator("img")).toHaveCount(13);
+  await expect(cards).toHaveCount(10);
+  await expect(cards.locator("img")).toHaveCount(10);
   await expect
     .poll(() =>
       cards
@@ -217,7 +217,7 @@ test("thirteen 3D accessories reuse selectable preview cards on desktop and mobi
         (imgs) =>
           new Set(imgs.map((img) => (img as HTMLImageElement).src)).size,
       ),
-  ).toBe(13);
+  ).toBe(10);
   await page.locator("#wear-3d-hat").check();
   await expect(
     cards
@@ -231,7 +231,7 @@ test("thirteen 3D accessories reuse selectable preview cards on desktop and mobi
   await page.screenshot({ path: "test-results/accessory-cards-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
-  await expect(cards).toHaveCount(13);
+  await expect(cards).toHaveCount(10);
   await page.locator("#wear-3d-ears").check();
   await expect(page.locator("#wear-3d-ears")).toBeChecked();
   await page.screenshot({ path: "test-results/accessory-cards-mobile.png" });
@@ -288,7 +288,7 @@ test("3D accessory edits belong to each part and survive skin switches and saved
   await page.getByLabel("礼帽帽身", { exact: true }).fill("#f0aabb");
   await page.getByLabel("礼帽帽带", { exact: true }).fill("#eeeecc");
   await page.getByLabel("猫耳外耳", { exact: true }).fill("#88ccaa");
-  await page.getByLabel("星尘环绕星光", { exact: true }).fill("#aabbff");
+  await page.getByLabel("流光环绕光带", { exact: true }).fill("#aabbff");
   await page.locator("#spatial-hat-size input").press("End");
   await page.locator("#save-local").click();
   const saved = await page.evaluate(() =>
@@ -342,7 +342,7 @@ test("3D accessory edits belong to each part and survive skin switches and saved
   });
 });
 
-test("stardust renders animated particles and exposes its controls on desktop and mobile", async ({
+test("the ring renders drifting light and exposes its controls on desktop and mobile", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -355,17 +355,17 @@ test("stardust renders animated particles and exposes its controls on desktop an
     .click();
   await page.locator("#wear-3d-orbit").check();
   await expect(
-    page.getByText("星尘环绕", { exact: true }).first(),
+    page.getByText("流光环绕", { exact: true }).first(),
   ).toBeVisible();
-  await expect(page.getByLabel("星尘环绕星光", { exact: true })).toHaveValue(
-    "#ffe074",
+  await expect(page.getByLabel("流光环绕光带", { exact: true })).toHaveValue(
+    "#cbd8ff",
   );
-  await expect(page.getByLabel("星尘环绕微尘", { exact: true })).toHaveValue(
-    "#bca4ff",
+  await expect(page.getByLabel("流光环绕星点", { exact: true })).toHaveValue(
+    "#ffe6a8",
   );
-  await page.locator("#spatial-orbit-density input").press("End");
+  await page.locator("#spatial-orbit-wisp input").press("End");
   await page.locator("#spatial-orbit-glow input").press("End");
-  await page.locator("#spatial-orbit-trail input").press("End");
+  await page.locator("#spatial-orbit-length input").press("End");
   const sample = () =>
     page.evaluate(async () => {
       const url = performance
@@ -374,9 +374,16 @@ test("stardust renders animated particles and exposes its controls on desktop an
       const { model } = await import(/* @vite-ignore */ url);
       const all = (nodes: any[]): any[] =>
         nodes.flatMap((n) => [n, ...all(n.children ?? [])]);
-      return all(model.scene().nodes).find(
-        (n) => n.id === "attachment-spatial-orbit-star-0",
-      ).transform.position;
+      // A stable signature of the band's shape: the sum over its own vertices.
+      const band = all(model.scene().nodes).find(
+        (n) => n.id === "attachment-spatial-orbit-ribbon-5",
+      );
+      return band.geometry.vertices
+        .reduce(
+          (sum: number, v: number[]) => sum + v[0] + v[1] * 3 + v[2] * 7,
+          0,
+        )
+        .toFixed(4);
     });
   const before = await sample();
   await expect.poll(sample).not.toEqual(before);
@@ -386,11 +393,11 @@ test("stardust renders animated particles and exposes its controls on desktop an
       .filter({ has: page.locator("#wear-3d-orbit") })
       .locator(".pet-thumbnail img"),
   ).toBeVisible();
-  await page.screenshot({ path: "test-results/stardust-desktop.png" });
+  await page.screenshot({ path: "test-results/orbit-ribbon-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
   await expect(page.locator("#wear-3d-orbit")).toBeChecked();
   await expect(page.locator("#avatar canvas")).toBeVisible();
-  await page.screenshot({ path: "test-results/stardust-mobile.png" });
+  await page.screenshot({ path: "test-results/orbit-ribbon-mobile.png" });
   expect(errors).toEqual([]);
 });

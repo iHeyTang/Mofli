@@ -17,10 +17,8 @@ export {
   bowTie,
   blush,
 };
-import { orbit } from "./stardust.js";
-export { orbit } from "./stardust.js";
-import { constellation, cometTrail, fireflyLoop } from "./orbiting.js";
-export { constellation, cometTrail, fireflyLoop } from "./orbiting.js";
+import { flowingOrbit } from "./ribbon.js";
+export { flowingOrbit } from "./ribbon.js";
 import { type PetConfig } from "@mofli/core";
 import { ellipsoid3D, type Node3D } from "@mofli/core/scene3d";
 import { softRevolution, roundedStroke } from "./soft-details.js";
@@ -136,10 +134,7 @@ export const ears = defineJellyAttachment({
 export const spatialParts = [
   { name: "礼帽", attachment: hat },
   { name: "小芽", attachment: ears },
-  { name: "星尘环绕", attachment: orbit },
-  { name: "星珠环", attachment: constellation },
-  { name: "彗尾环绕", attachment: cometTrail },
-  { name: "流萤环绕", attachment: fireflyLoop },
+  { name: "流光环绕", attachment: flowingOrbit },
   { name: "猫耳", attachment: catEars },
   { name: "兔耳", attachment: rabbitEars },
   { name: "短猫胡须", attachment: whiskers },

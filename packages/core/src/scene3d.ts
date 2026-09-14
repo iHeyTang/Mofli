@@ -29,6 +29,8 @@ export interface Material3D {
   transmissionRoughness?: number;
   /** Peak opacity of a soft disc in local XY unit coordinates; fades to zero at radius 1. */
   radialOpacity?: number;
+  /** Overall alpha, so a volume can fade with distance or along its own length. */
+  opacity?: number;
   /** Defaults to smooth when geometry provides normals. */
   smooth?: boolean;
   doubleSided?: boolean;
@@ -54,7 +56,7 @@ export interface Camera3D {
 }
 export interface Scene3D {
   /** Mount ID to an anchor node in the scene hierarchy. */
-  mounts?: Record<string,string>;
+  mounts?: Record<string, string>;
   nodes: readonly Node3D[];
   camera: Camera3D;
   /** World-space direction toward the light. */
