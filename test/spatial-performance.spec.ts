@@ -185,7 +185,7 @@ test("dimension scopes rigs and accessories and restores each draft", async ({
   ).toBe(false);
 });
 
-test("3D accessories reuse selectable preview cards on desktop and mobile", async ({
+test("thirteen 3D accessories reuse selectable preview cards on desktop and mobile", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -195,8 +195,8 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   const library = page.getByRole("complementary", { name: "素材库" });
   await library.getByRole("button", { name: "饰品", exact: true }).click();
   const cards = page.locator(".spatial-parts .attachment-item");
-  await expect(cards).toHaveCount(10);
-  await expect(cards.locator("img")).toHaveCount(10);
+  await expect(cards).toHaveCount(13);
+  await expect(cards.locator("img")).toHaveCount(13);
   await expect
     .poll(() =>
       cards
@@ -217,7 +217,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
         (imgs) =>
           new Set(imgs.map((img) => (img as HTMLImageElement).src)).size,
       ),
-  ).toBe(10);
+  ).toBe(13);
   await page.locator("#wear-3d-hat").check();
   await expect(
     cards
@@ -231,7 +231,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   await page.screenshot({ path: "test-results/accessory-cards-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
-  await expect(cards).toHaveCount(10);
+  await expect(cards).toHaveCount(13);
   await page.locator("#wear-3d-ears").check();
   await expect(page.locator("#wear-3d-ears")).toBeChecked();
   await page.screenshot({ path: "test-results/accessory-cards-mobile.png" });

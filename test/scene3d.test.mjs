@@ -709,9 +709,9 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
   assert.ok(triangles(scene.nodes) < 20000);
 });
 
-test("all ten spatial decorations render with unique nodes and round-trip", async () => {
+test("all thirteen spatial decorations render with unique nodes and round-trip", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  assert.equal(spatialParts.length, 10);
+  assert.equal(spatialParts.length, 13);
   const registry = new PetRegistry().registerPacks({
     id: "decorations",
     version: 1,
@@ -800,38 +800,177 @@ test("complete spatial outfits fit the renderer triangle budget", async () => {
 
 test("crown migration keeps last worn category without changing user colors", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const registry = new PetRegistry().registerPacks({ id: "crown-migration", version: 1, rigs: [spatialRig], skins: [spatialSkin], attachments: spatialParts });
-  const hat = { id: "hat", type: "spatial-hat", version: 1, colors: { fabric: "#abcdef" } };
-  const sprout = { id: "sprout", type: "spatial-ears", version: 1, colors: { leaf: "#123456" } };
-  for (const attachments of [[hat, sprout], [sprout, hat]]) {
-    const input = { version: 1, skin: spatialSkin, rigConfig: {}, pose: {}, attachments };
+  const registry = new PetRegistry().registerPacks({
+    id: "crown-migration",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: spatialParts,
+  });
+  const hat = {
+    id: "hat",
+    type: "spatial-hat",
+    version: 1,
+    colors: { fabric: "#abcdef" },
+  };
+  const sprout = {
+    id: "sprout",
+    type: "spatial-ears",
+    version: 1,
+    colors: { leaf: "#123456" },
+  };
+  for (const attachments of [
+    [hat, sprout],
+    [sprout, hat],
+  ]) {
+    const input = {
+      version: 1,
+      skin: spatialSkin,
+      rigConfig: {},
+      pose: {},
+      attachments,
+    };
     const result = registry.resolve(input).config;
     assert.deepEqual(result.attachments, [attachments[1]]);
     assert.equal(input.attachments.length, 2);
     assert.deepEqual(registry.resolve(result).config, result);
   }
-  assert.equal(spatialParts.filter(p => p.attachment.mount === "head.crown").length, 4);
+  assert.equal(
+    spatialParts.filter((p) => p.attachment.mount === "head.crown").length,
+    4,
+  );
   assert.ok(!Object.hasOwn(spatialRig.mounts, "head.crown.sprout"));
 });
 
 test("every spatial accessory supplies a translucent gel material", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(Boolean);
+  const materials = (nodes) =>
+    nodes
+      .flatMap((n) => [n.material, ...materials(n.children ?? [])])
+      .filter(Boolean);
   for (const { attachment } of spatialParts) {
-    const parameters = Object.fromEntries(Object.entries(attachment.parameters ?? {}).map(([key,rule]) => [key,rule.default]));
-    const nodes = attachment.sampleScene({ time: 0 }, parameters, attachment.colors);
-    assert.ok(materials(nodes).some(m => m.transmission >= .5), `${attachment.id} must not fall back to opaque plastic`);
+    const parameters = Object.fromEntries(
+      Object.entries(attachment.parameters ?? {}).map(([key, rule]) => [
+        key,
+        rule.default,
+      ]),
+    );
+    const nodes = attachment.sampleScene(
+      { time: 0 },
+      parameters,
+      attachment.colors,
+    );
+    assert.ok(
+      materials(nodes).some((m) => m.transmission >= 0.5),
+      `${attachment.id} must not fall back to opaque plastic`,
+    );
   }
 });
 
 test("accessory transmission control reaches opaque and gel endpoints", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(m => m?.transmission !== undefined);
-  for (const {attachment:a} of spatialParts) {
-    const p = Object.fromEntries(Object.entries(a.parameters).map(([k,v]) => [k,v.default]));
-    const opaque = materials(a.sampleScene({time:0}, {...p,transmission:0}, a.colors));
-    const gel = materials(a.sampleScene({time:0}, {...p,transmission:1}, a.colors));
-    assert.ok(opaque.length && opaque.every(m => m.transmission === 0));
-    assert.ok(gel.every(m => m.transmission > .5 && m.transmission <= 1));
+  const materials = (nodes) =>
+    nodes
+      .flatMap((n) => [n.material, ...materials(n.children ?? [])])
+      .filter((m) => m?.transmission !== undefined);
+  for (const { attachment: a } of spatialParts) {
+    const p = Object.fromEntries(
+      Object.entries(a.parameters).map(([k, v]) => [k, v.default]),
+    );
+    const opaque = materials(
+      a.sampleScene({ time: 0 }, { ...p, transmission: 0 }, a.colors),
+    );
+    const gel = materials(
+      a.sampleScene({ time: 0 }, { ...p, transmission: 1 }, a.colors),
+    );
+    assert.ok(opaque.length && opaque.every((m) => m.transmission === 0));
+    assert.ok(gel.every((m) => m.transmission > 0.5 && m.transmission <= 1));
   }
+});
+
+test("orbiting decorations own separate bands and keep clear of each other", async () => {
+  const { spatialParts, createSpatialPetScene, spatialRig, spatialSkin } =
+    await import("@mofli/grove/rigs/spatial");
+  const orbiting = spatialParts.filter((p) =>
+    p.attachment.mount.startsWith("character.orbit"),
+  );
+  assert.equal(orbiting.length, 4);
+  // One ring per mount: two accessories on the same anchor would replace each other.
+  assert.equal(new Set(orbiting.map((p) => p.attachment.mount)).size, 4);
+  const pose = { version: 1, skin: spatialSkin, rigConfig: {}, pose: {} };
+  // Bounding corners are enough to separate interleaved rings and keep the scan cheap.
+  const points = (nodes, out = []) => {
+    for (const node of nodes) {
+      // Halos are camera-facing discs, not the ring, so they cannot collide with one.
+      if (node.material?.unlit) continue;
+      const at = node.transform?.position ?? [0, 0, 0],
+        scale = node.transform?.scale ?? [1, 1, 1],
+        vertices = node.geometry?.vertices ?? [];
+      if (vertices.length) {
+        const lo = [0, 1, 2].map((axis) =>
+            Math.min(...vertices.map((v) => v[axis] * scale[axis])),
+          ),
+          hi = [0, 1, 2].map((axis) =>
+            Math.max(...vertices.map((v) => v[axis] * scale[axis])),
+          );
+        for (let corner = 0; corner < 8; corner++)
+          out.push([
+            at[0] + (corner & 1 ? hi[0] : lo[0]),
+            at[1] + (corner & 2 ? hi[1] : lo[1]),
+            at[2] + (corner & 4 ? hi[2] : lo[2]),
+          ]);
+      }
+      points(node.children ?? [], out);
+    }
+    return out;
+  };
+  const rings = [];
+  for (const { attachment: a } of orbiting) {
+    const pet = new PetRegistry()
+      .registerPacks({
+        id: "orbit-band",
+        version: 1,
+        rigs: [spatialRig],
+        skins: [spatialSkin],
+        attachments: [{ name: a.id, attachment: a }],
+      })
+      .create({
+        ...pose,
+        attachments: [{ id: a.id, type: a.id, version: 1 }],
+      });
+    const nodes = [];
+    let low = Infinity,
+      high = -Infinity;
+    for (const time of [0, 1.3]) {
+      const mounted = pet.sampleScene(time).nodes[0];
+      const anchor = mounted.children.find(
+        (n) => n.id === "mount-" + a.mount.replaceAll(".", "-"),
+      );
+      for (const node of anchor.children.flatMap((n) => n.children ?? [])) {
+        const at = node.transform?.position ?? [0, 0, 0];
+        for (const [x, y, z] of points([node]))
+          nodes.push([x + at[0], y + at[1], z + at[2]]);
+        const height = anchor.transform.position[1] + at[1];
+        low = Math.min(low, height);
+        high = Math.max(high, height);
+      }
+    }
+    // A ring has to travel outside the body instead of through it.
+    const reach = Math.max(...nodes.map(([x, , z]) => Math.hypot(x, z)));
+    assert.ok(reach > 1, `${a.id} collapses into the body`);
+    // A ring that never leaves its anchor height is not an orbit.
+    assert.ok(high - low > 0.2, `${a.id} barely moves off its anchor`);
+    rings.push({ id: a.id, nodes });
+  }
+  for (let i = 0; i < rings.length; i++)
+    for (let j = i + 1; j < rings.length; j++) {
+      let closest = Infinity;
+      for (const [ax, ay, az] of rings[i].nodes)
+        for (const [bx, by, bz] of rings[j].nodes)
+          closest = Math.min(closest, Math.hypot(ax - bx, ay - by, az - bz));
+      assert.ok(
+        closest > 0.08,
+        `${rings[i].id} and ${rings[j].id} intersect (${closest.toFixed(3)})`,
+      );
+    }
 });

@@ -106,6 +106,10 @@ const spatialMounts = [
   "head.cheeks",
   "head.lower.front",
   "character.orbit",
+  /** Two extra orbit bands, so several rings can circle the body at different heights. */
+  "character.orbit.high",
+  "character.orbit.low",
+  "character.orbit.trail",
 ];
 /** Intersection with the actual blended mesh, not its unrelated global apex. */
 function surfaceAt(mesh: Geometry3D, axis: 1 | 2, u: number, v: number) {
@@ -344,7 +348,21 @@ export function createSpatialPetScene(
   const depth = Math.max(...head.vertices.map((v) => Math.abs(v[2])));
   const lowerY = Math.min(...head.vertices.map((v) => v[1])) * 0.62;
   const mountTransform = (mount: string): Node3D["transform"] => {
-    if (mount === "character.orbit") return { position: [0, 0, 0] };
+    // Each orbit band is a vertical offset of the body centre, so its ring clears the others.
+    if (mount.startsWith("character.orbit"))
+      return {
+        position: [
+          0,
+          mount === "character.orbit.high"
+            ? 0.55
+            : mount === "character.orbit.low"
+              ? -0.24
+              : mount === "character.orbit.trail"
+                ? -0.06
+                : 0,
+          0,
+        ],
+      };
     if (mount === "head.cheeks")
       return {
         position: [
