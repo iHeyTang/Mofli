@@ -39,6 +39,7 @@ const mountNames: Record<string, string> = {
   "head.lower.front": "下缘中央",
   "head.lower.sides": "下缘两侧",
   "character.orbit": "角色环绕",
+  "character.orbit.low": "下层环绕",
 };
 function Library({ mode }: { mode?: "skins" | "parts" } = {}) {
   const m = useModel();

@@ -106,6 +106,8 @@ const spatialMounts = [
   "head.cheeks",
   "head.lower.front",
   "character.orbit",
+  /** A second band under it, so the ribbon can circle the body with the stardust ring. */
+  "character.orbit.low",
 ];
 /** Intersection with the actual blended mesh, not its unrelated global apex. */
 function surfaceAt(mesh: Geometry3D, axis: 1 | 2, u: number, v: number) {
@@ -344,8 +346,9 @@ export function createSpatialPetScene(
   const depth = Math.max(...head.vertices.map((v) => Math.abs(v[2])));
   const lowerY = Math.min(...head.vertices.map((v) => v[1])) * 0.62;
   const mountTransform = (mount: string): Node3D["transform"] => {
-    // The ring is drawn around the body centre, so the accessory owns its own height.
+    // Each ring is drawn around the body centre; the band decides its own height.
     if (mount === "character.orbit") return { position: [0, 0, 0] };
+    if (mount === "character.orbit.low") return { position: [0, -0.58, 0] };
     if (mount === "head.cheeks")
       return {
         position: [

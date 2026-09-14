@@ -35,7 +35,7 @@ const SEGMENTS = 11;
 /** Path samples per stretch. Eleven is the least that still reads as a curve. */
 const SAMPLES = 11;
 
-export const bandId = "spatial-orbit";
+export const bandId = "spatial-ribbon";
 
 /**
  * A ribbon of light that drifts around the body instead of marching in place: the
@@ -45,12 +45,12 @@ export const bandId = "spatial-orbit";
  */
 export const flowingOrbit = defineJellyAttachment({
   id: bandId,
-  mount: "character.orbit",
+  mount: "character.orbit.low",
   previewNodes: ["ribbon-5", "haze-5-0", "haze-5-1", "ribbon-3"],
   colors: { ribbon: "#cbd8ff", spark: "#ffe6a8" },
   parameters: {
     size: { min: 0.6, max: 1.8, default: 1 },
-    radius: { min: 1.15, max: 1.85, default: 1.42 },
+    radius: { min: 0.7, max: 1.05, default: 0.88 },
     speed: { min: 0, max: 1.6, default: 0.55 },
     length: { min: 0.5, max: 1, default: 0.86 },
     height: { min: 0, max: 1, default: 0.5 },
@@ -76,7 +76,7 @@ export const flowingOrbit = defineJellyAttachment({
       span = 2.4 + p.length! * 4.4,
       // The band sits under the face and climbs as it circles, so it wraps the body
       // instead of cutting straight across it.
-      lift = -0.66,
+      lift = -0.08,
       nodes: Node3D[] = [];
     const pathAt = (tail: number): Vector3 => {
       const angle = drift - tail * span,

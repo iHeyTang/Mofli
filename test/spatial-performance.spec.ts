@@ -195,8 +195,8 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   const library = page.getByRole("complementary", { name: "素材库" });
   await library.getByRole("button", { name: "饰品", exact: true }).click();
   const cards = page.locator(".spatial-parts .attachment-item");
-  await expect(cards).toHaveCount(10);
-  await expect(cards.locator("img")).toHaveCount(10);
+  await expect(cards).toHaveCount(11);
+  await expect(cards.locator("img")).toHaveCount(11);
   await expect
     .poll(() =>
       cards
@@ -217,7 +217,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
         (imgs) =>
           new Set(imgs.map((img) => (img as HTMLImageElement).src)).size,
       ),
-  ).toBe(10);
+  ).toBe(11);
   await page.locator("#wear-3d-hat").check();
   await expect(
     cards
@@ -231,7 +231,7 @@ test("3D accessories reuse selectable preview cards on desktop and mobile", asyn
   await page.screenshot({ path: "test-results/accessory-cards-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
-  await expect(cards).toHaveCount(10);
+  await expect(cards).toHaveCount(11);
   await page.locator("#wear-3d-ears").check();
   await expect(page.locator("#wear-3d-ears")).toBeChecked();
   await page.screenshot({ path: "test-results/accessory-cards-mobile.png" });
@@ -288,7 +288,7 @@ test("3D accessory edits belong to each part and survive skin switches and saved
   await page.getByLabel("礼帽帽身", { exact: true }).fill("#f0aabb");
   await page.getByLabel("礼帽帽带", { exact: true }).fill("#eeeecc");
   await page.getByLabel("猫耳外耳", { exact: true }).fill("#88ccaa");
-  await page.getByLabel("流光环绕光带", { exact: true }).fill("#aabbff");
+  await page.getByLabel("星尘环绕星光", { exact: true }).fill("#aabbff");
   await page.locator("#spatial-hat-size input").press("End");
   await page.locator("#save-local").click();
   const saved = await page.evaluate(() =>
@@ -353,7 +353,7 @@ test("the ring renders drifting light and exposes its controls on desktop and mo
     .locator(".segmented")
     .getByRole("button", { name: "饰品", exact: true })
     .click();
-  await page.locator("#wear-3d-orbit").check();
+  await page.locator("#wear-3d-ribbon").check();
   await expect(
     page.getByText("流光环绕", { exact: true }).first(),
   ).toBeVisible();
@@ -363,9 +363,9 @@ test("the ring renders drifting light and exposes its controls on desktop and mo
   await expect(page.getByLabel("流光环绕星点", { exact: true })).toHaveValue(
     "#ffe6a8",
   );
-  await page.locator("#spatial-orbit-wisp input").press("End");
-  await page.locator("#spatial-orbit-glow input").press("End");
-  await page.locator("#spatial-orbit-length input").press("End");
+  await page.locator("#spatial-ribbon-wisp input").press("End");
+  await page.locator("#spatial-ribbon-glow input").press("End");
+  await page.locator("#spatial-ribbon-length input").press("End");
   const sample = () =>
     page.evaluate(async () => {
       const url = performance
@@ -376,7 +376,7 @@ test("the ring renders drifting light and exposes its controls on desktop and mo
         nodes.flatMap((n) => [n, ...all(n.children ?? [])]);
       // A stable signature of the band's shape: the sum over its own vertices.
       const band = all(model.scene().nodes).find(
-        (n) => n.id === "attachment-spatial-orbit-ribbon-5",
+        (n) => n.id === "attachment-spatial-ribbon-ribbon-5",
       );
       return band.geometry.vertices
         .reduce(
@@ -390,13 +390,13 @@ test("the ring renders drifting light and exposes its controls on desktop and mo
   await expect(
     page
       .locator(".attachment-item")
-      .filter({ has: page.locator("#wear-3d-orbit") })
+      .filter({ has: page.locator("#wear-3d-ribbon") })
       .locator(".pet-thumbnail img"),
   ).toBeVisible();
   await page.screenshot({ path: "test-results/orbit-ribbon-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#mobile-tab-parts").click();
-  await expect(page.locator("#wear-3d-orbit")).toBeChecked();
+  await expect(page.locator("#wear-3d-ribbon")).toBeChecked();
   await expect(page.locator("#avatar canvas")).toBeVisible();
   await page.screenshot({ path: "test-results/orbit-ribbon-mobile.png" });
   expect(errors).toEqual([]);

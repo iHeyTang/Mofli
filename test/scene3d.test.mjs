@@ -551,8 +551,15 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
         id: "my-orb",
         type: "spatial-orbit",
         version: 1,
-        colors: { ribbon: "#9988ff" },
+        colors: { body: "#9988ff" },
         parameters: { speed: 0.2 },
+      },
+      {
+        id: "my-band",
+        type: "spatial-ribbon",
+        version: 1,
+        colors: { ribbon: "#99ffaa" },
+        parameters: { radius: 1 },
       },
     ],
   };
@@ -566,8 +573,12 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
     "#ffaaaa",
   );
   assert.equal(
-    nodes.find((n) => n.id === "attachment-my-orb-ribbon-0").material.color,
+    nodes.find((n) => n.id === "attachment-my-orb-star-0").material.color,
     "#9988ff",
+  );
+  assert.equal(
+    nodes.find((n) => n.id === "attachment-my-band-ribbon-0").material.color,
+    "#99ffaa",
   );
   assert.equal(
     nodes.find((n) => n.id === "attachment-my-hat-hat").transform.scale[0],
@@ -636,7 +647,7 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
 test("the ribbon drifts on its own clock, fades with distance and encircles the body", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
   const a = spatialParts.find(
-    (p) => p.attachment.id === "spatial-orbit",
+    (p) => p.attachment.id === "spatial-ribbon",
   ).attachment;
   const params = Object.fromEntries(
     Object.entries(a.parameters).map(([k, r]) => [k, r.default]),
@@ -668,7 +679,7 @@ test("the ribbon drifts on its own clock, fades with distance and encircles the 
   const shape = bandSpan(sample(1));
   // One band, not a closed hoop, and wide enough to travel around the body.
   assert.ok(
-    shape.width > 2,
+    shape.width > 1.5,
     `the band does not encircle the body (${shape.width})`,
   );
   assert.ok(shape.height < shape.width, "the band is taller than it is wide");
@@ -768,9 +779,9 @@ test("the ribbon drifts on its own clock, fades with distance and encircles the 
   assert.ok(triangles(scene.nodes) < 20000);
 });
 
-test("all ten spatial decorations render with unique nodes and round-trip", async () => {
+test("all eleven spatial decorations render with unique nodes and round-trip", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  assert.equal(spatialParts.length, 10);
+  assert.equal(spatialParts.length, 11);
   const registry = new PetRegistry().registerPacks({
     id: "decorations",
     version: 1,
@@ -947,22 +958,22 @@ test("accessory transmission control reaches opaque and gel endpoints", async ()
   }
 });
 
-test("the orbiting accessory owns the only ring mount", async () => {
+test("both rings share the 角色环绕 group and each keeps its own band", async () => {
   const { spatialParts, spatialRig } =
     await import("@mofli/grove/rigs/spatial");
   const orbiting = spatialParts.filter((p) =>
     p.attachment.mount.startsWith("character.orbit"),
   );
-  // The library shows one 角色环绕 group, so the rig exposes one ring mount.
+  // One group in the library, two bands in the rig, so both can be worn together.
   assert.deepEqual(
     orbiting.map(({ attachment }) => attachment.id),
-    ["spatial-orbit"],
+    ["spatial-orbit", "spatial-ribbon"],
   );
   assert.deepEqual(
     Object.keys(spatialRig.mounts).filter((m) =>
       m.startsWith("character.orbit"),
     ),
-    ["character.orbit"],
+    ["character.orbit", "character.orbit.low"],
   );
   const a = orbiting[0].attachment;
   const params = Object.fromEntries(
