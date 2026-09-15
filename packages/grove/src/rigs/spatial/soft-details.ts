@@ -27,8 +27,34 @@ export function detailMesh(
   return { vertices, triangles, normals };
 }
 
+/** A cord that thins and thickens along its own length, finishing with rounded tips. */
+export function taperedStroke(
+  points: Vector3[],
+  radiusAt: (tail: number) => number,
+): Geometry3D {
+  if (points.length < 2) throw new Error("A stroke needs at least two points");
+  return sweepStroke(points, 0, radiusAt);
+}
+
 /** Sweep a circular cord along a surface curve, finishing with hemispherical tips. */
 export function roundedStroke(points: Vector3[], radius: number): Geometry3D {
+  return sweepStroke(points, radius);
+}
+
+/**
+ * One cord sweep behind both entry points. `radiusAt` is read per path point, so a
+ * stroke can dissolve into a tip instead of ending in a blunt cut.
+ */
+function sweepStroke(
+  points: Vector3[],
+  radius: number,
+  radiusAt?: (tail: number) => number,
+): Geometry3D {
+  const at = (i: number): number => {
+    if (!radiusAt) return radius;
+    const tail = points.length > 1 ? i / (points.length - 1) : 0;
+    return Math.max(1e-6, radiusAt(tail));
+  };
   const vertices: Vector3[] = [],
     triangles: [number, number, number][] = [];
   const sides = 12;
@@ -62,20 +88,26 @@ export function roundedStroke(points: Vector3[], radius: number): Geometry3D {
   const first = points[0]!,
     last = points[points.length - 1]!,
     start = tangent(0),
-    end = tangent(points.length - 1);
+    end = tangent(points.length - 1),
+    startRadius = at(0),
+    endRadius = at(points.length - 1);
   // A single pole avoids zero-area triangles at either tip.
   vertices.push(
-    first.map((v, k) => v - start[k]! * radius) as [number, number, number],
+    first.map((v, k) => v - start[k]! * startRadius) as [
+      number,
+      number,
+      number,
+    ],
   );
   for (let i = 1; i <= 4; i++) {
     const a = ((i / 4) * Math.PI) / 2;
-    ring(first, start, Math.sin(a) * radius, -Math.cos(a) * radius);
+    ring(first, start, Math.sin(a) * startRadius, -Math.cos(a) * startRadius);
   }
   for (let i = 1; i < points.length; i++)
-    ring(points[i]!, tangent(i), radius, 0);
+    ring(points[i]!, tangent(i), at(i), 0);
   for (let i = 1; i < 4; i++) {
     const a = ((i / 4) * Math.PI) / 2;
-    ring(last, end, Math.cos(a) * radius, Math.sin(a) * radius);
+    ring(last, end, Math.cos(a) * endRadius, Math.sin(a) * endRadius);
   }
   const rings = (vertices.length - 1) / sides;
   for (let j = 0; j < sides; j++) {
@@ -91,7 +123,7 @@ export function roundedStroke(points: Vector3[], radius: number): Geometry3D {
   }
   const pole = vertices.length;
   vertices.push(
-    last.map((v, k) => v + end[k]! * radius) as [number, number, number],
+    last.map((v, k) => v + end[k]! * endRadius) as [number, number, number],
   );
   for (let j = 0; j < sides; j++)
     triangles.push([

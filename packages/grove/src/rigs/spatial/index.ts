@@ -344,6 +344,7 @@ export function createSpatialPetScene(
   const depth = Math.max(...head.vertices.map((v) => Math.abs(v[2])));
   const lowerY = Math.min(...head.vertices.map((v) => v[1])) * 0.62;
   const mountTransform = (mount: string): Node3D["transform"] => {
+    // The ring is drawn around the body centre; the accessory decides its own height.
     if (mount === "character.orbit") return { position: [0, 0, 0] };
     if (mount === "head.cheeks")
       return {

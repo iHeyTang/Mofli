@@ -566,7 +566,7 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
     "#ffaaaa",
   );
   assert.equal(
-    nodes.find((n) => n.id === "attachment-my-orb-orbit").material.color,
+    nodes.find((n) => n.id === "attachment-my-orb-star-0").material.color,
     "#9988ff",
   );
   assert.equal(
@@ -633,28 +633,125 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
   assert.equal(old.rigConfig.hat, 1);
 });
 
-test("stardust particles are deterministic, continuous, bounded and share geometry", async () => {
+test("the ribbon carries its own palette and replaces the stardust ring", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  const registry = new PetRegistry().registerPacks({
+    id: "ribbon-palette",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: spatialParts,
+  });
+  const wear = (type, colors) =>
+    registry.create({
+      version: 1,
+      skin: spatialSkin,
+      rigConfig: {},
+      pose: {},
+      attachments: [{ id: "ring", type, version: 1, colors }],
+    });
+  const all = (nodes) => nodes.flatMap((n) => [n, ...all(n.children ?? [])]);
+  const band = all(
+    wear("spatial-ribbon", { ribbon: "#99ffaa", spark: "#ff8899" }).sampleScene(
+      0.4,
+    ).nodes,
+  );
+  assert.equal(
+    band.find((n) => n.id === "attachment-ring-ribbon-0").material.color,
+    "#99ffaa",
+  );
+  assert.ok(
+    band.some((n) => n.material?.color === "#ff8899"),
+    "the ribbon ignores its 星点 color",
+  );
+  // One mount, so the two rings cannot be worn at once.
+  assert.deepEqual(
+    spatialParts
+      .filter((p) => p.attachment.mount.startsWith("character.orbit"))
+      .map((p) => p.attachment.mount),
+    ["character.orbit", "character.orbit"],
+  );
+  assert.throws(
+    () =>
+      registry.create({
+        version: 1,
+        skin: spatialSkin,
+        rigConfig: {},
+        pose: {},
+        attachments: [
+          { id: "a", type: "spatial-orbit", version: 1 },
+          { id: "b", type: "spatial-ribbon", version: 1 },
+        ],
+      }),
+    /Mount occupied/,
+  );
+});
+
+test("the ribbon drifts on its own clock, fades with distance and encircles the body", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
   const a = spatialParts.find(
-    (p) => p.attachment.id === "spatial-orbit",
+    (p) => p.attachment.id === "spatial-ribbon",
   ).attachment;
   const params = Object.fromEntries(
     Object.entries(a.parameters).map(([k, r]) => [k, r.default]),
   );
   const sample = (time, p = params) => a.sampleScene({ time }, p, a.colors);
   assert.deepEqual(sample(1), sample(1));
+  // Frozen time is frozen motion, so a reduced-motion scene never drifts.
   assert.deepEqual(
     sample(1, { ...params, speed: 0 }),
     sample(20, { ...params, speed: 0 }),
   );
   assert.notDeepEqual(sample(1), sample(1.5));
+  // The stardust and the trailing haze both answer to the glow control.
   assert.ok(
-    sample(1, { ...params, density: 1 }).length >
-      sample(1, { ...params, density: 0 }).length,
+    sample(1, { ...params, glow: 1 }).length >
+      sample(1, { ...params, glow: 0 }).length,
+  );
+  const bandSpan = (nodes) => {
+    const points = nodes
+      .filter((n) => n.id.startsWith("ribbon-"))
+      .flatMap((n) => n.geometry.vertices);
+    const xs = points.map(([x]) => x),
+      ys = points.map(([, y]) => y);
+    return {
+      width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys),
+    };
+  };
+  const shape = bandSpan(sample(1));
+  // One band, not a closed hoop, and wide enough to travel around the body.
+  assert.ok(
+    shape.width > 1.5,
+    `the band does not encircle the body (${shape.width})`,
+  );
+  assert.ok(shape.height < shape.width, "the band is taller than it is wide");
+  // A ring that only spins repeats its shape; this one swells as it travels.
+  // Each stretch is swept at the origin, so its envelope lives in the mesh.
+  const band = (time) => {
+    const points = sample(time)
+      .filter((n) => n.id.startsWith("ribbon-"))
+      .flatMap((n) => n.geometry.vertices);
+    const reach = points.map(([x, , z]) => Math.hypot(x, z)),
+      heights = points.map(([, y]) => y);
+    return {
+      radius: Math.max(...reach) - Math.min(...reach),
+      height: Math.max(...heights) - Math.min(...heights),
+    };
+  };
+  const journey = [0, 1.3, 2.6, 3.9, 5.2].map(band);
+  assert.ok(
+    new Set(journey.map((s) => s.radius.toFixed(4))).size >= 3,
+    "the band radius does not breathe",
   );
   assert.ok(
-    !sample(1, { ...params, glow: 0 }).some((n) => n.id.startsWith("glow")),
+    new Set(journey.map((s) => s.height.toFixed(4))).size >= 3,
+    "the band altitude does not swell",
   );
+  const seen = new Set();
+  for (let segment = 0; segment < 11; segment++)
+    seen.add(sample(1).find((n) => n.id === `ribbon-${segment}`).geometry);
+  assert.equal(seen.size, 11, "each stretch owns its own sweep");
   for (const time of [0, 0.2, 1, 5, 20, 100]) {
     const before = sample(time),
       after = sample(time + 0.0001);
@@ -663,18 +760,32 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
       after.map((n) => n.id),
     );
     before.forEach((n, i) => {
-      assert.equal(n.geometry, after[i].geometry);
-      assert.ok(n.transform.position.every(Number.isFinite));
-      assert.ok(n.transform.scale.every((v) => Number.isFinite(v) && v > 0));
+      assert.ok(n.transform?.position.every(Number.isFinite));
+      assert.ok(
+        (n.transform?.scale ?? [1, 1, 1]).every(
+          (v) => Number.isFinite(v) && v > 0,
+        ),
+      );
+      for (const value of [
+        n.material?.transmission,
+        n.material?.opacity,
+        n.material?.radialOpacity,
+      ])
+        assert.ok(
+          value === undefined || (value >= 0 && value <= 1),
+          `${n.id} has an out-of-range material response`,
+        );
       for (let k = 0; k < 3; k++)
         assert.ok(
-          Math.abs(n.transform.position[k] - after[i].transform.position[k]) <
-            0.001,
+          Math.abs(
+            (n.transform?.position[k] ?? 0) -
+              (after[i].transform?.position[k] ?? 0),
+          ) < 0.001,
         );
     });
   }
   const registry = new PetRegistry().registerPacks({
-    id: "dust-budget",
+    id: "ribbon-budget",
     version: 1,
     rigs: [spatialRig],
     skins: [spatialSkin],
@@ -694,7 +805,9 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
           id: attachment.id,
           type: attachment.id,
           version: 1,
-          ...(attachment === a ? { parameters: { density: 1, size: 2 } } : {}),
+          ...(attachment === a
+            ? { parameters: { size: 1.8, radius: 1.85 } }
+            : {}),
         })),
     })
     .sampleScene(2);
@@ -709,9 +822,9 @@ test("stardust particles are deterministic, continuous, bounded and share geomet
   assert.ok(triangles(scene.nodes) < 20000);
 });
 
-test("all ten spatial decorations render with unique nodes and round-trip", async () => {
+test("all eleven spatial decorations render with unique nodes and round-trip", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  assert.equal(spatialParts.length, 10);
+  assert.equal(spatialParts.length, 11);
   const registry = new PetRegistry().registerPacks({
     id: "decorations",
     version: 1,
@@ -800,38 +913,148 @@ test("complete spatial outfits fit the renderer triangle budget", async () => {
 
 test("crown migration keeps last worn category without changing user colors", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const registry = new PetRegistry().registerPacks({ id: "crown-migration", version: 1, rigs: [spatialRig], skins: [spatialSkin], attachments: spatialParts });
-  const hat = { id: "hat", type: "spatial-hat", version: 1, colors: { fabric: "#abcdef" } };
-  const sprout = { id: "sprout", type: "spatial-ears", version: 1, colors: { leaf: "#123456" } };
-  for (const attachments of [[hat, sprout], [sprout, hat]]) {
-    const input = { version: 1, skin: spatialSkin, rigConfig: {}, pose: {}, attachments };
+  const registry = new PetRegistry().registerPacks({
+    id: "crown-migration",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: spatialParts,
+  });
+  const hat = {
+    id: "hat",
+    type: "spatial-hat",
+    version: 1,
+    colors: { fabric: "#abcdef" },
+  };
+  const sprout = {
+    id: "sprout",
+    type: "spatial-ears",
+    version: 1,
+    colors: { leaf: "#123456" },
+  };
+  for (const attachments of [
+    [hat, sprout],
+    [sprout, hat],
+  ]) {
+    const input = {
+      version: 1,
+      skin: spatialSkin,
+      rigConfig: {},
+      pose: {},
+      attachments,
+    };
     const result = registry.resolve(input).config;
     assert.deepEqual(result.attachments, [attachments[1]]);
     assert.equal(input.attachments.length, 2);
     assert.deepEqual(registry.resolve(result).config, result);
   }
-  assert.equal(spatialParts.filter(p => p.attachment.mount === "head.crown").length, 4);
+  assert.equal(
+    spatialParts.filter((p) => p.attachment.mount === "head.crown").length,
+    4,
+  );
   assert.ok(!Object.hasOwn(spatialRig.mounts, "head.crown.sprout"));
 });
 
 test("every spatial accessory supplies a translucent gel material", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(Boolean);
+  const materials = (nodes) =>
+    nodes
+      .flatMap((n) => [n.material, ...materials(n.children ?? [])])
+      .filter(Boolean);
   for (const { attachment } of spatialParts) {
-    const parameters = Object.fromEntries(Object.entries(attachment.parameters ?? {}).map(([key,rule]) => [key,rule.default]));
-    const nodes = attachment.sampleScene({ time: 0 }, parameters, attachment.colors);
-    assert.ok(materials(nodes).some(m => m.transmission >= .5), `${attachment.id} must not fall back to opaque plastic`);
+    const parameters = Object.fromEntries(
+      Object.entries(attachment.parameters ?? {}).map(([key, rule]) => [
+        key,
+        rule.default,
+      ]),
+    );
+    const nodes = attachment.sampleScene(
+      { time: 0 },
+      parameters,
+      attachment.colors,
+    );
+    assert.ok(
+      materials(nodes).some((m) => m.transmission >= 0.5),
+      `${attachment.id} must not fall back to opaque plastic`,
+    );
   }
 });
 
 test("accessory transmission control reaches opaque and gel endpoints", async () => {
   const { spatialParts } = await import("@mofli/grove/rigs/spatial");
-  const materials = nodes => nodes.flatMap(n => [n.material, ...materials(n.children ?? [])]).filter(m => m?.transmission !== undefined);
-  for (const {attachment:a} of spatialParts) {
-    const p = Object.fromEntries(Object.entries(a.parameters).map(([k,v]) => [k,v.default]));
-    const opaque = materials(a.sampleScene({time:0}, {...p,transmission:0}, a.colors));
-    const gel = materials(a.sampleScene({time:0}, {...p,transmission:1}, a.colors));
-    assert.ok(opaque.length && opaque.every(m => m.transmission === 0));
-    assert.ok(gel.every(m => m.transmission > .5 && m.transmission <= 1));
+  const materials = (nodes) =>
+    nodes
+      .flatMap((n) => [n.material, ...materials(n.children ?? [])])
+      .filter((m) => m?.transmission !== undefined);
+  for (const { attachment: a } of spatialParts) {
+    const p = Object.fromEntries(
+      Object.entries(a.parameters).map(([k, v]) => [k, v.default]),
+    );
+    const opaque = materials(
+      a.sampleScene({ time: 0 }, { ...p, transmission: 0 }, a.colors),
+    );
+    const gel = materials(
+      a.sampleScene({ time: 0 }, { ...p, transmission: 1 }, a.colors),
+    );
+    assert.ok(opaque.length && opaque.every((m) => m.transmission === 0));
+    assert.ok(gel.every((m) => m.transmission > 0.5 && m.transmission <= 1));
   }
+});
+
+test("both rings share the 角色环绕 group and each keeps its own band", async () => {
+  const { spatialParts, spatialRig } =
+    await import("@mofli/grove/rigs/spatial");
+  const orbiting = spatialParts.filter((p) =>
+    p.attachment.mount.startsWith("character.orbit"),
+  );
+  // One group in the library, one mount in the rig: wearing one replaces the other.
+  assert.deepEqual(
+    orbiting.map(({ attachment }) => attachment.id),
+    ["spatial-orbit", "spatial-ribbon"],
+  );
+  assert.deepEqual(
+    Object.keys(spatialRig.mounts).filter((m) =>
+      m.startsWith("character.orbit"),
+    ),
+    ["character.orbit"],
+  );
+  const a = orbiting[0].attachment;
+  const params = Object.fromEntries(
+    Object.entries(a.parameters).map(([k, r]) => [k, r.default]),
+  );
+  const registry = new PetRegistry().registerPacks({
+    id: "orbit-mount",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: [{ name: a.id, attachment: a }],
+  });
+  const pet = registry.create({
+    version: 1,
+    skin: spatialSkin,
+    rigConfig: {},
+    pose: {},
+    attachments: [{ id: "ring", type: a.id, version: 1 }],
+  });
+  const mounted = pet.sampleScene(1).nodes[0];
+  const anchor = mounted.children.find((n) => n.id === "mount-character-orbit");
+  assert.ok(anchor, "the ring mount is missing");
+  assert.deepEqual(anchor.transform.position, [0, 0, 0]);
+  const parts = anchor.children.flatMap((n) => n.children ?? []);
+  assert.ok(parts.length, "the accessory is not attached to the ring mount");
+  // The ring travels outside the body instead of through it.
+  const reach = Math.max(
+    ...parts
+      .filter((n) => !n.material?.unlit)
+      .flatMap((n) =>
+        (n.geometry?.vertices ?? []).map(([x, , z]) =>
+          Math.hypot(n.transform.position[0] + x, n.transform.position[2] + z),
+        ),
+      ),
+  );
+  assert.ok(
+    reach > 1,
+    `the ring collapses into the body (${reach.toFixed(2)})`,
+  );
+  assert.equal(params.speed, a.parameters.speed.default);
 });

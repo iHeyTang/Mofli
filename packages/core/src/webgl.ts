@@ -38,7 +38,7 @@ export function createWebGLRenderer(container: HTMLElement) {
     `
     precision mediump float;
     uniform vec3 color; uniform vec3 light; uniform vec3 cameraPosition; uniform float ambient; uniform float unlit; uniform float gloss;
-    uniform sampler2D sceneColor; uniform sampler2D opaqueDepth; uniform float useOpaqueDepth; uniform vec2 viewport; uniform vec3 backdrop; uniform float transmission; uniform float transmissionRoughness; uniform float radialOpacity;
+    uniform sampler2D sceneColor; uniform sampler2D opaqueDepth; uniform float useOpaqueDepth; uniform vec2 viewport; uniform vec3 backdrop; uniform float transmission; uniform float transmissionRoughness; uniform float radialOpacity; uniform float nodeOpacity;
     varying vec3 vNormal; varying vec3 vPosition; varying vec2 vLocal;
     vec4 transmittedSample(vec2 uv){
       uv=clamp(uv,vec2(.001),vec2(.999));
@@ -72,7 +72,7 @@ export function createWebGLRenderer(container: HTMLElement) {
         shaded=mix(shaded,transmitted,transmission);
         shaded+=vec3(.17,.20,.18)*fresnel*transmission;
       }
-      float alpha=radialOpacity<0.0?1.0:radialOpacity*pow(max(0.0,1.0-dot(vLocal,vLocal)),3.0);
+      float alpha=clamp((radialOpacity<0.0?1.0:radialOpacity*pow(max(0.0,1.0-dot(vLocal,vLocal)),3.0))*nodeOpacity,0.0,1.0);
       gl_FragColor=vec4(mix(shaded,vec3(1.0),shine)*alpha,alpha);}`,
   );
   const program = gl.createProgram()!;
@@ -105,6 +105,7 @@ export function createWebGLRenderer(container: HTMLElement) {
       "transmission",
       "transmissionRoughness",
       "radialOpacity",
+      "nodeOpacity",
     ].map((key) => [key, gl.getUniformLocation(program, key)]),
   );
   const position = gl.getAttribLocation(program, "position"),
@@ -385,6 +386,7 @@ export function createWebGLRenderer(container: HTMLElement) {
           material.transmission,
           material.transmissionRoughness,
           material.radialOpacity,
+          material.opacity,
         ])
           if (
             value !== undefined &&
@@ -430,13 +432,16 @@ export function createWebGLRenderer(container: HTMLElement) {
               material.gloss > 1)
           )
             throw new Error("Invalid material gloss");
-          const soft = material.radialOpacity !== undefined;
+          const soft =
+            material.radialOpacity !== undefined ||
+            material.opacity !== undefined;
           gl!.depthMask(!soft);
           if (soft) {
             gl!.enable(gl!.BLEND);
             gl!.blendFunc(gl!.ONE, gl!.ONE_MINUS_SRC_ALPHA);
           } else gl!.disable(gl!.BLEND);
           gl!.uniform1f(uniforms.radialOpacity!, material.radialOpacity ?? -1);
+          gl!.uniform1f(uniforms.nodeOpacity!, material.opacity ?? 1);
           gl!.uniform1f(
             uniforms.transmissionRoughness!,
             material.transmissionRoughness ?? 0,
@@ -455,7 +460,9 @@ export function createWebGLRenderer(container: HTMLElement) {
         draws.push({
           z: m.multiply(view, world)[11]!,
           glass: !!material.transmission,
-          soft: material.radialOpacity !== undefined,
+          soft:
+            material.radialOpacity !== undefined ||
+            material.opacity !== undefined,
           draw,
         });
       }
