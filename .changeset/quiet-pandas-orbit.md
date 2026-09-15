@@ -25,5 +25,6 @@ frame at every preset.
 with its own distance or along its own length. `taperedStroke` reads a radius per
 path point, so one sweep can thin toward its tip.
 
-The rig exposes `character.orbit.low` next to `character.orbit` for the second
-band. Studio labels it 下层环绕.
+Both rings share `character.orbit`, so the library keeps a single 角色环绕 group
+and wearing one replaces the other; each accessory carries its own height in its
+own path.

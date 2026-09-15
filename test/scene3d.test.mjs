@@ -554,13 +554,6 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
         colors: { body: "#9988ff" },
         parameters: { speed: 0.2 },
       },
-      {
-        id: "my-band",
-        type: "spatial-ribbon",
-        version: 1,
-        colors: { ribbon: "#99ffaa" },
-        parameters: { radius: 1 },
-      },
     ],
   };
   const pet = registry.create(config);
@@ -575,10 +568,6 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
   assert.equal(
     nodes.find((n) => n.id === "attachment-my-orb-star-0").material.color,
     "#9988ff",
-  );
-  assert.equal(
-    nodes.find((n) => n.id === "attachment-my-band-ribbon-0").material.color,
-    "#99ffaa",
   );
   assert.equal(
     nodes.find((n) => n.id === "attachment-my-hat-hat").transform.scale[0],
@@ -642,6 +631,60 @@ test("3D accessories own independent palettes and parameters, preserve mounts an
   );
   assert.deepEqual(registry.resolve(migrated).config, migrated);
   assert.equal(old.rigConfig.hat, 1);
+});
+
+test("the ribbon carries its own palette and replaces the stardust ring", async () => {
+  const { spatialParts } = await import("@mofli/grove/rigs/spatial");
+  const registry = new PetRegistry().registerPacks({
+    id: "ribbon-palette",
+    version: 1,
+    rigs: [spatialRig],
+    skins: [spatialSkin],
+    attachments: spatialParts,
+  });
+  const wear = (type, colors) =>
+    registry.create({
+      version: 1,
+      skin: spatialSkin,
+      rigConfig: {},
+      pose: {},
+      attachments: [{ id: "ring", type, version: 1, colors }],
+    });
+  const all = (nodes) => nodes.flatMap((n) => [n, ...all(n.children ?? [])]);
+  const band = all(
+    wear("spatial-ribbon", { ribbon: "#99ffaa", spark: "#ff8899" }).sampleScene(
+      0.4,
+    ).nodes,
+  );
+  assert.equal(
+    band.find((n) => n.id === "attachment-ring-ribbon-0").material.color,
+    "#99ffaa",
+  );
+  assert.ok(
+    band.some((n) => n.material?.color === "#ff8899"),
+    "the ribbon ignores its 星点 color",
+  );
+  // One mount, so the two rings cannot be worn at once.
+  assert.deepEqual(
+    spatialParts
+      .filter((p) => p.attachment.mount.startsWith("character.orbit"))
+      .map((p) => p.attachment.mount),
+    ["character.orbit", "character.orbit"],
+  );
+  assert.throws(
+    () =>
+      registry.create({
+        version: 1,
+        skin: spatialSkin,
+        rigConfig: {},
+        pose: {},
+        attachments: [
+          { id: "a", type: "spatial-orbit", version: 1 },
+          { id: "b", type: "spatial-ribbon", version: 1 },
+        ],
+      }),
+    /Mount occupied/,
+  );
 });
 
 test("the ribbon drifts on its own clock, fades with distance and encircles the body", async () => {
@@ -964,7 +1007,7 @@ test("both rings share the 角色环绕 group and each keeps its own band", asyn
   const orbiting = spatialParts.filter((p) =>
     p.attachment.mount.startsWith("character.orbit"),
   );
-  // One group in the library, two bands in the rig, so both can be worn together.
+  // One group in the library, one mount in the rig: wearing one replaces the other.
   assert.deepEqual(
     orbiting.map(({ attachment }) => attachment.id),
     ["spatial-orbit", "spatial-ribbon"],
@@ -973,7 +1016,7 @@ test("both rings share the 角色环绕 group and each keeps its own band", asyn
     Object.keys(spatialRig.mounts).filter((m) =>
       m.startsWith("character.orbit"),
     ),
-    ["character.orbit", "character.orbit.low"],
+    ["character.orbit"],
   );
   const a = orbiting[0].attachment;
   const params = Object.fromEntries(

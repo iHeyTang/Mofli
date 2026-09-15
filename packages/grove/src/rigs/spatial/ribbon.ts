@@ -45,7 +45,7 @@ export const bandId = "spatial-ribbon";
  */
 export const flowingOrbit = defineJellyAttachment({
   id: bandId,
-  mount: "character.orbit.low",
+  mount: "character.orbit",
   previewNodes: ["ribbon-5", "haze-5-0", "haze-5-1", "ribbon-3"],
   colors: { ribbon: "#cbd8ff", spark: "#ffe6a8" },
   parameters: {
@@ -76,7 +76,7 @@ export const flowingOrbit = defineJellyAttachment({
       span = 2.4 + p.length! * 4.4,
       // The band sits under the face and climbs as it circles, so it wraps the body
       // instead of cutting straight across it.
-      lift = -0.08,
+      lift = -0.66,
       nodes: Node3D[] = [];
     const pathAt = (tail: number): Vector3 => {
       const angle = drift - tail * span,
